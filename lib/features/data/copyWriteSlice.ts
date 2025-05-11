@@ -1,5 +1,3 @@
-// redux/copywriteslice.ts
-
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export interface Contributor {
@@ -15,6 +13,9 @@ export interface CopyWriteSliceState {
   edition: string;
   editionStatement: string;
   contributors: Contributor[];
+  copyrightOption: "all-rights" | "creative-commons" | "public-domain";
+  copyrightHolder: string;
+  copyrightYear: string;
 }
 
 const initialState: CopyWriteSliceState = {
@@ -25,6 +26,9 @@ const initialState: CopyWriteSliceState = {
   contributors: [
     { id: 1, role: "By (author)", firstName: "Cecilia", lastName: "RAZA" },
   ],
+  copyrightOption: "all-rights",
+  copyrightHolder: "",
+  copyrightYear: "",
 };
 
 const copywritesliceSlice = createSlice({
@@ -74,6 +78,18 @@ const copywritesliceSlice = createSlice({
           : c
       );
     },
+    setCopyrightOption: (
+      state,
+      action: PayloadAction<"all-rights" | "creative-commons" | "public-domain">
+    ) => {
+      state.copyrightOption = action.payload;
+    },
+    setCopyrightHolder: (state, action: PayloadAction<string>) => {
+      state.copyrightHolder = action.payload;
+    },
+    setCopyrightYear: (state, action: PayloadAction<string>) => {
+      state.copyrightYear = action.payload;
+    },
   },
 });
 
@@ -85,6 +101,9 @@ export const {
   addContributor,
   removeContributor,
   updateContributor,
+  setCopyrightOption,
+  setCopyrightHolder,
+  setCopyrightYear,
 } = copywritesliceSlice.actions;
 
 export default copywritesliceSlice.reducer;
