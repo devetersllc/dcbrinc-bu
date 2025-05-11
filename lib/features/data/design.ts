@@ -19,7 +19,7 @@ const initialState: BookSpecificationsState = {
 };
 
 const bookspecificationsSlice = createSlice({
-  name: "bookSpecifications",
+  name: "design",
   initialState,
   reducers: {
     setBookSize: (

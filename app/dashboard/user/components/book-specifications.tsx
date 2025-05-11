@@ -21,12 +21,12 @@ import {
   setInteriorColor,
   setPageCount,
   setPaperType,
-} from "@/lib/features/data/bookSpecificationsSlice";
+} from "@/lib/features/data/design";
 
 export function BookSpecifications() {
   const dispatch = useDispatch();
-  const bookSpecifications = useSelector(
-    (state: RootState) => state.bookSpecifications
+  const design = useSelector(
+    (state: RootState) => state.design
   );
 
   return (
@@ -68,7 +68,7 @@ export function BookSpecifications() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Select
-                  value={bookSpecifications.bookSize}
+                  value={design.bookSize}
                   onValueChange={(value: BookSpecificationsState["bookSize"]) =>
                     dispatch(setBookSize(value))
                   }
@@ -91,7 +91,7 @@ export function BookSpecifications() {
               </div>
               <div>
                 <Select
-                  value={bookSpecifications.pageCount}
+                  value={design.pageCount}
                   onValueChange={(
                     value: BookSpecificationsState["pageCount"]
                   ) => dispatch(setPageCount(value))}
@@ -127,7 +127,7 @@ export function BookSpecifications() {
               the page.
             </p>
             <RadioGroup
-              value={bookSpecifications.interiorColor}
+              value={design.interiorColor}
               onValueChange={(
                 value: BookSpecificationsState["interiorColor"]
               ) => dispatch(setInteriorColor(value))}
@@ -135,7 +135,7 @@ export function BookSpecifications() {
             >
               <div
                 className={`border rounded-md p-2 ${
-                  bookSpecifications.interiorColor === "black-white"
+                  design.interiorColor === "black-white"
                     ? "ring-2 ring-blue-500"
                     : ""
                 }`}
@@ -162,7 +162,7 @@ export function BookSpecifications() {
               </div>
               <div
                 className={`border rounded-md p-2 ${
-                  bookSpecifications.interiorColor === "premium-color"
+                  design.interiorColor === "premium-color"
                     ? "ring-2 ring-blue-500"
                     : ""
                 }`}
@@ -207,13 +207,13 @@ export function BookSpecifications() {
             </p>
             <div
               className={`border rounded-md p-2 ${
-                bookSpecifications.paperType === "80lb-white-coated"
+                design.paperType === "80lb-white-coated"
                   ? "ring-2 ring-blue-500"
                   : ""
               }`}
             >
               <RadioGroup
-                value={bookSpecifications.paperType}
+                value={design.paperType}
                 onValueChange={(value: BookSpecificationsState["paperType"]) =>
                   dispatch(setPaperType(value))
                 }
@@ -250,7 +250,7 @@ export function BookSpecifications() {
               Pick a binding option for your Photo Book.
             </p>
             <RadioGroup
-              value={bookSpecifications.bindingType}
+              value={design.bindingType}
               onValueChange={(value: BookSpecificationsState["bindingType"]) =>
                 dispatch(setBindingType(value))
               }
@@ -258,7 +258,7 @@ export function BookSpecifications() {
             >
               <div
                 className={`border rounded-md p-2 ${
-                  bookSpecifications.bindingType === "hardcover-case"
+                  design.bindingType === "hardcover-case"
                     ? "ring-2 ring-blue-500"
                     : ""
                 }`}
@@ -285,7 +285,7 @@ export function BookSpecifications() {
               </div>
               <div
                 className={`border rounded-md p-2 ${
-                  bookSpecifications.bindingType === "paperback"
+                  design.bindingType === "paperback"
                     ? "ring-2 ring-blue-500"
                     : ""
                 }`}
@@ -312,7 +312,7 @@ export function BookSpecifications() {
               </div>
               <div
                 className={`border rounded-md p-2 ${
-                  bookSpecifications.bindingType === "hardcover-linen"
+                  design.bindingType === "hardcover-linen"
                     ? "ring-2 ring-blue-500"
                     : ""
                 }`}
@@ -355,7 +355,7 @@ export function BookSpecifications() {
               Select the cover finish for your Photo Book.
             </p>
             <RadioGroup
-              value={bookSpecifications.coverFinish}
+              value={design.coverFinish}
               onValueChange={(value: BookSpecificationsState["coverFinish"]) =>
                 dispatch(setCoverFinish(value))
               }
@@ -363,7 +363,7 @@ export function BookSpecifications() {
             >
               <div
                 className={`border rounded-md p-2 ${
-                  bookSpecifications.coverFinish === "glossy"
+                  design.coverFinish === "glossy"
                     ? "ring-2 ring-blue-500"
                     : ""
                 }`}
@@ -377,7 +377,7 @@ export function BookSpecifications() {
               </div>
               <div
                 className={`border rounded-md p-2 ${
-                  bookSpecifications.coverFinish === "matte"
+                  design.coverFinish === "matte"
                     ? "ring-2 ring-blue-500"
                     : ""
                 }`}

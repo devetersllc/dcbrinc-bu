@@ -22,12 +22,13 @@ import { RootState } from "@/lib/store";
 export default function MainTabs() {
   const startPage = useSelector((state: RootState) => state.startPage);
   const copyWrite = useSelector((state: RootState) => state.copyWrite);
-  const bookSpecifications = useSelector(
-    (state: RootState) => state.bookSpecifications
+  const design = useSelector(
+    (state: RootState) => state.design
   );
   console.log("startPage", startPage);
   console.log("copyWrite", copyWrite);
-  console.log("bookSpecifications", bookSpecifications);
+  console.log("design", design);
+  console.log("detail", design);
 
   return (
     <Tabs defaultValue="Start" className="w-[100%]">
