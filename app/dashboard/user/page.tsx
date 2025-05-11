@@ -39,8 +39,8 @@ export default function UserDashboard() {
       {/* <Button onClick={handleLogout} variant="outline">
         Logout
       </Button> */}
-      <CanvasEditor />
       <MainTabs />
+      <CanvasEditor />
     </div>
   );
 }
