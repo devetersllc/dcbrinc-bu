@@ -21,7 +21,7 @@ import {
   setInteriorColor,
   setPageCount,
   setPaperType,
-} from "@/lib/features/data/design";
+} from "@/lib/features/data/designSlice";
 
 export function BookSpecifications() {
   const dispatch = useDispatch();

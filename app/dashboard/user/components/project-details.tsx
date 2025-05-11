@@ -1,7 +1,7 @@
 "use client";
 
 import { Textarea } from "@/components/ui/textarea";
-import { setContributorNotes, setDescription, setTableOfContents } from "@/lib/features/data/detail";
+import { setContributorNotes, setDescription, setTableOfContents } from "@/lib/features/data/detailSlice";
 import { RootState } from "@/lib/store";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";

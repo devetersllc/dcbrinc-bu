@@ -8,7 +8,7 @@ import {
   setBisacCategory2,
   setBisacCategory3,
   setKeywords,
-} from "@/lib/features/data/detail";
+} from "@/lib/features/data/detailSlice";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

@@ -6,7 +6,7 @@ import {
   setAudience,
   setIsExplicitContent,
   setExplicitContentType,
-} from "@/lib/features/data/detail";
+} from "@/lib/features/data/detailSlice";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import {
   Select,
