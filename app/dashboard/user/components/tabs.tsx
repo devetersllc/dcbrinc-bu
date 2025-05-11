@@ -1,16 +1,4 @@
 "use client";
-
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProductSelection } from "./product-selection";
 import { GoalSelection } from "./goal-selection";
@@ -34,8 +22,12 @@ import { RootState } from "@/lib/store";
 export default function MainTabs() {
   const startPage = useSelector((state: RootState) => state.startPage);
   const copyWrite = useSelector((state: RootState) => state.copyWrite);
+  const bookSpecifications = useSelector(
+    (state: RootState) => state.bookSpecifications
+  );
   console.log("startPage", startPage);
   console.log("copyWrite", copyWrite);
+  console.log("bookSpecifications", bookSpecifications);
 
   return (
     <Tabs defaultValue="Start" className="w-[100%]">
