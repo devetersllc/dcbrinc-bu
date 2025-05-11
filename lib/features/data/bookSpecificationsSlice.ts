@@ -1,79 +1,73 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export interface BookSpecificationsState {
-  goal: "publish" | "print";
-  type:
-    | "print-book"
-    | "photo-book"
-    | "comic-book"
-    | "magazine"
-    | "yearbook"
-    | "calendar"
-    | "ebook";
-  projectTitle: string;
-  bookLanguage:
-    | "Akkadian"
-    | "Akkadian"
-    | "English"
-    | "Spanish"
-    | "French"
-    | "German"
-    | "Japanese";
-
-  bookCategory:
-    | "Fiction"
-    | "Non-Fiction"
-    | "Art & Photography"
-    | "Travel"
-    | "Cookbook"
-    | "Biography";
+  bookSize: "a4" | "a5" | "square";
+  pageCount: "24" | "30" | "36" | "42" | "48";
+  interiorColor: "black-white" | "premium-color";
+  paperType: "80lb-white-coated";
+  bindingType: "hardcover-case" | "paperback" | "hardcover-linen";
+  coverFinish: "glossy" | "matte";
 }
 
 const initialState: BookSpecificationsState = {
-  goal: "publish",
-  type: "print-book",
-  projectTitle: "",
-  bookLanguage: "Akkadian",
-  bookCategory: "Fiction",
+  bookSize: "a4",
+  pageCount: "30",
+  interiorColor: "black-white",
+  paperType: "80lb-white-coated",
+  bindingType: "hardcover-case",
+  coverFinish: "glossy",
 };
 
 const bookspecificationsSlice = createSlice({
   name: "bookSpecifications",
   initialState,
   reducers: {
-    setGoal: (state, action: PayloadAction<BookSpecificationsState["goal"]>) => {
-      state.goal = action.payload;
-    },
-    setType: (state, action: PayloadAction<BookSpecificationsState["type"]>) => {
-      state.type = action.payload;
-    },
-    setProjectTitle: (
+    setBookSize: (
       state,
-      action: PayloadAction<BookSpecificationsState["projectTitle"]>
+      action: PayloadAction<BookSpecificationsState["bookSize"]>
     ) => {
-      state.projectTitle = action.payload;
+      state.bookSize = action.payload;
     },
-    setBookLanguage: (
+    setPageCount: (
       state,
-      action: PayloadAction<BookSpecificationsState["bookLanguage"]>
+      action: PayloadAction<BookSpecificationsState["pageCount"]>
     ) => {
-      state.bookLanguage = action.payload;
+      state.pageCount = action.payload;
     },
-    setBookCategory: (
+    setInteriorColor: (
       state,
-      action: PayloadAction<BookSpecificationsState["bookCategory"]>
+      action: PayloadAction<BookSpecificationsState["interiorColor"]>
     ) => {
-      state.bookCategory = action.payload;
+      state.interiorColor = action.payload;
+    },
+    setPaperType: (
+      state,
+      action: PayloadAction<BookSpecificationsState["paperType"]>
+    ) => {
+      state.paperType = action.payload;
+    },
+    setBindingType: (
+      state,
+      action: PayloadAction<BookSpecificationsState["bindingType"]>
+    ) => {
+      state.bindingType = action.payload;
+    },
+    setCoverFinish: (
+      state,
+      action: PayloadAction<BookSpecificationsState["coverFinish"]>
+    ) => {
+      state.coverFinish = action.payload;
     },
   },
 });
 
 export const {
-  setGoal,
-  setType,
-  setProjectTitle,
-  setBookLanguage,
-  setBookCategory,
+  setBookSize,
+  setPageCount,
+  setInteriorColor,
+  setPaperType,
+  setBindingType,
+  setCoverFinish,
 } = bookspecificationsSlice.actions;
 
 export default bookspecificationsSlice.reducer;
