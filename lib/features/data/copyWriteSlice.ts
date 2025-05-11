@@ -16,6 +16,8 @@ export interface CopyWriteSliceState {
   copyrightOption: "all-rights" | "creative-commons" | "public-domain";
   copyrightHolder: string;
   copyrightYear: string;
+  isbnOption: "free-isbn" | "own-isbn" | "proceed-without";
+  ownIsbnValue: string;
 }
 
 const initialState: CopyWriteSliceState = {
@@ -29,6 +31,8 @@ const initialState: CopyWriteSliceState = {
   copyrightOption: "all-rights",
   copyrightHolder: "",
   copyrightYear: "",
+  isbnOption: "proceed-without",
+  ownIsbnValue: "",
 };
 
 const copywritesliceSlice = createSlice({
@@ -90,6 +94,15 @@ const copywritesliceSlice = createSlice({
     setCopyrightYear: (state, action: PayloadAction<string>) => {
       state.copyrightYear = action.payload;
     },
+    setIsbnOption: (
+      state,
+      action: PayloadAction<"free-isbn" | "own-isbn" | "proceed-without">
+    ) => {
+      state.isbnOption = action.payload;
+    },
+    setOwnIsbnValue: (state, action: PayloadAction<string>) => {
+      state.ownIsbnValue = action.payload;
+    },
   },
 });
 
@@ -104,6 +117,8 @@ export const {
   setCopyrightOption,
   setCopyrightHolder,
   setCopyrightYear,
+  setIsbnOption,
+  setOwnIsbnValue,
 } = copywritesliceSlice.actions;
 
 export default copywritesliceSlice.reducer;
