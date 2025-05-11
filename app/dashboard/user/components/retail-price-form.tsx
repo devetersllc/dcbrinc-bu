@@ -23,7 +23,8 @@ export default function RetailPriceForm() {
         <div className="flex justify-between items-start">
           <h2 className="text-xl font-bold">Set a Retail Price</h2>
           <p className="text-sm text-gray-600 max-w-md">
-            Set the price for each currency manually or select a revenue goal for each Photo Book sale.
+            Set the price for each currency manually or select a revenue goal
+            for each Photo Book sale.
           </p>
         </div>
 
@@ -48,6 +49,9 @@ export default function RetailPriceForm() {
         <div className="border rounded-t-none rounded-b-md p-4 grid grid-cols-3 gap-4 border-l-4 border-l-green-500">
           <div className="font-semibold">Revenue Goal</div>
           <div>
+            <label className="block text-xs uppercase font-semibold text-gray-700 mb-1">
+              Price
+            </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <BarChart3 className="h-4 w-4 text-gray-400" />
@@ -56,7 +60,9 @@ export default function RetailPriceForm() {
             </div>
           </div>
           <div>
-            <label className="block text-xs uppercase font-semibold text-gray-700 mb-1">Currency</label>
+            <label className="block text-xs uppercase font-semibold text-gray-700 mb-1">
+              Currency
+            </label>
             <Select defaultValue="USD">
               <SelectTrigger className="w-full">
                 <div className="flex items-center gap-2">
@@ -83,7 +89,9 @@ export default function RetailPriceForm() {
           <div className="col-span-5 grid grid-cols-5 gap-4">
             {Object.entries(minimumPrices).map(([currency, minPrice]) => (
               <div key={currency} className="space-y-2">
-                <div className="text-xs font-semibold text-center">{currency}</div>
+                <div className="text-xs font-semibold text-center">
+                  {currency}
+                </div>
                 <Input type="text" placeholder="--" className="text-center" />
                 <div className="text-xs text-center">
                   {minPrice} {currency}
@@ -94,12 +102,14 @@ export default function RetailPriceForm() {
 
           {/* Footnote */}
           <div className="col-span-6 mt-2 text-xs text-gray-500">
-            * Minimum Price is determined by the print cost and distribution fees.
+            * Minimum Price is determined by the print cost and distribution
+            fees.
             <br />
-            To ensure you earn revenue for sales, the list price cannot be less than the minimum price.
+            To ensure you earn revenue for sales, the list price cannot be less
+            than the minimum price.
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
