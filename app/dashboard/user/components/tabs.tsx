@@ -25,10 +25,11 @@ export default function MainTabs() {
   const design = useSelector(
     (state: RootState) => state.design
   );
+  const detail = useSelector((state: RootState) => state.detail);
   console.log("startPage", startPage);
   console.log("copyWrite", copyWrite);
   console.log("design", design);
-  console.log("detail", design);
+  console.log("detail", detail);
 
   return (
     <Tabs defaultValue="Start" className="w-[100%]">
