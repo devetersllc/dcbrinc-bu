@@ -10,17 +10,16 @@ import { InfoIcon } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import { useDispatch } from "react-redux";
-import { setGoal } from "@/lib/features/data/startPageSlice";
+import { setGoal, StartPageState } from "@/lib/features/data/startPageSlice";
 
 export function GoalSelection() {
   const [selectedGoal, setSelectedGoal] = useState("publish");
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([
     "lulu-bookstore",
   ]);
   const startPage = useSelector((state: RootState) => state.startPage);
   const dispatch = useDispatch();
-  console.log("startPage", startPage);
 
   const handleOptionChange = (option: string) => {
     if (selectedOptions.includes(option)) {
@@ -53,8 +52,8 @@ export function GoalSelection() {
       </Alert>
 
       <RadioGroup
-        value={startPage.gaol}
-        onValueChange={(e) => {
+        value={startPage.goal}
+        onValueChange={(e: StartPageState["goal"]) => {
           dispatch(setGoal(e));
         }}
         className="space-y-4"
@@ -81,7 +80,7 @@ export function GoalSelection() {
                   options to sell your Photo Book.
                 </p>
               </div>
-              <button
+              {/* <button
                 onClick={() => setExpanded(!expanded)}
                 className="p-2 text-gray-500 hover:text-gray-700"
               >
@@ -90,7 +89,7 @@ export function GoalSelection() {
                     expanded ? "" : "rotate-180"
                   }`}
                 />
-              </button>
+              </button> */}
             </div>
 
             {expanded && selectedGoal === "publish" && (
