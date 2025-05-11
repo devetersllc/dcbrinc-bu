@@ -9,6 +9,9 @@ export interface DetailState {
   bisacCategory2: string;
   bisacCategory3: string;
   keywords: string;
+  audience: string;
+  isExplicitContent: boolean;
+  explicitContentType: string;
 }
 
 const initialState: DetailState = {
@@ -20,6 +23,9 @@ const initialState: DetailState = {
   bisacCategory2: "",
   bisacCategory3: "",
   keywords: "",
+  audience: "general-trade",
+  isExplicitContent: true,
+  explicitContentType: "any-adult",
 };
 
 const detailSlice = createSlice({
@@ -50,6 +56,15 @@ const detailSlice = createSlice({
     setKeywords: (state, action: PayloadAction<string>) => {
       state.keywords = action.payload;
     },
+    setAudience: (state, action: PayloadAction<string>) => {
+      state.audience = action.payload;
+    },
+    setIsExplicitContent: (state, action: PayloadAction<boolean>) => {
+      state.isExplicitContent = action.payload;
+    },
+    setExplicitContentType: (state, action: PayloadAction<string>) => {
+      state.explicitContentType = action.payload;
+    },
   },
 });
 
@@ -62,6 +77,9 @@ export const {
   setBisacCategory2,
   setBisacCategory3,
   setKeywords,
+  setAudience,
+  setIsExplicitContent,
+  setExplicitContentType,
 } = detailSlice.actions;
 
 export default detailSlice.reducer;
