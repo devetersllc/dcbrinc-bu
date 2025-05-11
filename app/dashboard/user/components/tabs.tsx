@@ -33,7 +33,9 @@ import { RootState } from "@/lib/store";
 
 export default function MainTabs() {
   const startPage = useSelector((state: RootState) => state.startPage);
+  const copyWrite = useSelector((state: RootState) => state.copyWrite);
   console.log("startPage", startPage);
+  console.log("copyWrite", copyWrite);
 
   return (
     <Tabs defaultValue="Start" className="w-[100%]">
