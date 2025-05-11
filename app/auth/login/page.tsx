@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function LoginPage() {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
     setIsAdmin(window.location.hostname.includes("admin"));
@@ -25,15 +25,17 @@ export default function LoginPage() {
           </p>
         </div>
         <LoginForm userType={isAdmin ? "admin" : "user"} />
-        <p className="px-8 text-center text-sm text-muted-foreground">
-          Don't have an account?{" "}
-          <Link
-            href="/auth/signup"
-            className="underline underline-offset-4 hover:text-primary"
-          >
-            Sign up
-          </Link>
-        </p>
+        {isAdmin === false && (
+          <p className="px-8 text-center text-sm text-muted-foreground">
+            Don't have an account?{" "}
+            <Link
+              href="/auth/signup"
+              className="underline underline-offset-4 hover:text-primary"
+            >
+              Sign up
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );
