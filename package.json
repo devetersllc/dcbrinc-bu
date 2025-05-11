@@ -45,8 +45,8 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
-    "date-fns": "4.1.0",
     "embla-carousel-react": "8.5.1",
+    "fabric": "^4.3.1",
     "gcp-metadata": "latest",
     "input-otp": "1.4.1",
     "jose": "^6.0.11",
@@ -58,7 +58,6 @@
     "next": "15.2.4",
     "next-themes": "^0.4.4",
     "react": "^19",
-    "react-day-picker": "8.10.1",
     "react-dom": "^19",
     "react-hook-form": "latest",
     "react-redux": "latest",
@@ -74,6 +73,7 @@
     "zod": "latest"
   },
   "devDependencies": {
+    "@types/fabric": "^5.3.10",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22",
     "@types/react": "^19",
