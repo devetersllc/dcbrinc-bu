@@ -28,8 +28,13 @@ import PayeeManagement from "./payee-management";
 import ContributorsCopyrightForm from "./contributors-copyright-form";
 import ISBNSelection from "./isbn-selection";
 import PhotoBookReview from "./photo-book-review";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
 
 export default function MainTabs() {
+  const startPage = useSelector((state: RootState) => state.startPage);
+  console.log("startPage", startPage);
+
   return (
     <Tabs defaultValue="Start" className="w-[100%]">
       <TabsList className="grid w-full grid-cols-6">
