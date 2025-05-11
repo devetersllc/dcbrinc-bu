@@ -84,29 +84,6 @@ export default function RetailPriceForm() {
               />
             </div>
           </div>
-          <div>
-            <label className="block text-xs uppercase font-semibold text-gray-700 mb-1">
-              Currency
-            </label>
-            <Select
-              value={price.currency}
-              onValueChange={(val) => dispatch(setCurrency(val))}
-            >
-              <SelectTrigger className="w-full">
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-500">$</span>
-                  <SelectValue />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                {Object.keys(minimumPrices).map((cur) => (
-                  <SelectItem key={cur} value={cur}>
-                    {cur}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
         </div>
 
         {/* List Price Section */}
@@ -124,7 +101,10 @@ export default function RetailPriceForm() {
                   value={price.listPrices[cur] || ""}
                   onChange={(e) =>
                     dispatch(
-                      setListPrice({ currency: cur, value: e.target.valueAsNumber })
+                      setListPrice({
+                        currency: cur,
+                        value: e.target.valueAsNumber,
+                      })
                     )
                   }
                 />
