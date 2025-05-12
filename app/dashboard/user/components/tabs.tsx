@@ -18,6 +18,7 @@ import ISBNSelection from "./isbn-selection";
 import PhotoBookReview from "./photo-book-review";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
+import { Button } from "@/components/ui/button";
 
 export default function MainTabs() {
   const startPage = useSelector((state: RootState) => state.startPage);
@@ -33,54 +34,72 @@ export default function MainTabs() {
 
   return (
     <Tabs defaultValue="Start" className="w-[100%]">
-      <TabsList
-        className={`grid w-full ${
-          startPage.goal === "print" ? "grid-cols-6" : "grid-cols-3"
-        }`}
-      >
-        <TabsTrigger value="Start">Start</TabsTrigger>
-        {startPage.goal === "print" && (
-          <>
-            <TabsTrigger value="Copyright">Copyright</TabsTrigger>
-            <TabsTrigger value="Design">Design</TabsTrigger>
-            <TabsTrigger value="Details">Details</TabsTrigger>
-          </>
-        )}
-        <TabsTrigger value="Pricing">Pricing & Payee</TabsTrigger>
-        <TabsTrigger value="Review">Review</TabsTrigger>
-      </TabsList>
+      <div className="px-2 w-full sticky top-1 z-10">
+        <TabsList
+          className={`grid border-2 ${
+            startPage.goal === "publish" ? "grid-cols-6" : "grid-cols-3"
+          }`}
+        >
+          <TabsTrigger value="Start">Start</TabsTrigger>
+          {startPage.goal === "publish" && (
+            <>
+              <TabsTrigger value="Copyright">Copyright</TabsTrigger>
+            </>
+          )}
+          <TabsTrigger value="Design">Design</TabsTrigger>
+          {startPage.goal === "publish" && (
+            <>
+              <TabsTrigger value="Details">Details</TabsTrigger>
+              <TabsTrigger value="Pricing">Pricing & Payee</TabsTrigger>
+            </>
+          )}
+          <TabsTrigger value="Review">Review</TabsTrigger>
+        </TabsList>
+      </div>
       <TabsContent value="Start">
         <ProductSelection />
         <GoalSelection />
         <PhotoBookDetails />
+        <Button variant={"main"} size={"main"} className="w-full text-2xl">
+          Add Design Info
+        </Button>
       </TabsContent>
-      {startPage.goal === "print" && (
+      {startPage.goal === "publish" && (
         <>
           <TabsContent value="Copyright">
             <BookMetadataForm />
             <ContributorsCopyrightForm />
             <ISBNSelection />
           </TabsContent>
-          <TabsContent value="Design">
-            <InteriorFileUpload />
-            <BookSpecifications />
-            <PhotoBookCoverDesign />
-            <PhotoBookPreview />
-          </TabsContent>
+        </>
+      )}
+      <TabsContent value="Design">
+        <InteriorFileUpload />
+        <BookSpecifications />
+        <PhotoBookCoverDesign />
+        <PhotoBookPreview />
+        <Button variant={"main"} size={"main"} className="w-full text-2xl">
+          Review Book
+        </Button>
+      </TabsContent>
+      {startPage.goal === "publish" && (
+        <>
           <TabsContent value="Details">
             <ProjectDetails />
             <CategoriesAndKeywords />
             <AudienceForm />
           </TabsContent>
+          <TabsContent value="Pricing">
+            <RetailPriceForm />
+            <PayeeManagement />
+          </TabsContent>
         </>
       )}
-
-      <TabsContent value="Pricing">
-        <RetailPriceForm />
-        <PayeeManagement />
-      </TabsContent>
       <TabsContent value="Review">
         <PhotoBookReview />
+        <Button variant={"main"} size={"main"} className="w-full text-2xl">
+          Confirm & Publish
+        </Button>
       </TabsContent>
     </Tabs>
   );

@@ -26,7 +26,7 @@ export function ProjectDetails() {
 
       <div className="bg-white p-6 rounded-lg">
         <div className="flex justify-between items-start mb-6">
-          <h2 className="text-xl font-bold">Project Details</h2>
+          <h1 className="text-xl font-bold">Project Details</h1>
           <div className="text-sm">
             Provide all important metadata to help readers find your book.{" "}
             <Link href="#" className="text-blue-900 font-medium">

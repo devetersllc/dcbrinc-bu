@@ -1,14 +1,12 @@
-"use client"
+"use client";
 
-import { Download } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function PhotoBookReview() {
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
-      <div className="p-4 bg-blue-50">
-        <h1 className="text-2xl font-bold text-gray-900">Review Your Photo Book</h1>
-      </div>
+      <h1 className="text-xl font-bold">Review Your Photo Book</h1>
 
       <div className="bg-white p-6 rounded-md shadow-sm">
         <div className="flex flex-col md:flex-row gap-6">
@@ -17,11 +15,17 @@ export default function PhotoBookReview() {
             <div className="border-4 border-blue-900 p-2 w-[180px]">
               <div className="bg-white p-4 flex flex-col items-center">
                 <div className="mb-4">
-                  <img src="/placeholder.svg?height=40&width=80" alt="Lulu logo" className="h-10" />
+                  <img
+                    src="/placeholder.svg?height=40&width=80"
+                    alt="Lulu logo"
+                    className="h-10"
+                  />
                 </div>
                 <div className="text-center text-[8px] text-gray-500 space-y-1">
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-                  <p>Sed do eiusmod tempor incididunt ut labore et dolore magna</p>
+                  <p>
+                    Sed do eiusmod tempor incididunt ut labore et dolore magna
+                  </p>
                   <p>Ut enim ad minim veniam, quis nostrud exercitation</p>
                 </div>
               </div>
@@ -63,7 +67,9 @@ export default function PhotoBookReview() {
 
               <div className="pt-2">
                 <span className="text-gray-600 text-sm">Print Cost:</span>
-                <span className="text-blue-600 font-semibold ml-2">11.59 USD</span>
+                <span className="text-blue-600 font-semibold ml-2">
+                  11.59 USD
+                </span>
               </div>
 
               <div className="pt-4 flex flex-wrap gap-2">
@@ -87,5 +93,5 @@ export default function PhotoBookReview() {
         </div>
       </div>
     </div>
-  )
+  );
 }

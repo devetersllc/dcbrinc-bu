@@ -38,7 +38,7 @@ export function PhotoBookCoverDesign() {
 
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
-      <h2 className="text-2xl font-bold mb-6">Photo Book Cover Design</h2>
+      <h1 className="text-xl font-bold mb-6">Photo Book Cover Design</h1>
 
       <RadioGroup value={coverOption} onValueChange={handleOptionChange} className="space-y-4">
         <div className="border rounded-lg overflow-hidden">

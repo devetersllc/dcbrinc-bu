@@ -73,7 +73,7 @@ export function ProductSelection() {
 
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
-      <h2 className="text-xl font-bold mb-6">Select a Product Type</h2>
+      <h1 className="text-xl font-bold mb-6">Select a Product Type</h1>
       <RadioGroup
         value={startPage.type}
         onValueChange={(e: StartPageState["type"]) => {

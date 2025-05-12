@@ -34,9 +34,8 @@ export default function BookMetadataForm() {
         {/* Title and Edition Section */}
         <div className="space-y-4">
           <div className="flex justify-between items-start">
-            <div className="bg-blue-600 text-white px-2 py-1 font-semibold">
-              Title and Edition
-            </div>
+            <h1 className="text-xl font-bold mb-6">Title and Edition</h1>
+
             <div className="max-w-md">
               <p className="text-sm text-gray-600">
                 Enter additional title and edition information for your Photo

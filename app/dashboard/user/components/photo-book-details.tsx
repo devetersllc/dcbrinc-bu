@@ -31,7 +31,7 @@ export function PhotoBookDetails() {
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
       <div className="bg-white p-8 rounded-lg mb-4">
-        <h1 className="text-2xl font-bold mb-6">Photo Book Details</h1>
+        <h1 className="text-xl font-bold mb-6">Photo Book Details</h1>
 
         <div className="space-y-6">
           <div>
@@ -107,7 +107,9 @@ export function PhotoBookDetails() {
               <SelectContent>
                 <SelectItem value="Fiction">Fiction</SelectItem>
                 <SelectItem value="Non-Fiction">Non-Fiction</SelectItem>
-                <SelectItem value="Art & Photography">Art & Photography</SelectItem>
+                <SelectItem value="Art & Photography">
+                  Art & Photography
+                </SelectItem>
                 <SelectItem value="Travel">Travel</SelectItem>
                 <SelectItem value="Cookbook">Cookbook</SelectItem>
                 <SelectItem value="Biography">Biography</SelectItem>
@@ -115,15 +117,6 @@ export function PhotoBookDetails() {
             </Select>
           </div>
         </div>
-      </div>
-
-      <div className="w-full flex justify-center items-center px-10">
-        <Link
-          href="#copyright-info"
-          className="flex items-center justify-center w-full bg-blue-900 text-white py-4 px-6 rounded-2xl relative"
-        >
-          <span className="font-semibold">Add Copyright Info</span>
-        </Link>
       </div>
     </div>
   );

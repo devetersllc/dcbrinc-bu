@@ -28,7 +28,7 @@ export function CategoriesAndKeywords() {
 
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
-      <h2 className="text-xl font-bold mb-6">Categories and Keywords</h2>
+      <h1 className="text-xl font-bold mb-6">Categories and Keywords</h1>
 
       <div className="space-y-6">
         <div>
