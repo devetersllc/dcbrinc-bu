@@ -27,7 +27,7 @@ export default function AudienceForm() {
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
       <div className="space-y-4">
         <div>
-          <h2 className="text-xl font-bold">Audience</h2>
+          <h1 className="text-xl font-bold">Audience</h1>
           <p className="text-sm text-gray-600">
             Help readers find your Photo Book by assigning an Audience.
           </p>

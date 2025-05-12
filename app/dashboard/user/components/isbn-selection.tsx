@@ -34,7 +34,7 @@ export default function ISBNSelection() {
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
       <div className="space-y-4">
         <div className="flex justify-between items-start">
-          <h2 className="text-xl font-bold">ISBN</h2>
+          <h1 className="text-xl font-bold">ISBN</h1>
           <p className="text-sm text-gray-600 max-w-md">
             The International Standard Book Number (ISBN) is a unique identifier
             for your book. If you select Global Distribution, an ISBN is

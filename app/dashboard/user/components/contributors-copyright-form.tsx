@@ -33,7 +33,7 @@ export default function ContributorsCopyrightForm() {
       <div className="space-y-6">
         <div className="p-4">
           <div className="flex justify-between items-start mb-4">
-            <h2 className="text-xl font-bold">Copyright</h2>
+            <h1 className="text-xl font-bold">Copyright</h1>
             <div className="max-w-md">
               <p className="text-sm text-gray-600">
                 Select the copyright license that best suits your work. For more
