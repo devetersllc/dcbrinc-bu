@@ -5,7 +5,6 @@ import { useDispatch } from "react-redux";
 import { logoutUser } from "@/lib/features/auth/authSlice";
 import { useAuth } from "@/lib/hooks";
 import MainTabs from "./components/tabs";
-import CanvasEditor from "./makeYourDesign/CanvasEditor";
 
 export default function UserDashboard() {
   const router = useRouter();
@@ -40,7 +39,6 @@ export default function UserDashboard() {
         Logout
       </Button> */}
       <MainTabs />
-      <CanvasEditor />
     </div>
   );
 }
