@@ -1,3 +1,4 @@
+'use client'
 import { SignupForm } from "@/components/auth/signup-form"
 import { useAuth } from "@/lib/hooks";
 import Link from "next/link"
