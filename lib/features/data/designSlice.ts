@@ -14,7 +14,7 @@ const initialState: BookSpecificationsState = {
   pageCount: "30",
   interiorColor: "black-white",
   paperType: "80lb-white-coated",
-  bindingType: "hardcover-case",
+  bindingType: "hardcover-linen",
   coverFinish: "glossy",
 };
 

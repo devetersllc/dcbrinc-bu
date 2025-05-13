@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { RootState } from "@/lib/store";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/hooks";
 
 export default function Home() {
   const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
@@ -11,15 +12,7 @@ export default function Home() {
   useEffect(() => {
     setIsAdmin(window.location.hostname.includes("admin"));
   }, []);
-  const { user, isAuthenticated } = useSelector(
-    (state: RootState) => state.auth
-  );
-  console.log(
-    "user, isAuthenticated",
-    user,
-    isAuthenticated,
-    "branch shifted to origin"
-  );
+  console.log(useSelector((state: RootState) => state.auth));
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 text-center">
