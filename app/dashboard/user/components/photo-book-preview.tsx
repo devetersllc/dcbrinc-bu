@@ -29,7 +29,7 @@ export function PhotoBookPreview() {
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <div className="md:w-1/3">
-          <h2 className="text-xl font-bold">Photo Book Preview</h2>
+          <h1 className="text-xl font-bold">Photo Book Preview</h1>
         </div>
         <div className="md:w-2/3">
           <p className="text-sm">

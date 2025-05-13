@@ -12,16 +12,26 @@ import {
 } from "@/components/ui/select";
 import { InfoIcon } from "lucide-react";
 import Link from "next/link";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
+import { useDispatch } from "react-redux";
+import {
+  setBookCategory,
+  setBookLanguage,
+  setProjectTitle,
+  StartPageState,
+} from "@/lib/features/data/startPageSlice";
 
 export function PhotoBookDetails() {
-  const [title, setTitle] = useState("other");
-  const [language, setLanguage] = useState("Akkadian");
+  const startPage = useSelector((state: RootState) => state.startPage);
+  const dispatch = useDispatch();
+
   const [category, setCategory] = useState("Fiction");
 
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
       <div className="bg-white p-8 rounded-lg mb-4">
-        <h1 className="text-2xl font-bold mb-6">Photo Book Details</h1>
+        <h1 className="text-xl font-bold mb-6">Photo Book Details</h1>
 
         <div className="space-y-6">
           <div>
@@ -33,13 +43,14 @@ export function PhotoBookDetails() {
                 Project Title
               </Label>
               <span className="text-xs text-gray-500">
-                {title.length} / 255
+                {startPage.projectTitle.length} / 255
               </span>
             </div>
             <Input
               id="project-title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={startPage.projectTitle}
+              placeholder="Enter Project Title"
+              onChange={(e) => dispatch(setProjectTitle(e.target.value))}
               className="border-gray-300"
               maxLength={255}
             />
@@ -57,7 +68,12 @@ export function PhotoBookDetails() {
                 <InfoIcon size={16} />
               </div>
             </div>
-            <Select value={language} onValueChange={setLanguage}>
+            <Select
+              value={startPage.bookLanguage}
+              onValueChange={(e: StartPageState["bookLanguage"]) => {
+                dispatch(setBookLanguage(e));
+              }}
+            >
               <SelectTrigger id="book-language" className="border-gray-300">
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
@@ -79,7 +95,12 @@ export function PhotoBookDetails() {
             >
               Photo Book Category
             </Label>
-            <Select value={category} onValueChange={setCategory}>
+            <Select
+              value={startPage.bookCategory}
+              onValueChange={(e: StartPageState["bookCategory"]) => {
+                dispatch(setBookCategory(e));
+              }}
+            >
               <SelectTrigger id="book-category" className="border-gray-300">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
@@ -96,15 +117,6 @@ export function PhotoBookDetails() {
             </Select>
           </div>
         </div>
-      </div>
-
-      <div className="w-full flex justify-center items-center px-10">
-        <Link
-          href="#copyright-info"
-          className="flex items-center justify-center w-full bg-blue-900 text-white py-4 px-6 rounded-2xl relative"
-        >
-          <span className="font-semibold">Add Copyright Info</span>
-        </Link>
       </div>
     </div>
   );

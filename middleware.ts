@@ -49,8 +49,6 @@ export function middleware(request: NextRequest) {
 
   // Check for subdomain
   if (request.headers.get("host")?.startsWith("admin")) {
-    console.log("host---------", request.headers.get("host"));
-
     url.pathname = `/admin${url.pathname}`;
     return NextResponse.rewrite(url);
   }
