@@ -10,8 +10,6 @@ export function useAuth(requiredRole?: "user" | "admin") {
   const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.auth
   );
-  console.log("hitted");
-  console.log("user, isAuthenticated", user, isAuthenticated);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -19,7 +17,7 @@ export function useAuth(requiredRole?: "user" | "admin") {
       return;
     }
 
-    if (requiredRole && user?.role !== requiredRole) {
+    if ((requiredRole && user?.role !== requiredRole) || isAuthenticated) {
       if (user?.role === "admin") {
         router.push("/dashboard/admin");
       } else {

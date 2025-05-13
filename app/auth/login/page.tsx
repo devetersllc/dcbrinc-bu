@@ -1,11 +1,12 @@
 "use client";
 import { LoginForm } from "@/components/auth/login-form";
+import { useAuth } from "@/lib/hooks";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function LoginPage() {
   const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
-
+  useAuth();
   useEffect(() => {
     setIsAdmin(window.location.hostname.includes("admin"));
   }, []);

@@ -32,7 +32,7 @@ export default function UserDashboard() {
   // Don't render anything until we've checked authentication
   if (!user) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-start py-1 px-10">
+      <div className="min-h-screen flex flex-col items-center justify-start py-1">
         <div className="w-full">
           {/* TabsList Skeleton */}
           <div className="px-2 w-full sticky top-1 z-10">
@@ -75,7 +75,7 @@ export default function UserDashboard() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start py-1 px-10">
+    <div className="min-h-screen flex flex-col items-center justify-start py-1">
       {/* <Button onClick={handleLogout} variant="outline">
         Logout
       </Button> */}
