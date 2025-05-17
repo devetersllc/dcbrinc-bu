@@ -60,13 +60,17 @@ export function GoalSelection() {
       >
         <div className="border rounded-lg overflow-hidden">
           <div
-            className={`border-l-4 ${
-              selectedGoal === "publish"
-                ? "border-l-green-500"
-                : "border-l-transparent"
+            className={`border rounded-lg overflow-hidden ${
+              selectedGoal === "print" ? "border-l-4 border-l-blue-500" : ""
             }`}
+
+            // className={`border-l-4 ${
+            //   selectedGoal === "publish"
+            //     ? "border-l-green-500"
+            //     : "border-l-transparent"
+            // }`}
           >
-            <div className="flex items-start p-4 bg-white">
+            <div className="flex items-start p-4 bg-gray-100">
               <RadioGroupItem value="publish" id="publish" className="mt-1" />
               <div className="ml-3 flex-1">
                 <Label
