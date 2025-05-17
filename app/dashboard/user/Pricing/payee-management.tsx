@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Info, CheckCircle2 } from "lucide-react";
-import PaymentInformationForm from "./payment-information-form";
+import PaymentInformationForm from "./Component/payment-information-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

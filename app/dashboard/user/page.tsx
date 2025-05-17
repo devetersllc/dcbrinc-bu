@@ -1,6 +1,6 @@
 "use client";
 import { useAuth } from "@/lib/hooks";
-import MainTabs from "./components/tabs";
+import MainTabs from "./MainTabs";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function UserDashboard() {
