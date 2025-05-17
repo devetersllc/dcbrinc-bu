@@ -4,9 +4,9 @@ import PayeeManagement from "./payee-management";
 
 export default function Pricing() {
   return (
-    <TabsContent value="Pricing">
+    <>
       <RetailPriceForm />
       <PayeeManagement />
-    </TabsContent>
+    </>
   );
 }

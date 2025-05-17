@@ -6,10 +6,10 @@ import ISBNSelection from "./isbn-selection";
 
 export default function CopyRight() {
   return (
-    <TabsContent value="Copyright">
+    <>
       <BookMetadataForm />
       <ContributorsCopyrightForm />
       <ISBNSelection />
-    </TabsContent>
+    </>
   );
 }

@@ -5,6 +5,7 @@ import copyWriteSliceReducer from "@/lib/features/data/copyWriteSlice";
 import designReducer from "@/lib/features/data/designSlice";
 import detailReducer from "@/lib/features/data/detailSlice";
 import priceReducer from "@/lib/features/data/priceSlice";
+import generalReducer from "@/lib/features/general/general";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     design: designReducer,
     detail: detailReducer,
     price: priceReducer,
+    general: generalReducer,
   },
   devTools: process.env.NODE_ENV !== "production",
 });

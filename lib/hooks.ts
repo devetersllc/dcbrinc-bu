@@ -5,6 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/lib/store";
 import { useMemo } from "react";
+import { useDispatch } from "react-redux";
+import { setAreFieldsEmptyCheck } from "./features/general/general";
 
 export function useAuth(requiredRole?: "user" | "admin") {
   const pathname = usePathname();
@@ -12,7 +14,6 @@ export function useAuth(requiredRole?: "user" | "admin") {
   const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.auth
   );
-  console.log(pathname);
 
   useEffect(() => {
     if (!isAuthenticated && pathname !== "/" && pathname !== "/auth/login") {
@@ -37,11 +38,12 @@ export function useAuth(requiredRole?: "user" | "admin") {
   return { user, isAuthenticated };
 }
 
-
 export function useFieldsEmptyCheck(obj: Record<string, any>) {
-  return useMemo(() => {
-    return Object.values(obj).some(
+  const dispatch = useDispatch();
+  useMemo(() => {
+    const isEmpty = Object.values(obj).some(
       (value) => value === undefined || value === ""
     );
+    dispatch(setAreFieldsEmptyCheck(isEmpty));
   }, [obj]);
 }

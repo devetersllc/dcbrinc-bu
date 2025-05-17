@@ -5,10 +5,10 @@ import AudienceForm from "./audience-form";
 
 export default function Details() {
   return (
-    <TabsContent value="Details">
+    <>
       <ProjectDetails />
       <CategoriesAndKeywords />
       <AudienceForm />
-    </TabsContent>
+    </>
   );
 }

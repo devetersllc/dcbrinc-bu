@@ -10,13 +10,10 @@ const protectedPaths = ["/dashboard/user", "/dashboard/admin"];
 const adminPaths = ["/dashboard/admin"];
 
 export function middleware(request: NextRequest) {
-  console.log("mid hit");
   const { pathname } = request.nextUrl;
 
-  // Check if the path is protected
   if (protectedPaths.some((path) => pathname.startsWith(path))) {
     const token = request.cookies.get("auth-token")?.value;
-    console.log("token", token);
 
     // If no token, redirect to login
     if (!token) {
@@ -25,7 +22,6 @@ export function middleware(request: NextRequest) {
 
     // Verify token
     const decoded = decode(token) as JwtPayload;
-    console.log("decoded", decoded);
 
     try {
       verifyToken(token);

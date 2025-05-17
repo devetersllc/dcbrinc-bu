@@ -7,21 +7,34 @@ import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import { useFieldsEmptyCheck } from "@/lib/hooks";
+import { useDispatch } from "react-redux";
+import { setActiveTab } from "@/lib/features/general/general";
 
 export default function Design() {
+  const dispatch = useDispatch();
+  const general = useSelector((state: RootState) => state.general);
   const design = useSelector((state: RootState) => state.design);
-  const hasEmptyFields = useFieldsEmptyCheck(design);
-  console.log("hasEmptyFields design", hasEmptyFields);
+  useFieldsEmptyCheck(design);
+
+  const handleSubmit = () => {
+    dispatch(setActiveTab(general.activeTab + 1));
+  };
 
   return (
-    <TabsContent value="Design">
+    <>
       <InteriorFileUpload />
       <BookSpecifications />
       <PhotoBookCoverDesign />
       <PhotoBookPreview />
-      <Button variant={"main"} size={"main"} className="w-full text-2xl">
+      <Button
+        disabled={general.areFieldsEmptyCheck}
+        variant={"main"}
+        size={"main"}
+        className="w-full text-2xl"
+        onClick={handleSubmit}
+      >
         Review Book
       </Button>
-    </TabsContent>
+    </>
   );
 }
