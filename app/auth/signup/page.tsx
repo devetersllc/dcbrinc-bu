@@ -6,7 +6,7 @@ import Link from "next/link"
 export default function SignupPage() {
   useAuth();
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center">
+    <div className="flex h-screen w-full flex-col items-center justify-center px-1 sm:px-2 md:px-6 lg:px-10">
       <Link href="/" className="absolute left-4 top-4 md:left-8 md:top-8">
         Home
       </Link>

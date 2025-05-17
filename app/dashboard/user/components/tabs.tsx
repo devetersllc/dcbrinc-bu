@@ -34,7 +34,7 @@ export default function MainTabs() {
 
   return (
     <Tabs defaultValue="Start" className="w-[100%]">
-      <div className="px-2 w-full sticky top-1 z-10">
+      <div className="px- w-full sticky top-1 z-10">
         <TabsList
           className={`grid border-2 ${
             startPage.goal === "publish" ? "grid-cols-6" : "grid-cols-3"
@@ -56,51 +56,53 @@ export default function MainTabs() {
           <TabsTrigger value="Review">Review</TabsTrigger>
         </TabsList>
       </div>
-      <TabsContent value="Start">
-        <ProductSelection />
-        <GoalSelection />
-        <PhotoBookDetails />
-        <Button variant={"main"} size={"main"} className="w-full text-2xl">
-          Add Design Info
-        </Button>
-      </TabsContent>
-      {startPage.goal === "publish" && (
-        <>
-          <TabsContent value="Copyright">
-            <BookMetadataForm />
-            <ContributorsCopyrightForm />
-            <ISBNSelection />
-          </TabsContent>
-        </>
-      )}
-      <TabsContent value="Design">
-        <InteriorFileUpload />
-        <BookSpecifications />
-        <PhotoBookCoverDesign />
-        <PhotoBookPreview />
-        <Button variant={"main"} size={"main"} className="w-full text-2xl">
-          Review Book
-        </Button>
-      </TabsContent>
-      {startPage.goal === "publish" && (
-        <>
-          <TabsContent value="Details">
-            <ProjectDetails />
-            <CategoriesAndKeywords />
-            <AudienceForm />
-          </TabsContent>
-          <TabsContent value="Pricing">
-            <RetailPriceForm />
-            <PayeeManagement />
-          </TabsContent>
-        </>
-      )}
-      <TabsContent value="Review">
-        <PhotoBookReview />
-        <Button variant={"main"} size={"main"} className="w-full text-2xl">
-          Confirm & Publish
-        </Button>
-      </TabsContent>
+      <div>
+        <TabsContent value="Start">
+          <ProductSelection />
+          <GoalSelection />
+          <PhotoBookDetails />
+          <Button variant={"main"} size={"main"} className="w-full text-2xl">
+            Add Design Info
+          </Button>
+        </TabsContent>
+        {startPage.goal === "publish" && (
+          <>
+            <TabsContent value="Copyright">
+              <BookMetadataForm />
+              <ContributorsCopyrightForm />
+              <ISBNSelection />
+            </TabsContent>
+          </>
+        )}
+        <TabsContent value="Design">
+          <InteriorFileUpload />
+          <BookSpecifications />
+          <PhotoBookCoverDesign />
+          <PhotoBookPreview />
+          <Button variant={"main"} size={"main"} className="w-full text-2xl">
+            Review Book
+          </Button>
+        </TabsContent>
+        {startPage.goal === "publish" && (
+          <>
+            <TabsContent value="Details">
+              <ProjectDetails />
+              <CategoriesAndKeywords />
+              <AudienceForm />
+            </TabsContent>
+            <TabsContent value="Pricing">
+              <RetailPriceForm />
+              <PayeeManagement />
+            </TabsContent>
+          </>
+        )}
+        <TabsContent value="Review">
+          <PhotoBookReview />
+          <Button variant={"main"} size={"main"} className="w-full text-2xl">
+            Confirm & Publish
+          </Button>
+        </TabsContent>
+      </div>
     </Tabs>
   );
 }

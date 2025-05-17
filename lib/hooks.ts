@@ -11,11 +11,17 @@ export function useAuth(requiredRole?: "user" | "admin") {
   const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.auth
   );
+  console.log(pathname);
 
   useEffect(() => {
-    if (!isAuthenticated && pathname !== "/") {
-      router.push("/auth/login");
-      return;
+    if (!isAuthenticated && pathname !== "/" && pathname !== "/auth/login") {
+      if (pathname === "/auth/signup") {
+        router.push("/auth/signup");
+        return;
+      } else {
+        router.push("/auth/login");
+        return;
+      }
     }
 
     if ((requiredRole && user?.role !== requiredRole) || isAuthenticated) {

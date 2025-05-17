@@ -2,6 +2,7 @@
 
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export default function PhotoBookReview() {
   return (
@@ -10,15 +11,16 @@ export default function PhotoBookReview() {
 
       <div className="bg-white p-6 rounded-md shadow-sm">
         <div className="flex flex-col md:flex-row gap-6">
-          {/* Book Cover Preview */}
           <div className="flex-shrink-0">
             <div className="border-4 border-blue-900 p-2 w-[180px]">
               <div className="bg-white p-4 flex flex-col items-center">
                 <div className="mb-4">
-                  <img
+                  <Image
                     src="/placeholder.svg?height=40&width=80"
                     alt="Lulu logo"
                     className="h-10"
+                    width={10}
+                    height={10}
                   />
                 </div>
                 <div className="text-center text-[8px] text-gray-500 space-y-1">
@@ -32,7 +34,6 @@ export default function PhotoBookReview() {
             </div>
           </div>
 
-          {/* Book Details */}
           <div className="flex-grow">
             <div className="flex justify-between items-start">
               <div>

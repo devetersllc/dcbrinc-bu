@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -14,6 +13,7 @@ import { RootState } from "@/lib/store";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setType, StartPageState } from "@/lib/features/data/startPageSlice";
+import Image from "next/image";
 
 export function ProductSelection() {
   const startPage = useSelector((state: RootState) => state.startPage);
@@ -94,10 +94,12 @@ export function ProductSelection() {
             >
               <Card className="h-full border overflow-hidden">
                 <div className="h-40 overflow-hidden bg-gray-100">
-                  <img
+                  <Image
                     src={product.image || "/placeholder.svg"}
                     alt={product.title}
                     className="w-full h-full object-cover"
+                    width={100}
+                    height={100}
                   />
                 </div>
                 <CardContent className="p-4">
