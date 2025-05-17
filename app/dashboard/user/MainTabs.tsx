@@ -19,20 +19,23 @@ export default function MainTabs() {
   const startPage = useSelector((state: RootState) => state.startPage);
   console.log("state", state);
 
-  const TabsArray = [
-    { name: "Start", page: Start },
-    ...(startPage.goal === "publish"
-      ? [{ name: "CopyRight", page: CopyRight }]
-      : []),
-    { name: "Design", page: Design },
-    ...(startPage.goal === "publish"
-      ? [
-          { name: "Details", page: Details },
-          { name: "Pricing", page: Pricing },
-        ]
-      : []),
-    { name: "Review", page: Review },
-  ];
+  const TabsArray = useMemo(
+    () => [
+      { name: "Start", page: Start },
+      ...(startPage.goal === "publish"
+        ? [{ name: "CopyRight", page: CopyRight }]
+        : []),
+      { name: "Design", page: Design },
+      ...(startPage.goal === "publish"
+        ? [
+            { name: "Details", page: Details },
+            { name: "Pricing", page: Pricing },
+          ]
+        : []),
+      { name: "Review", page: Review },
+    ],
+    [startPage.goal]
+  );
 
   const tabEnabled = useCallback(
     (index: number) => {
@@ -62,6 +65,7 @@ export default function MainTabs() {
         >
           {TabsArray.map((tab, index) => (
             <TabsTrigger
+              disabled={!tabEnabled(index)}
               key={index}
               value={tab?.name}
               className={`${
