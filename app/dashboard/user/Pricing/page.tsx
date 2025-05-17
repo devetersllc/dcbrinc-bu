@@ -1,4 +1,4 @@
-import { TabsContent } from "@/components/ui/tabs";
+"use client";
 import RetailPriceForm from "./retail-price-form";
 import PayeeManagement from "./payee-management";
 

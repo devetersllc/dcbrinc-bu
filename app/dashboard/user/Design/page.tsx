@@ -1,4 +1,4 @@
-import { TabsContent } from "@/components/ui/tabs";
+'use client'
 import { InteriorFileUpload } from "./interior-file-upload";
 import { BookSpecifications } from "./book-specifications";
 import { PhotoBookCoverDesign } from "./photo-book-cover-design";

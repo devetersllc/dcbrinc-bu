@@ -1,8 +1,8 @@
+"use client";
 import { ProductSelection } from "./product-selection";
 import { GoalSelection } from "./goal-selection";
 import { PhotoBookDetails } from "./photo-book-details";
 import { Button } from "@/components/ui/button";
-import { TabsContent } from "@/components/ui/tabs";
 import { useFieldsEmptyCheck } from "@/lib/hooks";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
