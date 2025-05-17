@@ -1,18 +1,19 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/lib/store";
 
 export function useAuth(requiredRole?: "user" | "admin") {
+  const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.auth
   );
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && pathname !== "/") {
       router.push("/auth/login");
       return;
     }

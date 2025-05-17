@@ -12,7 +12,7 @@ export default function LoginPage() {
   }, []);
 
   return (
-    <div className="flex h-screen w-screen flex-col items-center justify-center">
+    <div className="flex h-screen w-full flex-col items-center justify-center">
       <Link href="/" className="absolute left-4 top-4 md:left-8 md:top-8">
         Home
       </Link>

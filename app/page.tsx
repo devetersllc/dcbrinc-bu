@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/hooks";
 
 export default function Home() {
   const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
+  useAuth();
 
   useEffect(() => {
     setIsAdmin(window.location.hostname.includes("admin"));
