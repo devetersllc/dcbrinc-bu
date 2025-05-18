@@ -1,11 +1,15 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertTriangle, CheckCircle, Upload } from "lucide-react"
-import Link from "next/link"
+import { useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle, CheckCircle, Upload } from "lucide-react";
+import Link from "next/link";
+import { RootState } from "@/lib/store";
+import { useSelector } from "react-redux";
+import { dataAccordingToType } from "@/lib/constants";
 
 export function InteriorFileUpload() {
+  const { type } = useSelector((state: RootState) => state.startPage);
   const [file, setFile] = useState({
     name: "file-example_PDF_1MB.pdf",
     pages: 30,
@@ -15,7 +19,7 @@ export function InteriorFileUpload() {
       lineThickness: true,
       bleed: true,
     },
-  })
+  });
 
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
@@ -25,8 +29,8 @@ export function InteriorFileUpload() {
         </div>
         <div className="md:w-2/3">
           <p className="text-base">
-            Your Interior File must be a PDF including all interior content for your Photo Book. For detailed PDF
-            creation instructions, see our{" "}
+            Your Interior File must be a PDF including all interior content for
+            your Photo Book. For detailed PDF creation instructions, see our{" "}
             <Link href="#" className="text-blue-900 font-medium">
               PDF Creation Guide
             </Link>
@@ -49,14 +53,18 @@ export function InteriorFileUpload() {
 
       {file.uploaded && (
         <>
-          {(file.warnings.transparency || file.warnings.lineThickness || file.warnings.bleed) && (
+          {(file.warnings.transparency ||
+            file.warnings.lineThickness ||
+            file.warnings.bleed) && (
             <Alert className="mb-4 border-orange-300 bg-orange-50 text-orange-900">
               <AlertTriangle className="h-5 w-5 text-orange-500" />
               <AlertDescription className="space-y-3">
                 {file.warnings.transparency && (
                   <p>
-                    <span className="font-semibold">Transparency:</span> We detected an element that may be transparent
-                    within your file. We strongly recommend flattening or removing any transparencies in your file.{" "}
+                    <span className="font-semibold">Transparency:</span> We
+                    detected an element that may be transparent within your
+                    file. We strongly recommend flattening or removing any
+                    transparencies in your file.{" "}
                     <Link href="#" className="text-blue-900 font-medium">
                       Review print guidelines
                     </Link>
@@ -65,15 +73,18 @@ export function InteriorFileUpload() {
                 )}
                 {file.warnings.lineThickness && (
                   <p>
-                    <span className="font-semibold">Images:</span> Your file contains images with line thickness less
-                    than 0.14 points. This may be too thin to print. Please review your file.
+                    <span className="font-semibold">Images:</span> Your file
+                    contains images with line thickness less than 0.14 points.
+                    This may be too thin to print. Please review your file.
                   </p>
                 )}
                 {file.warnings.bleed && (
                   <p>
-                    <span className="font-semibold">Full Bleed:</span> Please note that a white Bleed margin has been
-                    added to your file. The book preview will show how this Bleed margin impacts your file. If you
-                    require image content that extends to the trimmed edge of the page, please upload a PDF prepared for
+                    <span className="font-semibold">Full Bleed:</span> Please
+                    note that a white Bleed margin has been added to your file.
+                    The book preview will show how this Bleed margin impacts
+                    your file. If you require image content that extends to the
+                    trimmed edge of the page, please upload a PDF prepared for
                     Full Bleed.{" "}
                     <Link href="#" className="text-blue-900 font-medium">
                       Learn about full bleed
@@ -88,7 +99,8 @@ export function InteriorFileUpload() {
           <Alert className="mb-6 border-green-300 bg-green-50 text-green-900">
             <CheckCircle className="h-5 w-5 text-green-500" />
             <AlertDescription>
-              Your Photo Book file was successfully uploaded! Please continue designing your Photo Book below.
+              Your Photo Book file was successfully uploaded! Please continue
+              designing your Photo Book below.
             </AlertDescription>
           </Alert>
         </>
@@ -109,22 +121,28 @@ export function InteriorFileUpload() {
         <div className="space-y-1 text-sm">
           <div className="flex">
             <span className="w-28 font-medium">File Type:</span>
-            <span>PDF</span>
+            <span>{dataAccordingToType[type].fileType}</span>
           </div>
           <div className="flex">
             <span className="w-28 font-medium">Page Count:</span>
-            <span>24-800</span>
+            <span>{dataAccordingToType[type].pageCount}</span>
           </div>
           <div className="flex">
             <span className="w-28 font-medium">Fonts:</span>
-            <span>Embedded</span>
+            <span>{dataAccordingToType[type].fonts}</span>
           </div>
           <div className="flex">
             <span className="w-28 font-medium">Layers:</span>
-            <span>Flattened</span>
+            <span>{dataAccordingToType[type].layers}</span>
           </div>
+          {dataAccordingToType[type].pageSize && (
+            <div className="flex">
+              <span className="w-28 font-medium">Page Count:</span>
+              <span>{dataAccordingToType[type].pageSize}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
-  )
+  );
 }
