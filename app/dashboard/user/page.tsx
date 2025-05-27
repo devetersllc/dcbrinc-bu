@@ -11,7 +11,7 @@ export default function UserDashboard() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start py-1 px-1 sm:px-2 md:px-6 lg:px-10">
+    <div className="min-h-screen flex flex-col items-center justify-start py-1 px-1 sm:px-2 md:px-6 lg:px-16">
       <MainTabs />
     </div>
   );
