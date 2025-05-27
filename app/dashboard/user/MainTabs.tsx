@@ -22,16 +22,16 @@ export default function MainTabs() {
   const TabsArray = useMemo(
     () => [
       { name: "Start", page: Start },
-      ...(startPage.goal === "publish"
-        ? [{ name: "CopyRight", page: CopyRight }]
-        : []),
+      // ...(startPage.goal === "publish"
+      //   ? [{ name: "CopyRight", page: CopyRight }]
+      //   : []),
       { name: "Design", page: Design },
-      ...(startPage.goal === "publish"
-        ? [
-            { name: "Details", page: Details },
-            { name: "Pricing", page: Pricing },
-          ]
-        : []),
+      // ...(startPage.goal === "publish"
+      //   ? [
+      //       { name: "Details", page: Details },
+      //       { name: "Pricing", page: Pricing },
+      //     ]
+      //   : []),
       { name: "Review", page: Review },
     ],
     [startPage.goal]
@@ -60,7 +60,7 @@ export default function MainTabs() {
       <div className="px- w-full sticky top-1 z-10">
         <TabsList
           className={`grid border-2 ${
-            startPage.goal === "publish" ? "grid-cols-6" : "grid-cols-3"
+            startPage.goal === "publish" ? "grid-cols-3" : "grid-cols-3"
           }`}
         >
           {TabsArray.map((tab, index) => (
