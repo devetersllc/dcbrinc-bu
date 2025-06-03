@@ -1,6 +1,32 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
+interface PDFProperties {
+  fileType: string;
+  pageCount: number;
+  fontsEmbedded: boolean;
+  layersFlattened: boolean;
+  valid: boolean;
+  errors: string[];
+  dimensions?: {
+    width: number;
+    height: number;
+    unit: string;
+  };
+}
+
+interface ProcessedPDF {
+  properties: PDFProperties;
+  pdfDataUrl: string;
+  cloudinaryUrl?: string;
+  publicId?: string;
+  fileName: string;
+  fileSize?: number;
+  uploadSuccess?: boolean;
+}
+
 export interface BookSpecificationsState {
+  processing: boolean;
+  processedPDF: ProcessedPDF | null;
   bookSize: "a4" | "a5" | "square";
   pageCount: "24" | "30" | "36" | "42" | "48";
   interiorColor: "black-white" | "premium-color";
@@ -10,6 +36,8 @@ export interface BookSpecificationsState {
 }
 
 const initialState: BookSpecificationsState = {
+  processing: false,
+  processedPDF: null,
   bookSize: "a4",
   pageCount: "30",
   interiorColor: "black-white",
@@ -58,6 +86,18 @@ const bookspecificationsSlice = createSlice({
     ) => {
       state.coverFinish = action.payload;
     },
+    setProcessedPDF: (
+      state,
+      action: PayloadAction<BookSpecificationsState["processedPDF"]>
+    ) => {
+      state.processedPDF = action.payload;
+    },
+    setProcessing: (
+      state,
+      action: PayloadAction<BookSpecificationsState["processing"]>
+    ) => {
+      state.processing = action.payload;
+    },
   },
 });
 
@@ -68,6 +108,8 @@ export const {
   setPaperType,
   setBindingType,
   setCoverFinish,
+  setProcessedPDF,
+  setProcessing,
 } = bookspecificationsSlice.actions;
 
 export default bookspecificationsSlice.reducer;
