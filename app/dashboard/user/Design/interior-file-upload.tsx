@@ -19,6 +19,7 @@ export function InteriorFileUpload() {
   );
   const dispatch = useDispatch();
   console.log("processedPDF---", processedPDF);
+
   const processPDF = async (file: File | null) => {
     if (!file) return;
     dispatch(setProcessing(true));
@@ -46,8 +47,6 @@ export function InteriorFileUpload() {
   };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("trigeered---");
-
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       processPDF(selectedFile);
@@ -60,9 +59,10 @@ export function InteriorFileUpload() {
     const droppedFile = event.dataTransfer.files[0];
     if (droppedFile && droppedFile.type === "application/pdf") {
       processPDF(droppedFile);
-      setProcessedPDF(null);
+      dispatch(setProcessedPDF(null));
     }
   };
+
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
   };
@@ -91,8 +91,12 @@ export function InteriorFileUpload() {
             <h3 className="font-semibold">Uploaded File</h3>
           </div>
           <div className="md:w-2/3">
-            {/* <p className="text-base">{file.name}</p>
-            <p className="text-sm text-gray-600">{file.pages} Pages</p> */}
+            <p className="text-base">{processedPDF?.fileName}</p>
+            {processedPDF?.properties && (
+              <p className="text-sm text-gray-600">
+                {processedPDF?.properties?.pageCount} Pages
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -155,31 +159,29 @@ export function InteriorFileUpload() {
         </label>
       </div>
 
-      <div>
-        <h3 className="text-sm font-semibold uppercase mb-3">Requirements:</h3>
-        <div className="space-y-1 text-sm">
-          <div className="flex">
-            <span className="w-28 font-medium">File Type:</span>
-            <span>{dataAccordingToType[type].fileType}</span>
+      <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <h4 className="font-semibold text-blue-900 mb-3">Requirements:</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          <div className="flex items-center">
+            <CheckCircle className="h-4 w-4 text-blue-600 mr-2" />
+            <span>File Type: {dataAccordingToType[type].fileType}</span>
           </div>
-          <div className="flex">
-            <span className="w-28 font-medium">Page Count:</span>
-            <span>{dataAccordingToType[type].pageCount}</span>
+          <div className="flex items-center">
+            <CheckCircle className="h-4 w-4 text-blue-600 mr-2" />
+            <span>Page Count: {dataAccordingToType[type].pageCount}</span>
           </div>
-          <div className="flex">
-            <span className="w-28 font-medium">Fonts:</span>
-            <span>{dataAccordingToType[type].fonts}</span>
+          <div className="flex items-center">
+            <CheckCircle className="h-4 w-4 text-blue-600 mr-2" />
+            <span>Fonts: {dataAccordingToType[type].fonts}</span>
           </div>
-          <div className="flex">
-            <span className="w-28 font-medium">Layers:</span>
-            <span>{dataAccordingToType[type].layers}</span>
+          <div className="flex items-center">
+            <CheckCircle className="h-4 w-4 text-blue-600 mr-2" />
+            <span>Layers: {dataAccordingToType[type].layers}</span>
           </div>
-          {dataAccordingToType[type].pageSize && (
-            <div className="flex">
-              <span className="w-28 font-medium">Page Count:</span>
-              <span>{dataAccordingToType[type].pageSize}</span>
-            </div>
-          )}
+          <div className="flex items-center">
+            <CheckCircle className="h-4 w-4 text-blue-600 mr-2" />
+            <span>Page Size: {dataAccordingToType[type].pageSize}</span>
+          </div>
         </div>
       </div>
     </div>

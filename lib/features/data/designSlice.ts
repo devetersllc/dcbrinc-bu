@@ -24,9 +24,21 @@ interface ProcessedPDF {
   uploadSuccess?: boolean;
 }
 
+interface ProcessedCover {
+  properties: PDFProperties;
+  coverDataUrl: string;
+  cloudinaryUrl?: string;
+  publicId?: string;
+  coverFileName: string;
+  fileSize?: number;
+  uploadSuccess?: boolean;
+}
+
 export interface BookSpecificationsState {
   processing: boolean;
   processedPDF: ProcessedPDF | null;
+  processingCover: boolean;
+  processedCover: ProcessedCover | null;
   bookSize: "a4" | "a5" | "square";
   pageCount: "24" | "30" | "36" | "42" | "48";
   interiorColor: "black-white" | "premium-color";
@@ -38,6 +50,8 @@ export interface BookSpecificationsState {
 const initialState: BookSpecificationsState = {
   processing: false,
   processedPDF: null,
+  processingCover: false,
+  processedCover: null,
   bookSize: "a4",
   pageCount: "30",
   interiorColor: "black-white",
@@ -98,6 +112,18 @@ const bookspecificationsSlice = createSlice({
     ) => {
       state.processing = action.payload;
     },
+    setProcessingCover: (
+      state,
+      action: PayloadAction<BookSpecificationsState["processingCover"]>
+    ) => {
+      state.processingCover = action.payload;
+    },
+    setProcessedCover: (
+      state,
+      action: PayloadAction<BookSpecificationsState["processedCover"]>
+    ) => {
+      state.processedCover = action.payload;
+    },
   },
 });
 
@@ -110,6 +136,8 @@ export const {
   setCoverFinish,
   setProcessedPDF,
   setProcessing,
+  setProcessedCover,
+  setProcessingCover
 } = bookspecificationsSlice.actions;
 
 export default bookspecificationsSlice.reducer;
