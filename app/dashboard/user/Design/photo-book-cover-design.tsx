@@ -134,13 +134,6 @@ export function PhotoBookCoverDesign() {
 
             {uploadExpanded && (
               <div className="border-t px-6 py-4">
-                <Button
-                  variant="default"
-                  className="bg-blue-500 hover:bg-blue-600 mb-6"
-                >
-                  Download Template
-                </Button>
-
                 <div className="mb-6">
                   <div className="flex flex-col md:flex-row gap-6">
                     <div className="md:w-1/3">

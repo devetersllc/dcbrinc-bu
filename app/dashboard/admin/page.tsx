@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
@@ -49,6 +49,7 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [ordersLoading, setOrdersLoading] = useState(true);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     if (user && isAuthenticated) {
@@ -132,6 +133,56 @@ export default function AdminDashboard() {
     return <div className="py-10">Loading...</div>;
   }
 
+  const downloadPDF = (cloudinaryUrl: any, fileName:string) => {
+    // If we have a Cloudinary URL, use it for downloading the full PDF
+    if (cloudinaryUrl) {
+      // Create a fetch request to get the PDF as a blob
+      fetch(cloudinaryUrl)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.blob();
+        })
+        .then((blob) => {
+          // Create a blob URL for the PDF
+          const blobUrl = URL.createObjectURL(blob);
+
+          // Create a temporary anchor element for download
+          const link = document.createElement("a");
+          link.href = blobUrl;
+
+          // Ensure the filename has .pdf extension
+          const downloadFileName = fileName?.endsWith(".pdf")
+            ? fileName
+            : `${fileName || "document"}.pdf`;
+          link.download = downloadFileName;
+
+          // Append to body, click, and remove
+          document.body.appendChild(link);
+          link.click();
+
+          // Clean up
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+        })
+        .catch((error) => {
+          console.error("Error downloading PDF:", error);
+          alert("Failed to download PDF. Please try again.");
+        });
+      return;
+    }
+
+    // Fallback: download current page as image
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const link = document.createElement("a");
+    link.download = `Example.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-start py-1 px-1 sm:px-2 md:px-6 lg:px-16 pb-8 ">
       <div className="flex justify-between items-center mb-8">
@@ -208,7 +259,10 @@ export default function AdminDashboard() {
                                 size="sm"
                                 variant="outline"
                                 onClick={() =>
-                                  window.open(order.pdfCloudinaryUrl, "_blank")
+                                  downloadPDF(
+                                    order.pdfCloudinaryUrl,
+                                    order.userName
+                                  )
                                 }
                               >
                                 <FileText className="h-4 w-4 mr-1" />
@@ -218,9 +272,9 @@ export default function AdminDashboard() {
                                 size="sm"
                                 variant="outline"
                                 onClick={() =>
-                                  window.open(
+                                  downloadPDF(
                                     order.coverCloudinaryUrl,
-                                    "_blank"
+                                    order.userName
                                   )
                                 }
                               >

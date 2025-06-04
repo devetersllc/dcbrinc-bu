@@ -25,7 +25,7 @@ export default function Design() {
       <InteriorFileUpload />
       <BookSpecifications />
       <PhotoBookCoverDesign />
-      {design.processedPDF?.pdfDataUrl  && <PhotoBookPreview />}
+      {design.processedPDF?.pdfDataUrl && design.processedCover?.coverDataUrl  && <PhotoBookPreview />}
 
       <Button
         disabled={general.areFieldsEmptyCheck}

@@ -32,7 +32,7 @@ export interface StartPageState {
 const initialState: StartPageState = {
   goal: "print",
   type: "print-book",
-  projectTitle: "anything---",
+  projectTitle: "",
   bookLanguage: "Akkadian",
   bookCategory: "Fiction",
 };

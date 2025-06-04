@@ -14,7 +14,7 @@ import {
 
 export function InteriorFileUpload() {
   const { type } = useSelector((state: RootState) => state.startPage);
-  const { processedPDF, processing } = useSelector(
+  const { processedPDF, processing, processingCover } = useSelector(
     (state: RootState) => state.design
   );
   const dispatch = useDispatch();
