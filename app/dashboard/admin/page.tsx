@@ -217,7 +217,7 @@ export default function AdminDashboard() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {orders.map((order) => (
+                      {orders?.map((order) => (
                         <TableRow key={order._id}>
                           <TableCell>
                             <div>
