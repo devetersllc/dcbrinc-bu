@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/select";
 import { InfoIcon } from "lucide-react";
 import Image from "next/image";
-import { RootState } from "@/lib/store";
+import type { RootState } from "@/lib/store";
 import {
-  BookSpecificationsState,
+  type BookSpecificationsState,
   setBindingType,
   setBookSize,
   setCoverFinish,
@@ -23,9 +23,63 @@ import {
   setPaperType,
 } from "@/lib/features/data/designSlice";
 
+interface PricesObj {
+  name: string;
+  price: number;
+}
+
+const prices: PricesObj[] = [
+  { name: "glossy", price: 15.99 },
+  { name: "matte", price: 14.49 },
+  { name: "hardcover-linen", price: 25.0 },
+  { name: "paperback", price: 12.75 },
+  { name: "hardcover-case", price: 27.99 },
+  { name: "80lb-white-coated", price: 10.5 },
+  { name: "premium-color", price: 19.95 },
+  { name: "black-white", price: 8.99 },
+];
+
+const BASE_PRICE = 0;
+
 export function BookSpecifications() {
   const dispatch = useDispatch();
   const design = useSelector((state: RootState) => state.design);
+
+  const calculateTotalPrice = (): number => {
+    let total = BASE_PRICE;
+
+    // Add price for interior color
+    if (design.interiorColor) {
+      const interiorPrice =
+        prices.find((p) => p.name === design.interiorColor)?.price || 0;
+      total += interiorPrice;
+    }
+
+    // Add price for paper type
+    if (design.paperType) {
+      const paperPrice =
+        prices.find((p) => p.name === design.paperType)?.price || 0;
+      total += paperPrice;
+    }
+
+    // Add price for binding type
+    if (design.bindingType) {
+      const bindingPrice =
+        prices.find((p) => p.name === design.bindingType)?.price || 0;
+      total += bindingPrice;
+    }
+
+    // Add price for cover finish
+    if (design.coverFinish) {
+      const finishPrice =
+        prices.find((p) => p.name === design.coverFinish)?.price || 0;
+      total += finishPrice;
+    }
+
+    return total;
+  };
+
+  const totalPrice = calculateTotalPrice();
 
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
@@ -49,6 +103,7 @@ export function BookSpecifications() {
         </div>
       </div>
 
+      {/* Step 1: Book Size and Page Count */}
       <div className="border-t border-gray-200 py-4 flex flex-col justify-start items-start gap-3">
         <div className="flex flex-col md:flex-row gap-4 items-start">
           <div className="md:w-1/3 flex items-center gap-2">
@@ -113,6 +168,7 @@ export function BookSpecifications() {
         </div>
       </div>
 
+      {/* Step 2: Interior Color */}
       <div className="border-t border-gray-200 py-4 flex flex-col justify-start items-start gap-7 w-full">
         <div className="flex flex-col md:flex-row gap-4 items-center w-full">
           <div className="md:w-1/3 flex items-center gap-2">
@@ -129,18 +185,23 @@ export function BookSpecifications() {
           </div>
         </div>
         <RadioGroup
+          disabled={!design.processedPDF}
           value={design.interiorColor}
           onValueChange={(value: BookSpecificationsState["interiorColor"]) =>
             dispatch(setInteriorColor(value))
           }
-          className="grid grid-cols-1 md:grid-cols-6 gap-4 w-full"
+          className={`grid grid-cols-1 md:grid-cols-6 gap-4 w-full ${
+            !design.processedPDF && "cursor-not-allowed opacity-60"
+          }`}
         >
-          <label
+          <Label
             htmlFor="premium-color"
-            className={`border rounded-md p-2 col-span-2 cursor-pointer ${
+            className={`border rounded-md p-2 col-span-2 ${
               design.interiorColor === "premium-color"
                 ? "ring-2 ring-blue-500"
                 : ""
+            } ${
+              !design.processedPDF ? "cursor-not-allowed" : "cursor-pointer"
             }`}
           >
             <div className="flex items-center mb-2">
@@ -149,20 +210,22 @@ export function BookSpecifications() {
             </div>
             <div className="h-36 flex items-center justify-center p-1">
               <Image
-                src="/placeholder.svg?height=96&width=160"
-                alt="Color book example"
+                src="/design.webp"
+                alt="Premium color book interior example"
                 className="object-cover h-full w-full"
                 width={100}
                 height={100}
               />
             </div>
-          </label>
-          <label
+          </Label>
+          <Label
             htmlFor="black-white"
-            className={`border rounded-md p-2 col-span-2 cursor-pointer ${
+            className={`border rounded-md p-2 col-span-2 ${
               design.interiorColor === "black-white"
                 ? "ring-2 ring-blue-500"
                 : ""
+            }  ${
+              !design.processedPDF ? "cursor-not-allowed" : "cursor-pointer"
             }`}
           >
             <div className="flex items-center mb-2">
@@ -171,22 +234,23 @@ export function BookSpecifications() {
             </div>
             <div className="h-36 flex items-center justify-center p-1">
               <Image
-                src="/placeholder.svg?height=96&width=160"
-                alt="Color book example"
+                src="/design 2.webp"
+                alt="Black and white book interior example"
                 className="object-cover h-full w-full"
                 width={100}
                 height={100}
               />
             </div>
-          </label>
+          </Label>
         </RadioGroup>
       </div>
 
+      {/* Step 3: Paper Type */}
       <div className="border-t border-gray-200 py-4 flex flex-col justify-start items-start gap-7 w-full">
         <div className="flex flex-col md:flex-row gap-4 items-center w-full">
           <div className="md:w-1/3 flex items-center gap-2">
             <span className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-700 text-xs font-bold">
-              2
+              3
             </span>
             <h3 className="font-semibold">Paper Type</h3>
           </div>
@@ -198,18 +262,23 @@ export function BookSpecifications() {
           </div>
         </div>
         <RadioGroup
+          disabled={!design.interiorColor}
           value={design.paperType}
           onValueChange={(value: BookSpecificationsState["paperType"]) =>
             dispatch(setPaperType(value))
           }
-          className="grid grid-cols-1 md:grid-cols-6 gap-4 w-full"
+          className={`grid grid-cols-1 md:grid-cols-6 gap-4 w-full ${
+            !design.interiorColor && "cursor-not-allowed opacity-60"
+          }`}
         >
-          <label
-            htmlFor="premium-color"
-            className={`border rounded-md p-2 col-span-2 cursor-pointer ${
+          <Label
+            htmlFor="80lb-white-coated"
+            className={`border rounded-md p-2 col-span-2 ${
               design.paperType === "80lb-white-coated"
                 ? "ring-2 ring-blue-500"
                 : ""
+            } ${
+              !design.interiorColor ? "cursor-not-allowed" : "cursor-pointer"
             }`}
           >
             <div className="flex items-center mb-2">
@@ -221,22 +290,23 @@ export function BookSpecifications() {
             </div>
             <div className="h-36 flex items-center justify-center p-1">
               <Image
-                src="/placeholder.svg?height=96&width=160"
-                alt="Color book example"
+                src="/design 3.webp"
+                alt="80# white coated paper example"
                 className="object-cover h-full w-full"
                 width={100}
                 height={100}
               />
             </div>
-          </label>
+          </Label>
         </RadioGroup>
       </div>
 
+      {/* Step 4: Binding Type */}
       <div className="border-t border-gray-200 py-4 flex flex-col justify-start items-start gap-7 w-full">
         <div className="flex flex-col md:flex-row gap-4 items-center w-full">
           <div className="md:w-1/3 flex items-center gap-2">
             <span className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-700 text-xs font-bold">
-              2
+              4
             </span>
             <h3 className="font-semibold">Binding Type</h3>
           </div>
@@ -247,19 +317,22 @@ export function BookSpecifications() {
           </div>
         </div>
         <RadioGroup
+          disabled={!design.paperType}
           value={design.bindingType}
           onValueChange={(value: BookSpecificationsState["bindingType"]) =>
             dispatch(setBindingType(value))
           }
-          className="grid grid-cols-1 md:grid-cols-6 gap-4 w-full"
+          className={`grid grid-cols-1 md:grid-cols-6 gap-4 w-full ${
+            !design.paperType && "cursor-not-allowed opacity-60"
+          }`}
         >
-          <label
+          <Label
             htmlFor="hardcover-linen"
-            className={`border rounded-md p-2 col-span-2 cursor-pointer ${
+            className={`border rounded-md p-2 col-span-2 ${
               design.bindingType === "hardcover-linen"
                 ? "ring-2 ring-blue-500"
                 : ""
-            }`}
+            } ${!design.paperType ? "cursor-not-allowed" : "cursor-pointer"}`}
           >
             <div className="flex items-center mb-2">
               <RadioGroupItem value="hardcover-linen" id="hardcover-linen" />
@@ -267,19 +340,19 @@ export function BookSpecifications() {
             </div>
             <div className="h-36 flex items-center justify-center p-1">
               <Image
-                src="/placeholder.svg?height=96&width=160"
-                alt="Color book example"
+                src="/design 4.webp"
+                alt="Hardcover linen binding example"
                 className="object-cover h-full w-full"
                 width={100}
                 height={100}
               />
             </div>
-          </label>
-          <label
+          </Label>
+          <Label
             htmlFor="paperback"
-            className={`border rounded-md p-2 col-span-2 cursor-pointer ${
+            className={`border rounded-md p-2 col-span-2 ${
               design.bindingType === "paperback" ? "ring-2 ring-blue-500" : ""
-            }`}
+            } ${!design.paperType ? "cursor-not-allowed" : "cursor-pointer"}`}
           >
             <div className="flex items-center mb-2">
               <RadioGroupItem value="paperback" id="paperback" />
@@ -287,22 +360,23 @@ export function BookSpecifications() {
             </div>
             <div className="h-36 flex items-center justify-center p-1">
               <Image
-                src="/placeholder.svg?height=96&width=160"
-                alt="Color book example"
+                src="/design 5.webp"
+                alt="Paperback binding example"
                 className="object-cover h-full w-full"
                 width={100}
                 height={100}
               />
             </div>
-          </label>
+          </Label>
         </RadioGroup>
       </div>
 
+      {/* Step 5: Cover Finish */}
       <div className="border-t border-gray-200 py-4 flex flex-col justify-start items-start gap-7 w-full">
         <div className="flex flex-col md:flex-row gap-4 items-center w-full">
           <div className="md:w-1/3 flex items-center gap-2">
             <span className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-700 text-xs font-bold">
-              2
+              5
             </span>
             <h3 className="font-semibold">Cover Finish</h3>
           </div>
@@ -313,34 +387,37 @@ export function BookSpecifications() {
           </div>
         </div>
         <RadioGroup
+          disabled={!design.bindingType}
           value={design.coverFinish}
           onValueChange={(value: BookSpecificationsState["coverFinish"]) =>
             dispatch(setCoverFinish(value))
           }
-          className="grid grid-cols-1 md:grid-cols-6 gap-4 w-full"
+          className={`grid grid-cols-1 md:grid-cols-6 gap-4 w-full ${
+            !design.bindingType && "cursor-not-allowed opacity-60"
+          }`}
         >
-          <label
+          <Label
             htmlFor="glossy"
-            className={`border rounded-md p-2 col-span-2 cursor-pointer ${
+            className={`border rounded-md p-2 col-span-2 ${
               design.coverFinish === "glossy" ? "ring-2 ring-blue-500" : ""
-            }`}
+            } ${!design.bindingType ? "cursor-not-allowed" : "cursor-pointer"}`}
           >
             <div className="flex items-center">
               <RadioGroupItem value="glossy" id="glossy" />
               <div className="ml-2 font-medium">Glossy</div>
             </div>
-          </label>
-          <label
+          </Label>
+          <Label
             htmlFor="matte"
-            className={`border rounded-md p-2 col-span-2 cursor-pointer ${
+            className={`border rounded-md p-2 col-span-2 ${
               design.coverFinish === "matte" ? "ring-2 ring-blue-500" : ""
-            }`}
+            } ${!design.bindingType ? "cursor-not-allowed" : "cursor-pointer"}`}
           >
             <div className="flex items-center">
               <RadioGroupItem value="matte" id="matte" />
               <div className="ml-2 font-medium">Matte</div>
             </div>
-          </label>
+          </Label>
         </RadioGroup>
       </div>
 
@@ -348,9 +425,60 @@ export function BookSpecifications() {
         <div className="flex justify-between items-center">
           <div className="font-bold text-lg">Book Cost</div>
           <div className="bg-green-500 text-white px-4 py-1 rounded-md font-bold">
-            $1.99 USD
+            ${totalPrice.toFixed(2)} USD
           </div>
         </div>
+        {totalPrice > BASE_PRICE && (
+          <div className="mt-2 text-sm text-gray-600">
+            {design.interiorColor && (
+              <div className="flex justify-between">
+                <span>Interior Color ({design.interiorColor}):</span>
+                <span>
+                  +$
+                  {(
+                    prices.find((p) => p.name === design.interiorColor)
+                      ?.price || 0
+                  ).toFixed(2)}
+                </span>
+              </div>
+            )}
+            {design.paperType && (
+              <div className="flex justify-between">
+                <span>Paper Type ({design.paperType}):</span>
+                <span>
+                  +$
+                  {(
+                    prices.find((p) => p.name === design.paperType)?.price || 0
+                  ).toFixed(2)}
+                </span>
+              </div>
+            )}
+            {design.bindingType && (
+              <div className="flex justify-between">
+                <span>Binding Type ({design.bindingType}):</span>
+                <span>
+                  +$
+                  {(
+                    prices.find((p) => p.name === design.bindingType)?.price ||
+                    0
+                  ).toFixed(2)}
+                </span>
+              </div>
+            )}
+            {design.coverFinish && (
+              <div className="flex justify-between">
+                <span>Cover Finish ({design.coverFinish}):</span>
+                <span>
+                  +$
+                  {(
+                    prices.find((p) => p.name === design.coverFinish)?.price ||
+                    0
+                  ).toFixed(2)}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

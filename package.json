@@ -69,13 +69,13 @@
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
-    "vaul": "^0.9.6",
     "zod": "latest"
   },
   "devDependencies": {
     "@types/fabric": "^5.3.10",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22",
+    "@types/pdf-parse": "^1.1.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-redux": "^7.1.34",

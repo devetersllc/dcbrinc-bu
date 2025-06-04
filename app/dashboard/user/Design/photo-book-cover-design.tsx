@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   ChevronUp,
-  ChevronDown,
   CheckCircle,
   Upload,
   Loader2,
@@ -24,29 +23,21 @@ import { useSelector } from "react-redux";
 export function PhotoBookCoverDesign() {
   const [coverOption, setCoverOption] = useState("upload");
   const [uploadExpanded, setUploadExpanded] = useState(true);
-  const [createExpanded, setCreateExpanded] = useState(false);
   const dispatch = useDispatch();
   const { processedCover, processingCover } = useSelector(
     (state: RootState) => state.design
   );
-  console.log("processedCover---", processedCover);
 
   const toggleUploadSection = () => {
     setUploadExpanded(!uploadExpanded);
-  };
-
-  const toggleCreateSection = () => {
-    setCreateExpanded(!createExpanded);
   };
 
   const handleOptionChange = (value: string) => {
     setCoverOption(value);
     if (value === "upload") {
       setUploadExpanded(true);
-      setCreateExpanded(false);
     } else {
       setUploadExpanded(false);
-      setCreateExpanded(true);
     }
   };
 
@@ -78,7 +69,7 @@ export function PhotoBookCoverDesign() {
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log("event.target.files", event.target.files);
-    
+
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       processCover(selectedFile);
@@ -259,49 +250,6 @@ export function PhotoBookCoverDesign() {
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="border rounded-lg overflow-hidden">
-          <div
-            className={`border-l-4 ${
-              coverOption === "create"
-                ? "border-l-green-500"
-                : "border-l-transparent"
-            }`}
-          >
-            <div className="flex items-start p-4 bg-gray-50">
-              <RadioGroupItem value="create" id="create" className="mt-1" />
-              <div className="ml-3 flex-1">
-                <Label
-                  htmlFor="create"
-                  className="font-bold text-base cursor-pointer"
-                >
-                  Create Your Cover
-                </Label>
-                <p className="text-sm text-gray-600">
-                  Use our cover design tool to create a cover for your Photo
-                  Book.
-                </p>
-              </div>
-              <button
-                onClick={toggleCreateSection}
-                className="p-2 text-gray-500 hover:text-gray-700"
-              >
-                <ChevronDown
-                  className={`h-5 w-5 transition-transform ${
-                    createExpanded ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-            </div>
-
-            {createExpanded && (
-              <div className="border-t px-6 py-4">
-                {/* Content for the create cover section would go here */}
-                <p>Cover design tool interface would be displayed here.</p>
               </div>
             )}
           </div>

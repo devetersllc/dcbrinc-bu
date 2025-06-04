@@ -19,7 +19,7 @@ interface ProcessedPDF {
   pdfDataUrl: string;
   cloudinaryUrl?: string;
   publicId?: string;
-  fileName: string;
+  fileName: string | undefined;
   fileSize?: number;
   uploadSuccess?: boolean;
 }
@@ -29,7 +29,7 @@ interface ProcessedCover {
   coverDataUrl: string;
   cloudinaryUrl?: string;
   publicId?: string;
-  coverFileName: string;
+  coverFileName: string | undefined;
   fileSize?: number;
   uploadSuccess?: boolean;
 }
@@ -41,10 +41,10 @@ export interface BookSpecificationsState {
   processedCover: ProcessedCover | null;
   bookSize: "a4" | "a5" | "square";
   pageCount: "24" | "30" | "36" | "42" | "48";
-  interiorColor: "black-white" | "premium-color";
-  paperType: "80lb-white-coated";
-  bindingType: "hardcover-case" | "paperback" | "hardcover-linen";
-  coverFinish: "glossy" | "matte";
+  interiorColor: "black-white" | "premium-color" | "";
+  paperType: "80lb-white-coated" | "";
+  bindingType: "hardcover-case" | "paperback" | "hardcover-linen" | "";
+  coverFinish: "glossy" | "matte" | "";
 }
 
 const initialState: BookSpecificationsState = {
@@ -54,10 +54,10 @@ const initialState: BookSpecificationsState = {
   processedCover: null,
   bookSize: "a4",
   pageCount: "30",
-  interiorColor: "black-white",
-  paperType: "80lb-white-coated",
-  bindingType: "hardcover-linen",
-  coverFinish: "glossy",
+  interiorColor: "",
+  paperType: "",
+  bindingType: "",
+  coverFinish: "",
 };
 
 const bookspecificationsSlice = createSlice({
@@ -137,7 +137,7 @@ export const {
   setProcessedPDF,
   setProcessing,
   setProcessedCover,
-  setProcessingCover
+  setProcessingCover,
 } = bookspecificationsSlice.actions;
 
 export default bookspecificationsSlice.reducer;

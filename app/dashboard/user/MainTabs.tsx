@@ -17,7 +17,7 @@ export default function MainTabs() {
   const state = useSelector((state: RootState) => state);
   const general = useSelector((state: RootState) => state.general);
   const startPage = useSelector((state: RootState) => state.startPage);
-  console.log("state", state);
+  console.log("state", state.design);
 
   const TabsArray = useMemo(
     () => [

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { InteriorFileUpload } from "./interior-file-upload";
 import { BookSpecifications } from "./book-specifications";
 import { PhotoBookCoverDesign } from "./photo-book-cover-design";
@@ -25,7 +25,8 @@ export default function Design() {
       <InteriorFileUpload />
       <BookSpecifications />
       <PhotoBookCoverDesign />
-      <PhotoBookPreview />
+      {design.processedPDF?.pdfDataUrl  && <PhotoBookPreview />}
+
       <Button
         disabled={general.areFieldsEmptyCheck}
         variant={"main"}

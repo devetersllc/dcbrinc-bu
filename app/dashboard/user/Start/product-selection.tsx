@@ -25,49 +25,49 @@ export function ProductSelection() {
       title: "Print Book",
       description:
         "Traditional or paperback book using a wide range of paper stock and binding options. Perfect for novels, cookbooks, and more - perfect for a variety of projects.",
-      image: "/placeholder.svg?height=150&width=200",
+      image: "/startPage.webp",
     },
     {
       id: "photo-book",
       title: "Photo Book",
       description:
         "Preserve memories or create a lookbook of your work with a traditional photo book. Choose from a variety of sizes, paper types, cover styles, and more. Let your photographs highlight the best of your story options.",
-      image: "/placeholder.svg?height=150&width=200",
+      image: "/startPage 2.webp",
     },
     {
       id: "comic-book",
       title: "Comic Book",
       description:
         "Traditional comic book size with paperback binding. Bring your art to life with colorful pages, speech bubbles, and illustrations. Create inside of the cover.",
-      image: "/placeholder.svg?height=150&width=200",
+      image: "/startPage 3.webp",
     },
     {
       id: "magazine",
       title: "Magazine",
       description:
         "Create beautiful magazines with rich color and glossy pages. Perfect for showcasing paper stock designed for magazines and printing on the double-sided paper.",
-      image: "/placeholder.svg?height=150&width=200",
+      image: "/startPage 4.webp",
     },
     {
       id: "yearbook",
       title: "Yearbook",
       description:
         "For schools and businesses, a great way to capture a year's worth of memories. Enjoy the best printing and binding at a fraction of the cost.",
-      image: "/placeholder.svg?height=150&width=200",
+      image: "/startPage 5.webp",
     },
     {
       id: "calendar",
       title: "Calendar",
       description:
         "Create a 12 or 18-month calendar with custom images for each month. A great way to build your collection of seasonal imagery calendar design.",
-      image: "/placeholder.svg?height=150&width=200",
+      image: "/startPage 6.webp",
     },
     {
       id: "ebook",
       title: "Ebook",
       description:
         "Create an ebook from your PDF or EPUB file. Ready for reading on an ereader, tablet, or smartphone.",
-      image: "/placeholder.svg?height=150&width=200",
+      image: "/startPage 7.webp",
     },
   ];
 
