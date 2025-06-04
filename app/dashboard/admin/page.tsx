@@ -199,7 +199,7 @@ export default function AdminDashboard() {
             <CardContent>
               {ordersLoading ? (
                 <p>Loading orders...</p>
-              ) : orders.length === 0 ? (
+              ) : orders?.length === 0 ? (
                 <p>No orders found.</p>
               ) : (
                 <div className="overflow-x-auto">
