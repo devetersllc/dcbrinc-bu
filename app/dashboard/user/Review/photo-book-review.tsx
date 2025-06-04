@@ -3,8 +3,35 @@
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
 
 export default function PhotoBookReview() {
+  const {
+    pageCount,
+    interiorColor,
+    paperType,
+    bindingType,
+    coverFinish,
+    totalPrice,
+  } = useSelector((state: RootState) => state.design);
+  const email = useSelector((state: RootState) => state.auth.user?.email);
+  const name = useSelector((state: RootState) => state.auth.user?.name);
+
+  // data to save and show on admin dashboard as orders list
+
+  // name;
+  // email;
+  // processedPDF;
+  // processedCover;
+  // bookSize;
+  // pageCount;
+  // interiorColor;
+  // paperType;
+  // bindingType;
+  // coverFinish;
+  // totalPrice;
+
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
       <h1 className="text-xl font-bold">Review Your Photo Book</h1>
@@ -35,13 +62,9 @@ export default function PhotoBookReview() {
           </div>
 
           <div className="flex-grow">
-            <div className="flex justify-between items-start">
-              <div>
-                <h2 className="text-xl font-semibold mb-1">other</h2>
-                <p className="text-sm text-gray-500 mb-4">ID: nv7kjy4</p>
-              </div>
+            {/* <div className="flex justify-between items-start">
               <Button className="bg-blue-500 hover:bg-blue-600">Revise</Button>
-            </div>
+            </div> */}
 
             <div className="space-y-3">
               <h3 className="font-semibold">Photo Book Specifications</h3>
@@ -51,25 +74,25 @@ export default function PhotoBookReview() {
                 <span>A4 (8.27 x 11.69 in / 210 x 297 mm)</span>
 
                 <span className="text-gray-600">Page Count:</span>
-                <span>30 Pages</span>
+                <span>{pageCount} Pages</span>
 
                 <span className="text-gray-600">Interior Color:</span>
-                <span className="text-blue-600">Premium Black & White</span>
+                <span className="text-blue-600">{interiorColor}</span>
 
                 <span className="text-gray-600">Paper Type:</span>
-                <span className="text-blue-600">80# White — Coated</span>
+                <span className="text-blue-600">{paperType}</span>
 
                 <span className="text-gray-600">Binding Type:</span>
-                <span className="text-blue-600">Hardcover Case Wrap</span>
+                <span className="text-blue-600">{bindingType}</span>
 
                 <span className="text-gray-600">Cover Finish:</span>
-                <span className="text-blue-600">Glossy</span>
+                <span className="text-blue-600">{coverFinish}</span>
               </div>
 
               <div className="pt-2">
                 <span className="text-gray-600 text-sm">Print Cost:</span>
                 <span className="text-blue-600 font-semibold ml-2">
-                  11.59 USD
+                  {totalPrice} USD
                 </span>
               </div>
 
