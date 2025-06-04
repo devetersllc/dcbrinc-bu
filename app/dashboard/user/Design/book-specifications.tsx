@@ -21,7 +21,9 @@ import {
   setInteriorColor,
   setPageCount,
   setPaperType,
+  setTotalPrice,
 } from "@/lib/features/data/designSlice";
+import { useMemo } from "react";
 
 interface PricesObj {
   name: string;
@@ -44,8 +46,8 @@ const BASE_PRICE = 0;
 export function BookSpecifications() {
   const dispatch = useDispatch();
   const design = useSelector((state: RootState) => state.design);
-
-  const calculateTotalPrice = (): number => {
+  const disptach = useDispatch();
+  const calculateTotalPrice = () => {
     let total = BASE_PRICE;
 
     // Add price for interior color
@@ -76,11 +78,16 @@ export function BookSpecifications() {
       total += finishPrice;
     }
 
-    return total;
+    disptach(setTotalPrice(total));
   };
-
-  const totalPrice = calculateTotalPrice();
-
+  useMemo(() => {
+    calculateTotalPrice();
+  }, [
+    design.bindingType,
+    design.coverFinish,
+    design.interiorColor,
+    design.paperType,
+  ]);
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
       <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -425,10 +432,10 @@ export function BookSpecifications() {
         <div className="flex justify-between items-center">
           <div className="font-bold text-lg">Book Cost</div>
           <div className="bg-green-500 text-white px-4 py-1 rounded-md font-bold">
-            ${totalPrice.toFixed(2)} USD
+            ${design.totalPrice.toFixed(2)} USD
           </div>
         </div>
-        {totalPrice > BASE_PRICE && (
+        {design.totalPrice > BASE_PRICE && (
           <div className="mt-2 text-sm text-gray-600">
             {design.interiorColor && (
               <div className="flex justify-between">

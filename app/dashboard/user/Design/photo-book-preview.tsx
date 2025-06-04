@@ -387,7 +387,15 @@ export function PhotoBookPreview() {
       return "Cover";
     }
     const pdfPageNum = hasCover ? currentPage : currentPage + 1;
-    return `Page ${pdfPageNum}`;
+
+    // Show two pages at a time for interior PDF pages
+    if (pdfPageNum === 1) {
+      return `Page 1-2`;
+    } else {
+      const startPage = (pdfPageNum - 1) * 2 - 1;
+      const endPage = Math.min(startPage + 1, totalPages - (hasCover ? 1 : 0));
+      return `Page ${startPage}-${endPage}`;
+    }
   };
 
   if (loading) {

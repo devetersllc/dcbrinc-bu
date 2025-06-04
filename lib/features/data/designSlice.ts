@@ -45,6 +45,7 @@ export interface BookSpecificationsState {
   paperType: "80lb-white-coated" | "";
   bindingType: "hardcover-case" | "paperback" | "hardcover-linen" | "";
   coverFinish: "glossy" | "matte" | "";
+  totalPrice:number
 }
 
 const initialState: BookSpecificationsState = {
@@ -58,6 +59,7 @@ const initialState: BookSpecificationsState = {
   paperType: "",
   bindingType: "",
   coverFinish: "",
+  totalPrice:0,
 };
 
 const bookspecificationsSlice = createSlice({
@@ -124,6 +126,12 @@ const bookspecificationsSlice = createSlice({
     ) => {
       state.processedCover = action.payload;
     },
+    setTotalPrice: (
+      state,
+      action: PayloadAction<BookSpecificationsState["totalPrice"]>
+    ) => {
+      state.totalPrice = action.payload;
+    },
   },
 });
 
@@ -138,6 +146,7 @@ export const {
   setProcessing,
   setProcessedCover,
   setProcessingCover,
+  setTotalPrice
 } = bookspecificationsSlice.actions;
 
 export default bookspecificationsSlice.reducer;
