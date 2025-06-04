@@ -2,17 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
 import {
   BookOpen,
   ChevronLeft,
   ChevronRight,
   Download,
   Maximize2,
-  RotateCcw,
-  RotateCw,
-  ZoomIn,
-  ZoomOut,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { RootState } from "@/lib/store";
@@ -21,8 +16,6 @@ import { useSelector } from "react-redux";
 export function PhotoBookPreview() {
   const [currentPage, setCurrentPage] = useState(0); // Start at 0 for cover
   const [totalPages, setTotalPages] = useState(0);
-  const [zoom, setZoom] = useState(1);
-  const [rotation, setRotation] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [loading, setLoading] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -44,24 +37,11 @@ export function PhotoBookPreview() {
   const coverFileName = useSelector(
     (state: RootState) => state.design.processedCover?.coverFileName
   );
-  console.log(
-    "pdfDataUrl----",
-    pdfDataUrl,
-    "coverDataUrl----",
-    coverDataUrl,
-    "fileName----",
-    fileName,
-    "coverFileName----",
-    coverFileName,
-    "cloudinaryUrl----",
-    cloudinaryUrl
-  );
 
   useEffect(() => {
     const handleError = (error: Error) => {
       console.error("PDF loading error:", error);
       setLoading(false);
-      // You might want to show an error state to the user
     };
 
     setHasCover(!!coverDataUrl);
@@ -72,7 +52,7 @@ export function PhotoBookPreview() {
     try {
       setLoading(true);
 
-      // Ensure PDF.js is loaded
+      // Ensure we're in browser environment
       if (typeof window === "undefined") {
         throw new Error("Window object not available");
       }
@@ -83,6 +63,7 @@ export function PhotoBookPreview() {
         const script = document.createElement("script");
         script.src =
           "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+        script.crossOrigin = "anonymous"; // Add crossOrigin attribute
         document.head.appendChild(script);
 
         await new Promise((resolve, reject) => {
@@ -103,33 +84,49 @@ export function PhotoBookPreview() {
       }
 
       // Load main PDF
-      const pdf = await pdfjsLib.getDocument(pdfDataUrl).promise;
-      setPdfDoc(pdf);
-      const pdfPageCount = pdf.numPages;
+      try {
+        const pdf = await pdfjsLib.getDocument({
+          url: pdfDataUrl,
+          withCredentials: true,
+        }).promise;
+        setPdfDoc(pdf);
+        const pdfPageCount = pdf.numPages;
 
-      // Load cover PDF if available
-      let coverPageCount = 0;
-      if (coverDataUrl) {
-        try {
-          const coverPdf = await pdfjsLib.getDocument(coverDataUrl).promise;
-          setCoverDoc(coverPdf);
-          coverPageCount = 1; // Cover should have exactly 1 page
-        } catch (coverError) {
-          console.error("Error loading cover PDF:", coverError);
+        // Load cover PDF if available
+        let coverPageCount = 0;
+        if (coverDataUrl) {
+          try {
+            const coverPdf = await pdfjsLib.getDocument({
+              url: coverDataUrl,
+              withCredentials: true,
+            }).promise;
+            setCoverDoc(coverPdf);
+            coverPageCount = 1; // Cover should have exactly 1 page
+          } catch (coverError) {
+            console.error("Error loading cover PDF:", coverError);
+          }
+        }
+
+        // Total pages = cover + PDF pages
+        setTotalPages(pdfPageCount + coverPageCount);
+
+        // Render initial page (cover if available, otherwise first PDF page)
+        if (coverDataUrl) {
+          await renderCoverPage();
+        } else {
+          renderPage(1, pdf);
+        }
+      } catch (pdfError) {
+        console.error("Error loading main PDF:", pdfError);
+        setTotalPages(1 + (coverDataUrl ? 1 : 0));
+        if (coverDataUrl) {
+          await renderCoverPage();
+        } else {
+          renderFallbackPage(1);
         }
       }
-
-      // Total pages = cover + PDF pages
-      setTotalPages(pdfPageCount + coverPageCount);
-
-      // Render initial page (cover if available, otherwise first PDF page)
-      if (coverDoc || coverDataUrl) {
-        await renderCoverPage();
-      } else {
-        renderPage(1, pdf);
-      }
     } catch (error) {
-      console.error("Error loading PDFs:", error);
+      console.error("Error in loadPDFs:", error);
       setTotalPages(1 + (coverDataUrl ? 1 : 0));
       if (coverDataUrl) {
         await renderCoverPage();
@@ -154,10 +151,15 @@ export function PhotoBookPreview() {
       if (typeof window !== "undefined" && (window as any).pdfjsLib) {
         const pdfjsLib = (window as any).pdfjsLib;
 
-        // Load cover PDF and render first page
-        const coverPdf = await pdfjsLib.getDocument(coverDataUrl).promise;
-        const page = await coverPdf.getPage(2); // Cover should have exactly 1 page
-        const viewport = page.getViewport({ scale: zoom, rotation });
+        // Use existing coverDoc if available, otherwise load it
+        let coverPdf = coverDoc;
+        if (!coverPdf) {
+          coverPdf = await pdfjsLib.getDocument(coverDataUrl).promise;
+          setCoverDoc(coverPdf);
+        }
+
+        const page = await coverPdf.getPage(1); // Cover should be page 1, not page 2
+        const viewport = page.getViewport({ scale: 1 });
 
         canvas.height = viewport.height;
         canvas.width = viewport.width;
@@ -183,8 +185,8 @@ export function PhotoBookPreview() {
     if (!ctx) return;
 
     // Set canvas size
-    canvas.width = 600 * zoom;
-    canvas.height = 800 * zoom;
+    canvas.width = 600;
+    canvas.height = 800;
 
     // Clear canvas
     ctx.fillStyle = "white";
@@ -197,16 +199,16 @@ export function PhotoBookPreview() {
 
     // Draw cover content
     ctx.fillStyle = "#333";
-    ctx.font = `${24 * zoom}px Arial`;
+    ctx.font = `24px Arial`;
     ctx.textAlign = "center";
     ctx.fillText("Book Cover", canvas.width / 2, canvas.height / 2);
 
-    ctx.font = `${16 * zoom}px Arial`;
+    ctx.font = `16px Arial`;
     ctx.fillStyle = "#666";
     ctx.fillText(
       coverFileName || "Cover PDF",
       canvas.width / 2,
-      canvas.height / 2 + 40 * zoom
+      canvas.height / 2 + 40
     );
   };
 
@@ -219,10 +221,22 @@ export function PhotoBookPreview() {
 
     try {
       const pdfDocument = pdf || pdfDoc;
-      if (!pdfDocument) return;
+      if (!pdfDocument) {
+        renderFallbackPage(pageNum);
+        return;
+      }
+
+      // Make sure pageNum is within valid range
+      if (pageNum < 1 || pageNum > pdfDocument.numPages) {
+        console.error(
+          `Invalid page number: ${pageNum}. PDF has ${pdfDocument.numPages} pages.`
+        );
+        renderFallbackPage(pageNum);
+        return;
+      }
 
       const page = await pdfDocument.getPage(pageNum);
-      const viewport = page.getViewport({ scale: zoom, rotation });
+      const viewport = page.getViewport({ scale: 1 });
 
       canvas.height = viewport.height;
       canvas.width = viewport.width;
@@ -234,7 +248,7 @@ export function PhotoBookPreview() {
 
       await page.render(renderContext).promise;
     } catch (error) {
-      console.error("Error rendering page:", error);
+      console.error(`Error rendering page ${pageNum}:`, error);
       renderFallbackPage(pageNum);
     }
   };
@@ -243,12 +257,12 @@ export function PhotoBookPreview() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     // Set canvas size
-    canvas.width = 600 * zoom;
-    canvas.height = 800 * zoom;
+    canvas.width = 600;
+    canvas.height = 800;
 
     // Clear canvas
     ctx.fillStyle = "white";
@@ -261,30 +275,35 @@ export function PhotoBookPreview() {
 
     // Draw page content
     ctx.fillStyle = "#333";
-    ctx.font = `${24 * zoom}px Arial`;
+    ctx.font = `24px Arial`;
     ctx.textAlign = "center";
     ctx.fillText(`Page ${pageNum}`, canvas.width / 2, canvas.height / 2);
 
-    ctx.font = `${16 * zoom}px Arial`;
+    ctx.font = `16px Arial`;
     ctx.fillStyle = "#666";
     ctx.fillText(
-      fileName as string,
+      fileName || "PDF Document",
       canvas.width / 2,
-      canvas.height / 2 + 40 * zoom
+      canvas.height / 2 + 40
     );
   };
 
   useEffect(() => {
-    if (currentPage === 0 && hasCover) {
-      renderCoverPage();
-    } else if (pdfDoc) {
-      const pdfPageNum = hasCover ? currentPage : currentPage + 1;
-      renderPage(pdfPageNum);
-    } else {
-      const pdfPageNum = hasCover ? currentPage : currentPage + 1;
-      renderFallbackPage(pdfPageNum);
-    }
-  }, [currentPage, zoom, rotation, pdfDoc, coverDoc, hasCover]);
+    const renderCurrentPage = async () => {
+      if (currentPage === 0 && hasCover) {
+        await renderCoverPage();
+      } else {
+        const pdfPageNum = hasCover ? currentPage : currentPage + 1;
+        if (pdfDoc) {
+          await renderPage(pdfPageNum);
+        } else {
+          renderFallbackPage(pdfPageNum);
+        }
+      }
+    };
+
+    renderCurrentPage();
+  }, [currentPage, pdfDoc, coverDoc, hasCover]);
 
   const nextPage = () => {
     if (currentPage < totalPages - 1) {
@@ -314,7 +333,12 @@ export function PhotoBookPreview() {
     if (cloudinaryUrl) {
       // Create a fetch request to get the PDF as a blob
       fetch(cloudinaryUrl)
-        .then((response) => response.blob())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.blob();
+        })
         .then((blob) => {
           // Create a blob URL for the PDF
           const blobUrl = URL.createObjectURL(blob);
@@ -326,7 +350,7 @@ export function PhotoBookPreview() {
           // Ensure the filename has .pdf extension
           const downloadFileName = fileName?.endsWith(".pdf")
             ? fileName
-            : `${fileName}.pdf`;
+            : `${fileName || "document"}.pdf`;
           link.download = downloadFileName;
 
           // Append to body, click, and remove
@@ -354,7 +378,7 @@ export function PhotoBookPreview() {
         ? "cover"
         : `page-${hasCover ? currentPage : currentPage + 1}`;
     link.download = `${pageLabel}.png`;
-    link.href = canvas.toDataURL();
+    link.href = canvas.toDataURL("image/png");
     link.click();
   };
 
@@ -414,6 +438,8 @@ export function PhotoBookPreview() {
                   Cover
                 </div>
               )}
+
+              {/* Download buttons */}
               {cloudinaryUrl ? (
                 <>
                   <Button
@@ -437,7 +463,7 @@ export function PhotoBookPreview() {
                           ? "cover"
                           : `page-${hasCover ? currentPage : currentPage + 1}`;
                       link.download = `${pageLabel}.png`;
-                      link.href = canvas.toDataURL();
+                      link.href = canvas.toDataURL("image/png");
                       link.click();
                     }}
                     title="Download current page as image"
@@ -456,6 +482,8 @@ export function PhotoBookPreview() {
                   <Download className="h-4 w-4" />
                 </Button>
               )}
+
+              {/* Fullscreen button */}
               <Button
                 variant="outline"
                 size="sm"
@@ -475,230 +503,22 @@ export function PhotoBookPreview() {
             <canvas
               ref={canvasRef}
               className="shadow-2xl bg-white max-w-full max-h-full"
-              style={{
-                transform: `rotate(${rotation}deg)`,
-                transition: "transform 0.2s ease-in-out",
-              }}
             />
           </div>
 
           {/* Page Navigation */}
           <div className="p-4 border-t bg-gray-50">
-            <div className="flex justify-center mt-2 text-sm text-gray-600">
-              {hasCover && (
-                <span className="mr-4">Cover | Pages 1-{totalPages - 1}</span>
-              )}
-              <span>Use arrow keys to navigate</span>
+            <div className="flex justify-between items-center">
+              <div className="text-sm text-gray-600">
+                {hasCover && (
+                  <span className="mr-4">Cover | Pages 1-{totalPages - 1}</span>
+                )}
+                <span>Use arrow keys to navigate</span>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
     </div>
   );
-}
-
-{
-  /* <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
-<div className="flex flex-col md:flex-row gap-4 mb-6">
-  <div className="md:w-1/3">
-    <h1 className="text-xl font-bold">Photo Book Preview</h1>
-  </div>
-  <div className="md:w-2/3">
-    <p className="text-sm">
-      Use this preview window to see how your Photo Book will look. Carefully review the margins, bleed, and fold
-      areas to ensure your Photo Book will print correctly.
-    </p>
-  </div>
-</div>
-
-<div className="flex flex-wrap gap-4 mb-4">
-  <div className="flex items-center space-x-2">
-    <Switch
-      id="margin"
-      checked={viewOptions.margin}
-      onCheckedChange={() => handleViewOptionChange("margin")}
-      className="bg-blue-900 data-[state=checked]:bg-blue-900"
-    />
-    <Label htmlFor="margin">Margin</Label>
-  </div>
-  <div className="flex items-center space-x-2">
-    <Switch
-      id="wrap"
-      checked={viewOptions.wrap}
-      onCheckedChange={() => handleViewOptionChange("wrap")}
-      className="bg-blue-500 data-[state=checked]:bg-blue-500"
-    />
-    <Label htmlFor="wrap">Wrap</Label>
-  </div>
-  <div className="flex items-center space-x-2">
-    <Switch
-      id="folds"
-      checked={viewOptions.folds}
-      onCheckedChange={() => handleViewOptionChange("folds")}
-      className="bg-purple-500 data-[state=checked]:bg-purple-500"
-    />
-    <Label htmlFor="folds">Folds</Label>
-  </div>
-  <div className="flex items-center space-x-2">
-    <Switch
-      id="trim"
-      checked={viewOptions.trim}
-      onCheckedChange={() => handleViewOptionChange("trim")}
-      className="bg-gray-900 data-[state=checked]:bg-gray-900"
-    />
-    <Label htmlFor="trim">Trim</Label>
-  </div>
-</div>
-
-<div className="relative bg-blue-100 border-4 border-blue-500 mb-4 p-2">
-  <div className="flex">
-    <div className="w-1/2 border-r-4 border-r-pink-500 p-2 bg-white">
-      <div className="flex flex-col items-center justify-center h-full">
-        <div className="text-blue-900 font-bold text-3xl mb-2 flex items-center">
-          <div className="transform -rotate-12 mr-1">
-            <div className="w-6 h-8 bg-blue-900 rounded-sm"></div>
-          </div>
-          lulu
-        </div>
-        <div className="text-center font-bold mb-4">BACK COVER</div>
-
-        {viewOptions.margin && (
-          <>
-            <div className="w-full border border-yellow-500 p-1 mb-2">
-              <div className="text-xs">SAFETY MARGIN (from wrap edge)</div>
-              <div className="text-xs">0.125" / 3.175mm</div>
-            </div>
-
-            <div className="w-full border border-green-500 p-1 mb-2">
-              <div className="text-xs">WRAP AREA (from wrap edge)</div>
-              <div className="text-xs">0.75" / 19.05mm</div>
-            </div>
-
-            <div className="w-full border border-orange-500 p-1 mb-2">
-              <div className="text-xs">BARCODE AREA (required)</div>
-              <div className="text-xs">2.625" x 1.00" (66.675 x 25.4mm)</div>
-              <div className="text-xs">0.625" from bottom/right wrap edge</div>
-            </div>
-          </>
-        )}
-
-        <div className="mt-auto w-full">
-          <div className="bg-yellow-300 p-2 text-center">BARCODE AREA</div>
-        </div>
-      </div>
-    </div>
-
-    <div className="w-1/2 p-2 bg-white">
-      <div className="flex flex-col items-center justify-center h-full">
-        <div className="text-blue-900 font-bold text-3xl mb-2 flex items-center">
-          <div className="transform -rotate-12 mr-1">
-            <div className="w-6 h-8 bg-blue-900 rounded-sm"></div>
-          </div>
-          lulu
-        </div>
-        <div className="text-center font-bold mb-4">FRONT COVER</div>
-
-        {viewOptions.margin && (
-          <>
-            <div className="w-full border border-gray-500 p-1 mb-2">
-              <div className="text-xs">TOTAL DOCUMENT SIZE (with wrap)</div>
-              <div className="text-xs">18.54" x 13.44" (470.92mm x 341.38mm)</div>
-            </div>
-
-            <div className="w-full border border-purple-500 p-1 mb-2">
-              <div className="text-xs">SPINE AREA</div>
-              <div className="text-xs">0.25" x 11.00" (6.35mm x 279.4mm)</div>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  </div>
-</div>
-
-<div className="flex items-center mb-6">
-  <div className="w-4 h-4 bg-blue-900 rounded-full mr-2"></div>
-  <Slider
-    value={[currentPage]}
-    max={totalPages}
-    step={1}
-    className="flex-1"
-    onValueChange={(value) => setCurrentPage(value[0])}
-  />
-</div>
-
-<div className="flex justify-center gap-2 mb-8">
-  <Button variant="outline" size="sm">
-    <ChevronFirst className="h-4 w-4" />
-  </Button>
-  <Button variant="outline" size="sm">
-    <ChevronLeft className="h-4 w-4" />
-  </Button>
-  <Button variant="outline" size="sm">
-    Cover
-  </Button>
-  <Button variant="outline" size="sm">
-    <ChevronRight className="h-4 w-4" />
-  </Button>
-  <Button variant="outline" size="sm">
-    <ChevronLast className="h-4 w-4" />
-  </Button>
-</div>
-
-<div className="mb-6">
-  <h3 className="text-lg font-bold mb-2">Important Information About Your Photo Book</h3>
-  <p className="text-sm mb-2">
-    Download and check your print-ready files before continuing. The following may impact your printing:
-  </p>
-  <ol className="list-decimal pl-6 space-y-2 text-sm">
-    <li>
-      <span className="font-semibold">Bleed</span> - All Photo Book files must be sized for Full Bleed. If your
-      file is sized to the exact dimensions for your Photo Book, Lulu must add a white margin around the outer
-      edges of your pages to compensate. If your Photo Book includes color or content that stretches to the edge
-      of your page, be sure to review our{" "}
-      <Link href="#" className="text-blue-900 font-medium">
-        Full Bleed instructions
-      </Link>
-      .
-    </li>
-    <li>
-      <span className="font-semibold">Spine</span> - Trimming tolerance for your spine is 0.125" / 3.18 mm toward
-      the front and back cover. Designing your spine with sufficient margins also variance in mind will help avoid
-      issues with spine text alignment and any cut-off text around the edges of your content.{" "}
-      <Link href="#" className="text-blue-900 font-medium">
-        Learn more about spine and trim variance
-      </Link>
-      .
-    </li>
-    <li>
-      <span className="font-semibold">Color</span> - Color may differ slightly between your digital file and your
-      printed Photo Book. To learn more about color variance, see our{" "}
-      <Link href="#" className="text-blue-900 font-medium">
-        PDF Creation instructions
-      </Link>
-      .
-    </li>
-  </ol>
-</div>
-
-<Button className="bg-blue-500 hover:bg-blue-600 w-full md:w-auto">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="mr-2"
-  >
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-    <polyline points="7 10 12 15 17 10"></polyline>
-    <line x1="12" y1="15" x2="12" y2="3"></line>
-  </svg>
-  Print-Ready Files
-</Button>
-</div> */
 }
