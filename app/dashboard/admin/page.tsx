@@ -284,7 +284,7 @@ export default function AdminDashboard() {
                             </div>
                           </TableCell>
                           <TableCell className="font-medium">
-                            ${order.totalPrice.toFixed(2)}
+                            ${order.totalPrice?.toFixed(2)}
                           </TableCell>
                           <TableCell>
                             <Badge

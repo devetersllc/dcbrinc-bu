@@ -6,19 +6,19 @@ import { decode, JwtPayload } from "jsonwebtoken";
 // GET - Fetch all orders (Admin only)
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get("auth-token")?.value;
+    // const token = request.cookies.get("auth-token")?.value;
 
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // if (!token) {
+    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // }
 
-    const decoded = decode(token) as JwtPayload;
-    if (!decoded || decoded.role !== "admin") {
-      return NextResponse.json(
-        { error: "Admin access required" },
-        { status: 403 }
-      );
-    }
+    // const decoded = decode(token) as JwtPayload;
+    // if (!decoded || decoded.role !== "admin") {
+    //   return NextResponse.json(
+    //     { error: "Admin access required" },
+    //     { status: 403 }
+    //   );
+    // }
 
     const db = await connectToDatabase();
     const orders = await db

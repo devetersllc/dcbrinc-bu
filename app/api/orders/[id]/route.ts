@@ -7,16 +7,16 @@ import { decode, JwtPayload } from "jsonwebtoken"
 // PATCH - Update order status (Admin only)
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const token = request.cookies.get("auth-token")?.value
+    // const token = request.cookies.get("auth-token")?.value
 
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+    // if (!token) {
+    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    // }
 
-        const decoded = decode(token) as JwtPayload;
-    if (!decoded || decoded.role !== "admin") {
-      return NextResponse.json({ error: "Admin access required" }, { status: 403 })
-    }
+    //     const decoded = decode(token) as JwtPayload;
+    // if (!decoded || decoded.role !== "admin") {
+    //   return NextResponse.json({ error: "Admin access required" }, { status: 403 })
+    // }
 
     const { status } = await request.json()
     const { id } = params
