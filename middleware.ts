@@ -28,7 +28,7 @@ export function middleware(request: NextRequest) {
     } catch (err) {
       console.log("err", err);
     }
-    console.log("token", token);
+    console.log("auth-token", token);
     if (!decoded) {
       return NextResponse.redirect(new URL("/auth/login", request.url));
     }

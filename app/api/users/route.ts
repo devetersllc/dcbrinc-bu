@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify token
-    const decoded = verifyToken(token);
+        const decoded = decode(token) as JwtPayload;;
     if (!decoded || decoded.role !== "admin") {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
