@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
+import { useRef } from "react";
 
 export default function PhotoBookReview() {
   const {
@@ -14,23 +15,46 @@ export default function PhotoBookReview() {
     bindingType,
     coverFinish,
     totalPrice,
+    processedPDF,
   } = useSelector((state: RootState) => state.design);
-  const email = useSelector((state: RootState) => state.auth.user?.email);
-  const name = useSelector((state: RootState) => state.auth.user?.name);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // data to save and show on admin dashboard as orders list
+  const downloadPDF = (cloudinaryUrl: any, fileName: string | undefined) => {
+    if (cloudinaryUrl) {
+      fetch(cloudinaryUrl)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.blob();
+        })
+        .then((blob) => {
+          const blobUrl = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = blobUrl;
+          const downloadFileName = fileName?.endsWith(".pdf")
+            ? fileName
+            : `${fileName || "document"}.pdf`;
+          link.download = downloadFileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+        })
+        .catch((error) => {
+          console.error("Error downloading PDF:", error);
+          alert("Failed to download PDF. Please try again.");
+        });
+      return;
+    }
 
-  // name;
-  // email;
-  // processedPDF;
-  // processedCover;
-  // bookSize;
-  // pageCount;
-  // interiorColor;
-  // paperType;
-  // bindingType;
-  // coverFinish;
-  // totalPrice;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const link = document.createElement("a");
+    link.download = `Example.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  };
 
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
@@ -92,7 +116,7 @@ export default function PhotoBookReview() {
               <div className="pt-2">
                 <span className="text-gray-600 text-sm">Print Cost:</span>
                 <span className="text-blue-600 font-semibold ml-2">
-                  {totalPrice} USD
+                  {totalPrice?.toFixed(2)} USD
                 </span>
               </div>
 
@@ -100,6 +124,13 @@ export default function PhotoBookReview() {
                 <Button
                   variant="outline"
                   className="bg-blue-50 border-blue-200 text-blue-800 hover:bg-blue-100 flex items-center gap-2"
+                  onClick={() =>
+                    downloadPDF(
+                      processedPDF?.cloudinaryUrl,
+                      processedPDF?.fileName
+                    )
+                  }
+                  disabled={processedPDF?.cloudinaryUrl ? false : true}
                 >
                   <Download size={16} />
                   Print-Ready Files

@@ -162,7 +162,7 @@ function BookDetailsPopover({ order }: { order: Order }) {
           <div className="flex justify-between">
             <span className="text-muted-foreground">Pages:</span>
             <span className="font-medium">
-              {order.bookSpecifications?.pageCount}
+              {order?.pageCount}
             </span>
           </div>
           <div className="flex justify-between">
@@ -176,6 +176,7 @@ function BookDetailsPopover({ order }: { order: Order }) {
 }
 
 function SpecificationsPopover({ order }: { order: Order }) {
+
   return (
     <PopoverContent className="w-64" align="start">
       <div className="space-y-2">
@@ -184,7 +185,7 @@ function SpecificationsPopover({ order }: { order: Order }) {
           <div className="flex justify-between">
             <span className="text-muted-foreground">Paper:</span>
             <span className="font-medium">
-              {order.bookSpecifications?.paperType}
+              {order?.paperType}
             </span>
           </div>
           <div className="flex justify-between">

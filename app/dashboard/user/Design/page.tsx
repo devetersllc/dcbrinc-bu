@@ -25,10 +25,13 @@ export default function Design() {
       <InteriorFileUpload />
       <BookSpecifications />
       <PhotoBookCoverDesign />
-      {design.processedPDF?.pdfDataUrl && design.processedCover?.coverDataUrl  && <PhotoBookPreview />}
+      {design.processedPDF?.pdfDataUrl &&
+        design.processedCover?.coverDataUrl && <PhotoBookPreview />}
 
       <Button
-        disabled={general.areFieldsEmptyCheck}
+        disabled={
+          general.areFieldsEmptyCheck || !design?.processedCover?.cloudinaryUrl
+        }
         variant={"main"}
         size={"main"}
         className="w-full text-2xl"

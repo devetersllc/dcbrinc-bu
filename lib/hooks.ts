@@ -42,7 +42,7 @@ export function useFieldsEmptyCheck(obj: Record<string, any>) {
   const dispatch = useDispatch();
   useMemo(() => {
     const isEmpty = Object.values(obj).some(
-      (value) => value === undefined || value === ""
+      (value) => value === undefined || value === "" || value === null
     );
     dispatch(setAreFieldsEmptyCheck(isEmpty));
   }, [obj]);
