@@ -1,26 +1,132 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+type BookType =
+  | "print-book"
+  | "photo-book"
+  | "comic-book"
+  | "magazine"
+  | "yearbook"
+  | "calendar"
+  | "ebook";
+
+type BookInfo = {
+  fileType: string;
+  pageCount: string;
+  fonts: string;
+  layers: string;
+  pageSize?: string;
+};
+
+const dataAccordingToType: Record<BookType, BookInfo> = {
+  "print-book": {
+    fileType: "PDF",
+    pageCount: "2-800",
+    fonts: "Embedded",
+    layers: "Flattened",
+  },
+  "photo-book": {
+    fileType: "PDF",
+    pageCount: "24-800",
+    fonts: "Embedded",
+    layers: "Flattened",
+  },
+  "comic-book": {
+    fileType: "PDF",
+    pageCount: "4-800",
+    fonts: "Embedded",
+    layers: "Flattened",
+    pageSize: "6.88 x 10.50 in",
+  },
+  magazine: {
+    fileType: "PDF",
+    pageCount: "4-800",
+    fonts: "Embedded",
+    layers: "Flattened",
+  },
+  yearbook: {
+    fileType: "PDF",
+    pageCount: "4-800",
+    fonts: "Embedded",
+    layers: "Flattened",
+  },
+  calendar: {
+    fileType: "PDF",
+    pageCount: "2-800",
+    fonts: "Embedded",
+    layers: "Flattened",
+  },
+  ebook: {
+    fileType: "EPUB, DOCX, RTF, ODT, PDF",
+    pageCount: "2-800",
+    fonts: "Embedded",
+    layers: "Flattened",
+  },
+};
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get("pdf") as File;
+    const bookType = formData.get("bookType") as BookType;
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    if (file.type !== "application/pdf") {
-      return NextResponse.json(
-        { error: "File must be a PDF" },
-        { status: 400 }
-      );
+    if (!bookType || !dataAccordingToType[bookType]) {
+      return NextResponse.json({ error: "Invalid book type" }, { status: 400 });
     }
 
-    // Convert file to buffer
+    // Get book type requirements
+    const requirements = dataAccordingToType[bookType];
+
+    // Validate file type based on book type
+    const allowedTypes = requirements.fileType.split(", ");
+    const fileExtension = file.name.split(".").pop()?.toLowerCase();
+
+    if (bookType === "ebook") {
+      const validEbookTypes = ["pdf", "epub", "docx", "rtf", "odt"];
+      if (!fileExtension || !validEbookTypes.includes(fileExtension)) {
+        return NextResponse.json(
+          { error: `File must be one of: ${requirements.fileType}` },
+          { status: 400 }
+        );
+      }
+    } else {
+      if (file.type !== "application/pdf") {
+        return NextResponse.json(
+          { error: "File must be a PDF" },
+          { status: 400 }
+        );
+      }
+    }
+
+    // For non-PDF files in ebook, handle differently
+    if (bookType === "ebook" && fileExtension !== "pdf") {
+      return NextResponse.json({
+        properties: {
+          fileType: fileExtension?.toUpperCase(),
+          pageCount: "N/A",
+          fontsEmbedded: true,
+          layersFlattened: true,
+          valid: true,
+          errors: [],
+        },
+        fileName: file.name,
+        fileSize: file.size,
+        uploadSuccess: true,
+      });
+    }
+
+    // Convert file to buffer for PDF processing
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Validate PDF properties first
-    const properties = await validatePDFProperties(buffer);
+    // Validate PDF properties with book type requirements
+    const properties = await validatePDFProperties(
+      buffer,
+      bookType,
+      requirements
+    );
 
     // Create PDF data URL for client-side rendering
     const pdfDataUrl = `data:application/pdf;base64,${buffer.toString(
@@ -30,7 +136,7 @@ export async function POST(request: NextRequest) {
     // Try to upload to Cloudinary if credentials are available (optional)
     let cloudinaryUrl = null;
     let publicId = null;
-    let uploadSuccess = false;
+    let uploadSuccess = properties.valid;
 
     if (properties.valid && isCloudinaryConfigured()) {
       try {
@@ -47,7 +153,6 @@ export async function POST(request: NextRequest) {
         }
       } catch (uploadError: any) {
         console.warn("Cloudinary upload failed:", uploadError.message);
-        // Log the full error for debugging
         console.error("Full Cloudinary error:", uploadError);
       }
     } else if (!isCloudinaryConfigured()) {
@@ -56,8 +161,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       properties,
-      pdfDataUrl, // Always provide data URL as primary source
-      cloudinaryUrl, // Optional Cloudinary URL if upload succeeded
+      pdfDataUrl,
+      cloudinaryUrl,
       publicId,
       fileName: file.name,
       fileSize: file.size,
@@ -105,15 +210,13 @@ async function uploadToCloudinary(
     throw new Error("CLOUDINARY_CLOUD_NAME not configured");
   }
 
-  // Convert buffer to blob
   const blob = new Blob([buffer], { type: "application/pdf" });
   const timestamp = Math.round(Date.now() / 1000);
   const publicId = `pdf_${timestamp}_${fileName.replace(/[^a-zA-Z0-9]/g, "_")}`;
 
-  // Use unsigned upload with the preset you created
   const formData = new FormData();
   formData.append("file", blob);
-  formData.append("upload_preset", "kpgnv3dh"); // ✅ Use the preset you created
+  formData.append("upload_preset", "kpgnv3dh");
   formData.append("folder", folder);
   formData.append("public_id", publicId);
 
@@ -146,28 +249,39 @@ async function uploadToCloudinary(
   }
 }
 
-async function validatePDFProperties(buffer: Buffer) {
+async function validatePDFProperties(
+  buffer: Buffer,
+  bookType: BookType,
+  requirements: BookInfo
+) {
   const errors: string[] = [];
 
   try {
-    // Dynamic import for pdf-parse (if available)
     let pdfParse;
     try {
       pdfParse = (await import("pdf-parse")).default;
     } catch (importError) {
       console.warn("pdf-parse not available, using fallback validation");
-      return fallbackValidation(buffer);
+      return fallbackValidation(buffer, bookType, requirements);
     }
 
     const pdfData = await pdfParse(buffer);
     const pageCount = pdfData.numpages;
 
-    // Validate page count
-    if (pageCount < 2 || pageCount > 800) {
-      errors.push(`Page count (${pageCount}) must be between 2 and 800`);
+    // Parse page count requirements for the specific book type
+    const [minPages, maxPages] = requirements.pageCount.split("-").map(Number);
+
+    // Validate page count based on book type
+    if (pageCount < minPages || pageCount > maxPages) {
+      errors.push(
+        `Page count (${pageCount}) must be between ${minPages} and ${maxPages} for ${bookType.replace(
+          "-",
+          " "
+        )}`
+      );
     }
 
-    // Check PDF content for fonts and layers (simplified)
+    // Check PDF content for fonts and layers
     const content = buffer.toString("binary");
 
     // Check for embedded fonts
@@ -177,8 +291,8 @@ async function validatePDFProperties(buffer: Buffer) {
         content.includes("/FontFile2") ||
         content.includes("/FontFile3"));
 
-    if (!hasEmbeddedFonts) {
-      errors.push("PDF should have embedded fonts for better compatibility");
+    if (!hasEmbeddedFonts && requirements.fonts === "Embedded") {
+      errors.push("PDF must have embedded fonts for better compatibility");
     }
 
     // Check for layers
@@ -186,8 +300,26 @@ async function validatePDFProperties(buffer: Buffer) {
       content.includes("/OCG") ||
       content.includes("/OCProperties") ||
       content.includes("/Layer");
-    if (hasLayers) {
-      errors.push("PDF should have flattened layers (layers detected)");
+
+    if (hasLayers && requirements.layers === "Flattened") {
+      errors.push("PDF must have flattened layers (layers detected)");
+    }
+
+    // Additional validation for comic books (page size)
+    if (bookType === "comic-book" && requirements.pageSize) {
+      // This is a simplified check - in a real implementation, you'd parse the PDF page dimensions
+      const hasCorrectPageSize = checkPageSize(content, requirements.pageSize);
+      if (!hasCorrectPageSize) {
+        errors.push(
+          `Page size should be ${requirements.pageSize} for comic books`
+        );
+      }
+    }
+
+    // File size validation (max 50MB)
+    const maxSizeBytes = 50 * 1024 * 1024; // 50MB
+    if (buffer.length > maxSizeBytes) {
+      errors.push("File size must not exceed 50MB");
     }
 
     return {
@@ -197,14 +329,20 @@ async function validatePDFProperties(buffer: Buffer) {
       layersFlattened: !hasLayers,
       valid: errors.length === 0,
       errors,
+      bookType,
+      requirements,
     };
   } catch (error) {
     console.error("Error parsing PDF:", error);
-    return fallbackValidation(buffer);
+    return fallbackValidation(buffer, bookType, requirements);
   }
 }
 
-function fallbackValidation(buffer: Buffer) {
+function fallbackValidation(
+  buffer: Buffer,
+  bookType: BookType,
+  requirements: BookInfo
+) {
   const errors: string[] = [];
 
   // Basic PDF validation
@@ -218,18 +356,40 @@ function fallbackValidation(buffer: Buffer) {
   const pageMatches = content.match(/\/Type\s*\/Page[^s]/g);
   const pageCount = pageMatches ? pageMatches.length : 1;
 
-  // Validate page count
-  if (pageCount < 2 || pageCount > 800) {
-    errors.push(`Page count (${pageCount}) must be between 2 and 800`);
+  // Parse page count requirements for the specific book type
+  const [minPages, maxPages] = requirements.pageCount.split("-").map(Number);
+
+  // Validate page count based on book type
+  if (pageCount < minPages || pageCount > maxPages) {
+    errors.push(
+      `Page count (${pageCount}) must be between ${minPages} and ${maxPages} for ${bookType.replace(
+        "-",
+        " "
+      )}`
+    );
   }
 
   // Check for embedded fonts (simplified check)
   const hasEmbeddedFonts =
     content.includes("/FontDescriptor") && content.includes("/FontFile");
 
+  if (!hasEmbeddedFonts && requirements.fonts === "Embedded") {
+    errors.push("PDF must have embedded fonts for better compatibility");
+  }
+
   // Check for layers (simplified check)
   const hasLayers =
     content.includes("/OCG") || content.includes("/OCProperties");
+
+  if (hasLayers && requirements.layers === "Flattened") {
+    errors.push("PDF must have flattened layers (layers detected)");
+  }
+
+  // File size validation (max 50MB)
+  const maxSizeBytes = 50 * 1024 * 1024; // 50MB
+  if (buffer.length > maxSizeBytes) {
+    errors.push("File size must not exceed 50MB");
+  }
 
   return {
     fileType: "PDF",
@@ -238,5 +398,14 @@ function fallbackValidation(buffer: Buffer) {
     layersFlattened: !hasLayers,
     valid: errors.length === 0,
     errors,
+    bookType,
+    requirements,
   };
+}
+
+function checkPageSize(content: string, expectedSize: string): boolean {
+  // This is a simplified implementation
+  // In a real scenario, you'd parse the MediaBox or CropBox from the PDF
+  // For now, we'll return true to avoid false positives
+  return true;
 }

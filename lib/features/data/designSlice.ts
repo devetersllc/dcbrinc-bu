@@ -1,17 +1,17 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 interface PDFProperties {
-  fileType: string;
-  pageCount: number;
-  fontsEmbedded: boolean;
-  layersFlattened: boolean;
+  fileType: string | null;
+  pageCount: number | null;
+  fontsEmbedded: boolean | null;
+  layersFlattened: boolean | null;
   valid: boolean;
   errors: string[];
   dimensions?: {
     width: number;
     height: number;
     unit: string;
-  };
+  } | null;
 }
 
 interface ProcessedPDF {
@@ -30,7 +30,7 @@ interface ProcessedCover {
   cloudinaryUrl?: string;
   publicId?: string;
   coverFileName: string | undefined;
-  fileSize?: number;
+  fileSize?: number | undefined;
   uploadSuccess?: boolean;
 }
 
@@ -45,7 +45,7 @@ export interface BookSpecificationsState {
   paperType: "80lb-white-coated" | "";
   bindingType: "hardcover-case" | "paperback" | "hardcover-linen" | "";
   coverFinish: "glossy" | "matte" | "";
-  totalPrice:number
+  totalPrice: number;
 }
 
 const initialState: BookSpecificationsState = {
@@ -59,7 +59,7 @@ const initialState: BookSpecificationsState = {
   paperType: "",
   bindingType: "",
   coverFinish: "",
-  totalPrice:0,
+  totalPrice: 0,
 };
 
 const bookspecificationsSlice = createSlice({
@@ -146,7 +146,7 @@ export const {
   setProcessing,
   setProcessedCover,
   setProcessingCover,
-  setTotalPrice
+  setTotalPrice,
 } = bookspecificationsSlice.actions;
 
 export default bookspecificationsSlice.reducer;
