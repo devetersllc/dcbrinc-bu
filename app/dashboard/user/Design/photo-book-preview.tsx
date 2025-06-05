@@ -158,11 +158,15 @@ export function PhotoBookPreview() {
           setCoverDoc(coverPdf);
         }
 
-        const page = await coverPdf.getPage(1); // Cover should be page 1, not page 2
+        const page = await coverPdf.getPage(1);
         const viewport = page.getViewport({ scale: 1 });
 
-        canvas.height = viewport.height;
+        // Set canvas dimensions first
         canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        // Reset transform
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
 
         const renderContext = {
           canvasContext: ctx,
@@ -176,7 +180,6 @@ export function PhotoBookPreview() {
       renderFallbackCover();
     }
   };
-
   const renderFallbackCover = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -238,8 +241,12 @@ export function PhotoBookPreview() {
       const page = await pdfDocument.getPage(pageNum);
       const viewport = page.getViewport({ scale: 1 });
 
-      canvas.height = viewport.height;
+      // Set canvas dimensions first
       canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      // Reset transform
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
 
       const renderContext = {
         canvasContext: ctx,
@@ -252,7 +259,7 @@ export function PhotoBookPreview() {
       renderFallbackPage(pageNum);
     }
   };
-
+  
   const renderFallbackPage = (pageNum: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
