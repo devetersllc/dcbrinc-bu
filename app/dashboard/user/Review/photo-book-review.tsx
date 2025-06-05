@@ -135,13 +135,13 @@ export default function PhotoBookReview() {
                   <Download size={16} />
                   Print-Ready Files
                 </Button>
-                <Button
+                {/* <Button
                   variant="outline"
                   className="bg-blue-50 border-blue-200 text-blue-800 hover:bg-blue-100 flex items-center gap-2"
                 >
                   <Download size={16} />
                   Source Files
-                </Button>
+                </Button> */}
               </div>
             </div>
           </div>
