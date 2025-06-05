@@ -1,41 +1,54 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db";
-import { getAuthCookie, verifyToken } from "@/lib/auth";
 
+// GET - Fetch all users with pagination
 export async function GET(request: NextRequest) {
   try {
-    // Get auth token
-    const token = await getAuthCookie();
-    if (!token) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
-    // Verify token
-        const decoded = decode(token) as JwtPayload;;
-    if (!decoded || decoded.role !== "admin") {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const { searchParams } = new URL(request.url);
+    const page = Number.parseInt(searchParams.get("page") || "1");
+    const limit = Number.parseInt(searchParams.get("limit") || "10");
+    const search = searchParams.get("search") || "";
 
     const db = await connectToDatabase();
-    const usersCollection = db.collection("users");
 
-    // Get all users
-    const users = await usersCollection.find({}).toArray();
-
-    // Remove passwords from response
-    const sanitizedUsers = users.map((user) => {
-      const { password, ...userWithoutPassword } = user;
-      return {
-        ...userWithoutPassword,
-        _id: user._id.toString(),
+    // Build search query
+    let searchQuery = {};
+    if (search) {
+      searchQuery = {
+        $or: [
+          { name: { $regex: search, $options: "i" } },
+          { email: { $regex: search, $options: "i" } },
+          { role: { $regex: search, $options: "i" } },
+        ],
       };
-    });
+    }
 
-    return NextResponse.json({ users: sanitizedUsers });
+    // Calculate skip value for pagination
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination
+    const total = await db.collection("users").countDocuments(searchQuery);
+
+    // Fetch users with pagination
+    const users = await db
+      .collection("users")
+      .find(searchQuery)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+
+    return NextResponse.json({
+      users,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    });
   } catch (error) {
-    console.error("Get users error:", error);
+    console.error("Failed to fetch users:", error);
     return NextResponse.json(
-      { message: "Internal server error" },
+      { error: "Failed to fetch users" },
       { status: 500 }
     );
   }

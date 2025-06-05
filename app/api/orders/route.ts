@@ -1,9 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db";
-import { verifyToken } from "@/lib/auth";
-import { decode, JwtPayload } from "jsonwebtoken";
 
-// GET - Fetch all orders (Admin only)
+// GET - Fetch all orders with pagination (Admin only)
 export async function GET(request: NextRequest) {
   try {
     // const token = request.cookies.get("auth-token")?.value;
@@ -20,14 +18,48 @@ export async function GET(request: NextRequest) {
     //   );
     // }
 
+    const { searchParams } = new URL(request.url);
+    const page = Number.parseInt(searchParams.get("page") || "1");
+    const limit = Number.parseInt(searchParams.get("limit") || "10");
+    const search = searchParams.get("search") || "";
+
     const db = await connectToDatabase();
+
+    // Build search query
+    let searchQuery = {};
+    if (search) {
+      searchQuery = {
+        $or: [
+          { name: { $regex: search, $options: "i" } },
+          { email: { $regex: search, $options: "i" } },
+          { status: { $regex: search, $options: "i" } },
+          { bookSize: { $regex: search, $options: "i" } },
+        ],
+      };
+    }
+
+    // Calculate skip value for pagination
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination
+    const total = await db.collection("orders").countDocuments(searchQuery);
+
+    // Fetch orders with pagination
     const orders = await db
       .collection("orders")
-      .find({})
+      .find(searchQuery)
       .sort({ orderDate: -1 })
+      .skip(skip)
+      .limit(limit)
       .toArray();
 
-    return NextResponse.json({ orders });
+    return NextResponse.json({
+      orders,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    });
   } catch (error) {
     console.error("Failed to fetch orders:", error);
     return NextResponse.json(
