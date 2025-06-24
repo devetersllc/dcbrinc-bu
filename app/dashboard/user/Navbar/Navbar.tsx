@@ -18,10 +18,10 @@ export default function Navbar() {
     <div className="p-3 h-fit w-full relative flex items-center justify-between bg-white">
       <Link
         href={"/dashboard/user"}
-        className="h-10 flex items-center justify-centerw-fit cursor-pointer"
+        className="h-8 md:h-10 flex items-center justify-centerw-fit cursor-pointer"
       >
         <Image
-          src="/dummy-logo-5b.png"
+          src="https://dcbrinc.com/wp-content/uploads/2025/03/IMG_6463-2-1024x779-1.png"
           alt="Color book example"
           className="object-cover h-full w-full"
           width={20}

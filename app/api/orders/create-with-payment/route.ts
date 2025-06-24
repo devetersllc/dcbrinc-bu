@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       bindingType: orderData.bindingType,
       coverFinish: orderData.coverFinish,
       totalPrice: Number.parseFloat(orderData.totalPrice),
-      status: "paid",
+      status: "pending",
       orderDate: new Date(),
       paymentInfo: {
         paymentId: paymentData.paymentId,

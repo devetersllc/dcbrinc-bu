@@ -751,7 +751,7 @@ export default function AdminDashboard() {
                     </div>
 
                     {/* Orders Pagination */}
-                    <div className="flex items-center justify-between mt-6">
+                    <div className="flex items-center justify-between mt-6 flex-wrap">
                       <div className="text-sm text-muted-foreground">
                         Showing{" "}
                         {(ordersPagination.current - 1) *
@@ -764,7 +764,7 @@ export default function AdminDashboard() {
                         )}{" "}
                         of {ordersPagination.total} orders
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 gap-4 overflow-auto">
                         <Select
                           value={ordersPagination.pageSize.toString()}
                           onValueChange={(value) => {

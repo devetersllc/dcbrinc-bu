@@ -162,7 +162,7 @@ export function PaymentForm({
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full mx-auto custom-scroll">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CreditCard className="h-5 w-5" />
@@ -184,7 +184,7 @@ export function PaymentForm({
         </div>
 
         {/* Test Card Information */}
-        <Alert className="mb-4">
+        {/* <Alert className="mb-4">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             <strong>Test Cards:</strong>
@@ -195,7 +195,7 @@ export function PaymentForm({
             <br />
             Insufficient Funds: 4000 0000 0000 0127
           </AlertDescription>
-        </Alert>
+        </Alert> */}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
