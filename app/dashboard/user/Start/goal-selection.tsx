@@ -44,12 +44,12 @@ export function GoalSelection() {
         </div>
       </div>
 
-      <Alert className="mb-6 border-purple-500 bg-purple-50 text-purple-900">
+      {/* <Alert className="mb-6 border-purple-500 bg-purple-50 text-purple-900">
         <InfoIcon className="h-5 w-5 text-purple-500" />
         <AlertDescription>
           Your Photo Book is currently not eligible for Global Distribution.
         </AlertDescription>
-      </Alert>
+      </Alert> */}
 
       <RadioGroup
         value={startPage.goal}

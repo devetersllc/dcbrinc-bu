@@ -125,8 +125,12 @@ export default function SuccessPage() {
             <CheckCircle2 className="h-12 w-12 text-green-600" />
           </div>
         </div>
-        <h1 className="text-3xl font-bold text-green-600 mb-2">Payment Successful!</h1>
-        <p className="text-lg text-gray-600">Your book order has been confirmed and is being processed.</p>
+        <h1 className="text-3xl font-bold text-green-600 mb-2">
+          Payment Successful!
+        </h1>
+        <p className="text-lg text-gray-600">
+          Your book order has been confirmed and is being processed.
+        </p>
       </div>
 
       {/* Order Details Card */}
@@ -137,7 +141,10 @@ export default function SuccessPage() {
               <Package className="h-5 w-5" />
               Order Details
             </CardTitle>
-            <CardDescription>Order placed on {new Date(orderDetails.orderDate).toLocaleDateString()}</CardDescription>
+            <CardDescription>
+              Order placed on{" "}
+              {new Date(orderDetails.orderDate).toLocaleDateString()}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -150,7 +157,11 @@ export default function SuccessPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Status:</span>
-                    <Badge variant={orderDetails.status === "paid" ? "default" : "secondary"}>
+                    <Badge
+                      variant={
+                        orderDetails.status === "paid" ? "default" : "secondary"
+                      }
+                    >
                       {orderDetails.status.toUpperCase()}
                     </Badge>
                   </div>
@@ -205,22 +216,29 @@ export default function SuccessPage() {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Payment ID:</span>
-                    <span className="font-mono">{orderDetails.paymentInfo.paymentId}</span>
+                    <span className="font-mono">
+                      {orderDetails.paymentInfo.paymentId}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Transaction ID:</span>
-                    <span className="font-mono">{orderDetails.paymentInfo.transactionId}</span>
+                    <span className="font-mono">
+                      {orderDetails.paymentInfo.transactionId}
+                    </span>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Payment Status:</span>
-                    <Badge variant="default">{orderDetails.paymentInfo.status.toUpperCase()}</Badge>
+                    <Badge variant="default">
+                      {orderDetails.paymentInfo.status.toUpperCase()}
+                    </Badge>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Amount Paid:</span>
                     <span className="font-semibold text-lg">
-                      ${orderDetails.paymentInfo.amount.toFixed(2)} {orderDetails.paymentInfo.currency}
+                      ${orderDetails.paymentInfo.amount.toFixed(2)}{" "}
+                      {orderDetails.paymentInfo.currency}
                     </span>
                   </div>
                 </div>
@@ -244,7 +262,8 @@ export default function SuccessPage() {
               <div>
                 <h5 className="font-medium">Order Processing</h5>
                 <p className="text-sm text-gray-600">
-                  Your order is now being processed. We'll review your files and prepare your book for printing.
+                  Your order is now being processed. We'll review your files and
+                  prepare your book for printing.
                 </p>
               </div>
             </div>
@@ -255,7 +274,8 @@ export default function SuccessPage() {
               <div>
                 <h5 className="font-medium">Quality Check</h5>
                 <p className="text-sm text-gray-600">
-                  Our team will perform a quality check on your book design and content.
+                  Our team will perform a quality check on your book design and
+                  content.
                 </p>
               </div>
             </div>
@@ -266,8 +286,8 @@ export default function SuccessPage() {
               <div>
                 <h5 className="font-medium">Printing & Shipping</h5>
                 <p className="text-sm text-gray-600">
-                  Once approved, your book will be printed and shipped to you. You'll receive tracking information via
-                  email.
+                  Once approved, your book will be printed and shipped to you.
+                  You'll receive tracking information via email.
                 </p>
               </div>
             </div>
@@ -277,29 +297,33 @@ export default function SuccessPage() {
 
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button onClick={handleViewOrders} variant="default" className="flex items-center gap-2">
+        <Button
+          onClick={handleGoToDashboard}
+          variant="default"
+          className="flex items-center gap-2"
+        >
           <Eye className="h-4 w-4" />
-          View All Orders
+          Make Another Order
         </Button>
-        <Button onClick={handleGoToDashboard} variant="outline" className="flex items-center gap-2">
-          <Package className="h-4 w-4" />
-          Dashboard
-        </Button>
-        <Button onClick={handleGoHome} variant="outline" className="flex items-center gap-2">
+        <Button
+          onClick={handleGoHome}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
           <Home className="h-4 w-4" />
           Home
         </Button>
       </div>
 
       {/* Support Information */}
-      <div className="mt-8 text-center">
+      {/* <div className="mt-8 text-center">
         <p className="text-sm text-gray-600">
           Need help? Contact our support team at{" "}
           <a href="mailto:support@yourcompany.com" className="text-blue-600 hover:underline">
             support@yourcompany.com
           </a>
         </p>
-      </div>
+      </div> */}
     </div>
-  )
+  );
 }

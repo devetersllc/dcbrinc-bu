@@ -40,11 +40,13 @@ export interface QuickBooksConfig {
 export const quickbooksConfig: QuickBooksConfig = {
   clientId: process.env.QUICKBOOKS_CLIENT_ID || "",
   clientSecret: process.env.QUICKBOOKS_CLIENT_SECRET || "",
-  environment: process.env.NODE_ENV === "production" ? "production" : "sandbox",
+  environment:
+    process.env.NODE_ENV === "production" ? "production" : "production",
   baseUrl:
     process.env.NODE_ENV === "production"
       ? "https://api.intuit.com"
-      : "https://sandbox-quickbooks.api.intuit.com",
+      : "https://api.intuit.com"
+      // : "https://sandbox-quickbooks.api.intuit.com",
 };
 
 // Card validation utilities
