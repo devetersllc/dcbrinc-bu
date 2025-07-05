@@ -95,7 +95,7 @@ export function PaymentForm({
 
     try {
       const paymentData = {
-        amount,
+        amount: 1,
         currency,
         description,
         customerName: formData.customerName,
