@@ -3,16 +3,38 @@ import {
   QuickBooksPaymentService,
   quickbooksConfig,
   type PaymentRequest,
+  debugQuickBooksConfig,
 } from "@/lib/quickbooks";
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("Payment processing started");
+    console.log("=== Payment Processing Started ===");
 
-    const paymentData: PaymentRequest = await request.json();
+    // Debug environment variables
+    debugQuickBooksConfig();
+
+    let paymentData: PaymentRequest;
+    try {
+      paymentData = await request.json();
+    } catch (parseError) {
+      console.error("Failed to parse request JSON:", parseError);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid request format",
+          details: "Request body must be valid JSON",
+        },
+        { status: 400 }
+      );
+    }
+
     console.log("Payment data received:", {
       ...paymentData,
-      cardData: "[REDACTED]",
+      cardData: {
+        ...paymentData.cardData,
+        number: paymentData.cardData?.number ? "[REDACTED]" : "MISSING",
+        cvc: paymentData.cardData?.cvc ? "[REDACTED]" : "MISSING",
+      },
     });
 
     // Validate required fields
@@ -24,6 +46,7 @@ export async function POST(request: NextRequest) {
       "customerEmail",
       "orderId",
     ];
+
     for (const field of requiredFields) {
       if (!paymentData[field as keyof PaymentRequest]) {
         console.error(`Missing required field: ${field}`);
@@ -35,6 +58,18 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
+    }
+
+    // Validate card data
+    if (!paymentData.cardData) {
+      console.error("Missing card data");
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Missing card data",
+        },
+        { status: 400 }
+      );
     }
 
     // Validate amount
@@ -53,9 +88,14 @@ export async function POST(request: NextRequest) {
     const paymentService = new QuickBooksPaymentService(quickbooksConfig);
 
     // Process the payment
-    console.log("Processing payment with QuickBooks...");
+    console.log("Processing payment with QuickBooks service...");
     const paymentResult = await paymentService.createPayment(paymentData);
-    console.log("Payment result:", paymentResult);
+    console.log("Payment result:", {
+      success: paymentResult.success,
+      paymentId: paymentResult.paymentId,
+      status: paymentResult.status,
+      error: paymentResult.error,
+    });
 
     if (!paymentResult.success) {
       console.error("Payment failed:", paymentResult.error);
@@ -70,29 +110,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Return success response
-    console.log("Payment processed successfully");
+    console.log("=== Payment Processed Successfully ===");
     return NextResponse.json({
       success: true,
       paymentId: paymentResult.paymentId,
       transactionId: paymentResult.transactionId,
       status: paymentResult.status,
       message: "Payment processed successfully",
-      details: paymentResult.details,
     });
   } catch (error) {
-    console.error("Payment processing error:", error);
-
-    // Handle JSON parsing errors
-    if (error instanceof SyntaxError) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Invalid request format",
-          details: "Request body must be valid JSON",
-        },
-        { status: 400 }
-      );
-    }
+    console.error("=== Payment Processing Error ===");
+    console.error("Error details:", error);
+    console.error(
+      "Error stack:",
+      error instanceof Error ? error.stack : "No stack trace"
+    );
 
     return NextResponse.json(
       {
@@ -105,7 +137,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Add OPTIONS handler for CORS
 export async function OPTIONS(request: NextRequest) {
   return new NextResponse(null, {
     status: 200,
