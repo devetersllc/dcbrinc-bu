@@ -38,14 +38,18 @@ export interface QuickBooksConfig {
 }
 
 export const quickbooksConfig: QuickBooksConfig = {
-  clientId: process.env.QUICKBOOKS_CLIENT_ID || "",
-  clientSecret: process.env.QUICKBOOKS_CLIENT_SECRET || "",
+  clientId:
+    process.env.QUICKBOOKS_CLIENT_ID ||
+    "ABDRA2OcO8b4jHQefcUuQQlJUPcaOVGkR75iXjRucxhMdhtzEu",
+  clientSecret:
+    process.env.QUICKBOOKS_CLIENT_SECRET ||
+    "pp2d4HwwyTuafN4M17EWD0ZKmYp6Dhq6AC6FrrNJ",
   environment:
     process.env.NODE_ENV === "production" ? "production" : "production",
   baseUrl:
     process.env.NODE_ENV === "production"
       ? "https://api.intuit.com"
-      : "https://api.intuit.com"
+      : "https://api.intuit.com",
   // : "https://sandbox-quickbooks.api.intuit.com",
 };
 
