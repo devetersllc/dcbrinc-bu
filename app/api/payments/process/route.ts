@@ -3,39 +3,13 @@ import {
   QuickBooksPaymentService,
   quickbooksConfig,
   type PaymentRequest,
-  debugQuickBooksConfig,
 } from "@/lib/quickbooks";
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("=== Payment Processing Started ===");
+    console.log("Processing production payment request");
 
-    // Debug environment variables
-    debugQuickBooksConfig();
-
-    let paymentData: PaymentRequest;
-    try {
-      paymentData = await request.json();
-    } catch (parseError) {
-      console.error("Failed to parse request JSON:", parseError);
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Invalid request format",
-          details: "Request body must be valid JSON",
-        },
-        { status: 400 }
-      );
-    }
-
-    console.log("Payment data received:", {
-      ...paymentData,
-      cardData: {
-        ...paymentData.cardData,
-        number: paymentData.cardData?.number ? "[REDACTED]" : "MISSING",
-        cvc: paymentData.cardData?.cvc ? "[REDACTED]" : "MISSING",
-      },
-    });
+    const paymentData: PaymentRequest = await request.json();
 
     // Validate required fields
     const requiredFields = [
@@ -49,7 +23,6 @@ export async function POST(request: NextRequest) {
 
     for (const field of requiredFields) {
       if (!paymentData[field as keyof PaymentRequest]) {
-        console.error(`Missing required field: ${field}`);
         return NextResponse.json(
           {
             success: false,
@@ -62,7 +35,6 @@ export async function POST(request: NextRequest) {
 
     // Validate card data
     if (!paymentData.cardData) {
-      console.error("Missing card data");
       return NextResponse.json(
         {
           success: false,
@@ -72,13 +44,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const requiredCardFields = [
+      "number",
+      "expMonth",
+      "expYear",
+      "cvc",
+      "name",
+      "address",
+    ];
+    for (const field of requiredCardFields) {
+      if (!paymentData.cardData[field as keyof typeof paymentData.cardData]) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Missing card field: ${field}`,
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     // Validate amount
-    if (paymentData.amount <= 0) {
-      console.error("Invalid amount:", paymentData.amount);
+    if (typeof paymentData.amount !== "number" || paymentData.amount <= 0) {
       return NextResponse.json(
         {
           success: false,
-          error: "Payment amount must be greater than 0",
+          error: "Payment amount must be a positive number",
         },
         { status: 400 }
       );
@@ -88,14 +79,8 @@ export async function POST(request: NextRequest) {
     const paymentService = new QuickBooksPaymentService(quickbooksConfig);
 
     // Process the payment
-    console.log("Processing payment with QuickBooks service...");
+    console.log("Processing payment with QuickBooks...");
     const paymentResult = await paymentService.createPayment(paymentData);
-    console.log("Payment result:", {
-      success: paymentResult.success,
-      paymentId: paymentResult.paymentId,
-      status: paymentResult.status,
-      error: paymentResult.error,
-    });
 
     if (!paymentResult.success) {
       console.error("Payment failed:", paymentResult.error);
@@ -109,8 +94,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Return success response
-    console.log("=== Payment Processed Successfully ===");
+    console.log("Payment processed successfully");
     return NextResponse.json({
       success: true,
       paymentId: paymentResult.paymentId,
@@ -119,12 +103,18 @@ export async function POST(request: NextRequest) {
       message: "Payment processed successfully",
     });
   } catch (error) {
-    console.error("=== Payment Processing Error ===");
-    console.error("Error details:", error);
-    console.error(
-      "Error stack:",
-      error instanceof Error ? error.stack : "No stack trace"
-    );
+    console.error("Payment processing error:", error);
+
+    if (error instanceof SyntaxError) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid request format",
+          details: "Request body must be valid JSON",
+        },
+        { status: 400 }
+      );
+    }
 
     return NextResponse.json(
       {

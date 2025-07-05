@@ -13,139 +13,54 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { CreditCard, Lock } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CardValidator } from "@/lib/quickbooks";
+import { Loader2, CreditCard, Lock } from "lucide-react";
 
 interface PaymentFormProps {
   amount: number;
-  currency: string;
-  description: string;
-  customerName: string;
-  customerEmail: string;
-  orderId: string;
-  onPaymentSuccess: (paymentData: any) => void;
-  onPaymentError: (error: string) => void;
-  isProcessing: boolean;
+  currency?: string;
+  description?: string;
+  onSuccess?: (paymentId: string) => void;
+  onError?: (error: string) => void;
 }
 
 export function PaymentForm({
   amount,
-  currency,
-  description,
-  customerName,
-  customerEmail,
-  orderId,
-  onPaymentSuccess,
-  onPaymentError,
-  isProcessing,
+  currency = "USD",
+  description = "Payment",
+  onSuccess,
+  onError,
 }: PaymentFormProps) {
-  const [cardData, setCardData] = useState({
-    number: "",
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const [formData, setFormData] = useState({
+    customerName: "",
+    customerEmail: "",
+    cardNumber: "",
     expMonth: "",
     expYear: "",
     cvc: "",
-    name: customerName,
-    address: {
-      streetAddress: "",
-      city: "",
-      region: "",
-      country: "US",
-      postalCode: "",
-    },
+    cardholderName: "",
+    streetAddress: "",
+    city: "",
+    region: "",
+    postalCode: "",
+    country: "US",
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [cardType, setCardType] = useState<string>("");
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    // Validate card number
-    const cardValidation = CardValidator.validateCardNumber(cardData.number);
-    if (!cardValidation.isValid) {
-      newErrors.number = cardValidation.error || "Invalid card number";
-    }
-
-    // Validate expiry
-    const expiryValidation = CardValidator.validateExpiry(
-      cardData.expMonth,
-      cardData.expYear
-    );
-    if (!expiryValidation.isValid) {
-      newErrors.expiry = expiryValidation.error || "Invalid expiry date";
-    }
-
-    // Validate CVC
-    const cvcValidation = CardValidator.validateCVC(
-      cardData.cvc,
-      cardData.number
-    );
-    if (!cvcValidation.isValid) {
-      newErrors.cvc = cvcValidation.error || "Invalid CVC";
-    }
-
-    // Validate name
-    const nameValidation = CardValidator.validateName(cardData.name);
-    if (!nameValidation.isValid) {
-      newErrors.name = nameValidation.error || "Invalid cardholder name";
-    }
-
-    // Validate address
-    const addressValidation = CardValidator.validateAddress(cardData.address);
-    if (!addressValidation.isValid) {
-      newErrors.address = addressValidation.error || "Invalid address";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
-    try {
-      const paymentRequest = {
-        amount: 1,
-        currency,
-        description,
-        customerName,
-        customerEmail,
-        orderId,
-        cardData,
-      };
-
-      const response = await fetch("/api/payments/process", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(paymentRequest),
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        onPaymentSuccess(result);
-      } else {
-        // Provide more specific error messages
-        let errorMessage = result.error || "Payment processing failed";
-        if (result.details && typeof result.details === "string") {
-          errorMessage = result.details;
-        }
-        onPaymentError(errorMessage);
-      }
-    } catch (error) {
-      console.error("Payment submission error:", error);
-      onPaymentError(
-        "Network error occurred. Please check your connection and try again."
-      );
-    }
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    setError(null);
   };
 
   const formatCardNumber = (value: string) => {
@@ -153,9 +68,11 @@ export function PaymentForm({
     const matches = v.match(/\d{4,16}/g);
     const match = (matches && matches[0]) || "";
     const parts = [];
+
     for (let i = 0, len = match.length; i < len; i += 4) {
       parts.push(match.substring(i, i + 4));
     }
+
     if (parts.length) {
       return parts.join(" ");
     } else {
@@ -164,234 +81,325 @@ export function PaymentForm({
   };
 
   const handleCardNumberChange = (value: string) => {
-    const formattedValue = formatCardNumber(value);
-    setCardData((prev) => ({ ...prev, number: formattedValue }));
-    setCardType(CardValidator.getCardType(formattedValue));
+    const formatted = formatCardNumber(value);
+    if (formatted.replace(/\s/g, "").length <= 16) {
+      handleInputChange("cardNumber", formatted);
+    }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsProcessing(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const paymentData = {
+        amount,
+        currency,
+        description,
+        customerName: formData.customerName,
+        customerEmail: formData.customerEmail,
+        orderId: `order-${Date.now()}`,
+        cardData: {
+          number: formData.cardNumber,
+          expMonth: formData.expMonth,
+          expYear: formData.expYear,
+          cvc: formData.cvc,
+          name: formData.cardholderName,
+          address: {
+            streetAddress: formData.streetAddress,
+            city: formData.city,
+            region: formData.region,
+            country: formData.country,
+            postalCode: formData.postalCode,
+          },
+        },
+      };
+
+      const response = await fetch("/api/payments/process", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(paymentData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSuccess(`Payment successful! Transaction ID: ${result.paymentId}`);
+        onSuccess?.(result.paymentId);
+      } else {
+        setError(result.error || "Payment failed");
+        onError?.(result.error || "Payment failed");
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Payment processing failed";
+      setError(errorMessage);
+      onError?.(errorMessage);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const currentYear = new Date().getFullYear() % 100;
+  const years = Array.from({ length: 20 }, (_, i) => currentYear + i);
+
   return (
-    <Card className="w-full mx-auto custom-scroll">
+    <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CreditCard className="h-5 w-5" />
           Payment Information
         </CardTitle>
         <CardDescription>
-          Complete your book order with secure payment
+          Complete your payment of ${amount.toFixed(2)} {currency}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-          <div className="flex justify-between items-center">
-            <span className="font-medium">Total Amount:</span>
-            <span className="text-lg font-bold">
-              ${amount.toFixed(2)} {currency}
-            </span>
-          </div>
-          <div className="text-sm text-gray-600 mt-1">{description}</div>
-        </div>
-
-        {/* Test Card Information */}
-        {/* <Alert className="mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            <strong>Test Cards:</strong>
-            <br />
-            Success: 4111 1111 1111 1111
-            <br />
-            Declined: 4000 0000 0000 0002
-            <br />
-            Insufficient Funds: 4000 0000 0000 0127
-          </AlertDescription>
-        </Alert> */}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="cardNumber">Card Number</Label>
-            <div className="relative">
-              <Input
-                id="cardNumber"
-                placeholder="1234 5678 9012 3456"
-                value={cardData.number}
-                onChange={(e) => handleCardNumberChange(e.target.value)}
-                maxLength={19}
-                className={errors.number ? "border-red-500" : ""}
-              />
-              {cardType && (
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
-                  {cardType}
-                </div>
-              )}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Customer Information */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Customer Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="customerName">Full Name</Label>
+                <Input
+                  id="customerName"
+                  value={formData.customerName}
+                  onChange={(e) =>
+                    handleInputChange("customerName", e.target.value)
+                  }
+                  placeholder="John Doe"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="customerEmail">Email</Label>
+                <Input
+                  id="customerEmail"
+                  type="email"
+                  value={formData.customerEmail}
+                  onChange={(e) =>
+                    handleInputChange("customerEmail", e.target.value)
+                  }
+                  placeholder="john@example.com"
+                  required
+                />
+              </div>
             </div>
-            {errors.number && (
-              <p className="text-sm text-red-500">{errors.number}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-3 gap-2">
-            <div className="space-y-2">
-              <Label htmlFor="expMonth">Month</Label>
-              <Input
-                id="expMonth"
-                placeholder="MM"
-                value={cardData.expMonth}
-                onChange={(e) =>
-                  setCardData((prev) => ({
-                    ...prev,
-                    expMonth: e.target.value.replace(/\D/g, "").slice(0, 2),
-                  }))
-                }
-                maxLength={2}
-                className={errors.expiry ? "border-red-500" : ""}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="expYear">Year</Label>
-              <Input
-                id="expYear"
-                placeholder="YY"
-                value={cardData.expYear}
-                onChange={(e) =>
-                  setCardData((prev) => ({
-                    ...prev,
-                    expYear: e.target.value.replace(/\D/g, "").slice(0, 2),
-                  }))
-                }
-                maxLength={2}
-                className={errors.expiry ? "border-red-500" : ""}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="cvc">CVC</Label>
-              <Input
-                id="cvc"
-                placeholder="123"
-                value={cardData.cvc}
-                onChange={(e) =>
-                  setCardData((prev) => ({
-                    ...prev,
-                    cvc: e.target.value.replace(/\D/g, "").slice(0, 4),
-                  }))
-                }
-                maxLength={4}
-                className={errors.cvc ? "border-red-500" : ""}
-              />
-            </div>
-          </div>
-          {errors.expiry && (
-            <p className="text-sm text-red-500">{errors.expiry}</p>
-          )}
-          {errors.cvc && <p className="text-sm text-red-500">{errors.cvc}</p>}
-
-          <div className="space-y-2">
-            <Label htmlFor="cardName">Cardholder Name</Label>
-            <Input
-              id="cardName"
-              placeholder="John Doe"
-              value={cardData.name}
-              onChange={(e) =>
-                setCardData((prev) => ({
-                  ...prev,
-                  name: e.target.value,
-                }))
-              }
-              className={errors.name ? "border-red-500" : ""}
-            />
-            {errors.name && (
-              <p className="text-sm text-red-500">{errors.name}</p>
-            )}
           </div>
 
           <Separator />
 
+          {/* Card Information */}
           <div className="space-y-4">
-            <h4 className="font-medium">Billing Address</h4>
-
-            <div className="space-y-2">
-              <Label htmlFor="streetAddress">Street Address</Label>
-              <Input
-                id="streetAddress"
-                placeholder="123 Main St"
-                value={cardData.address.streetAddress}
-                onChange={(e) =>
-                  setCardData((prev) => ({
-                    ...prev,
-                    address: { ...prev.address, streetAddress: e.target.value },
-                  }))
-                }
-                className={errors.address ? "border-red-500" : ""}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
+            <h3 className="text-lg font-medium flex items-center gap-2">
+              <Lock className="h-4 w-4" />
+              Card Information
+            </h3>
+            <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
+                <Label htmlFor="cardNumber">Card Number</Label>
                 <Input
-                  id="city"
-                  placeholder="New York"
-                  value={cardData.address.city}
-                  onChange={(e) =>
-                    setCardData((prev) => ({
-                      ...prev,
-                      address: { ...prev.address, city: e.target.value },
-                    }))
-                  }
-                  className={errors.address ? "border-red-500" : ""}
+                  id="cardNumber"
+                  value={formData.cardNumber}
+                  onChange={(e) => handleCardNumberChange(e.target.value)}
+                  placeholder="1234 5678 9012 3456"
+                  maxLength={19}
+                  required
                 />
               </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="expMonth">Month</Label>
+                  <Select
+                    value={formData.expMonth}
+                    onValueChange={(value) =>
+                      handleInputChange("expMonth", value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="MM" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 12 }, (_, i) => i + 1).map(
+                        (month) => (
+                          <SelectItem
+                            key={month}
+                            value={month.toString().padStart(2, "0")}
+                          >
+                            {month.toString().padStart(2, "0")}
+                          </SelectItem>
+                        )
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="expYear">Year</Label>
+                  <Select
+                    value={formData.expYear}
+                    onValueChange={(value) =>
+                      handleInputChange("expYear", value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="YY" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {years.map((year) => (
+                        <SelectItem
+                          key={year}
+                          value={year.toString().padStart(2, "0")}
+                        >
+                          {year}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cvc">CVC</Label>
+                  <Input
+                    id="cvc"
+                    value={formData.cvc}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "cvc",
+                        e.target.value.replace(/\D/g, "")
+                      )
+                    }
+                    placeholder="123"
+                    maxLength={4}
+                    required
+                  />
+                </div>
+              </div>
               <div className="space-y-2">
-                <Label htmlFor="region">State</Label>
+                <Label htmlFor="cardholderName">Cardholder Name</Label>
                 <Input
-                  id="region"
-                  placeholder="NY"
-                  value={cardData.address.region}
+                  id="cardholderName"
+                  value={formData.cardholderName}
                   onChange={(e) =>
-                    setCardData((prev) => ({
-                      ...prev,
-                      address: { ...prev.address, region: e.target.value },
-                    }))
+                    handleInputChange("cardholderName", e.target.value)
                   }
-                  className={errors.address ? "border-red-500" : ""}
+                  placeholder="Name on card"
+                  required
                 />
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="postalCode">Postal Code</Label>
-              <Input
-                id="postalCode"
-                placeholder="10001"
-                value={cardData.address.postalCode}
-                onChange={(e) =>
-                  setCardData((prev) => ({
-                    ...prev,
-                    address: { ...prev.address, postalCode: e.target.value },
-                  }))
-                }
-                className={errors.address ? "border-red-500" : ""}
-              />
-            </div>
-            {errors.address && (
-              <p className="text-sm text-red-500">{errors.address}</p>
-            )}
           </div>
 
-          <Alert>
-            <Lock className="h-4 w-4" />
-            <AlertDescription>
-              Your payment information is secure and encrypted.
-            </AlertDescription>
-          </Alert>
+          <Separator />
+
+          {/* Billing Address */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Billing Address</h3>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="streetAddress">Street Address</Label>
+                <Input
+                  id="streetAddress"
+                  value={formData.streetAddress}
+                  onChange={(e) =>
+                    handleInputChange("streetAddress", e.target.value)
+                  }
+                  placeholder="123 Main St"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="city">City</Label>
+                  <Input
+                    id="city"
+                    value={formData.city}
+                    onChange={(e) => handleInputChange("city", e.target.value)}
+                    placeholder="New York"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="region">State/Region</Label>
+                  <Input
+                    id="region"
+                    value={formData.region}
+                    onChange={(e) =>
+                      handleInputChange("region", e.target.value)
+                    }
+                    placeholder="NY"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="postalCode">Postal Code</Label>
+                  <Input
+                    id="postalCode"
+                    value={formData.postalCode}
+                    onChange={(e) =>
+                      handleInputChange("postalCode", e.target.value)
+                    }
+                    placeholder="10001"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="country">Country</Label>
+                  <Select
+                    value={formData.country}
+                    onValueChange={(value) =>
+                      handleInputChange("country", value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="US">United States</SelectItem>
+                      <SelectItem value="CA">Canada</SelectItem>
+                      <SelectItem value="GB">United Kingdom</SelectItem>
+                      <SelectItem value="AU">Australia</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {success && (
+            <Alert>
+              <AlertDescription>{success}</AlertDescription>
+            </Alert>
+          )}
 
           <Button
             type="submit"
             className="w-full"
-            disabled={isProcessing}
             size="lg"
+            disabled={isProcessing}
           >
-            {isProcessing
-              ? "Processing Payment..."
-              : `Pay $${amount.toFixed(2)}`}
+            {isProcessing ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing Payment...
+              </>
+            ) : (
+              <>
+                <Lock className="mr-2 h-4 w-4" />
+                Pay ${amount.toFixed(2)} {currency}
+              </>
+            )}
           </Button>
         </form>
       </CardContent>

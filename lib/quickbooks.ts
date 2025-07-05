@@ -27,7 +27,7 @@ export interface PaymentResponse {
   transactionId?: string;
   status?: string;
   error?: string;
-  details?: string;
+  details?: any;
 }
 
 export interface QuickBooksConfig {
@@ -38,44 +38,21 @@ export interface QuickBooksConfig {
 }
 
 export const quickbooksConfig: QuickBooksConfig = {
-  clientId:
-    process.env.QUICKBOOKS_CLIENT_ID ||
-    "ABDRA2OcO8b4jHQefcUuQQlJUPcaOVGkR75iXjRucxhMdhtzEu",
-  clientSecret:
-    process.env.QUICKBOOKS_CLIENT_SECRET ||
-    "pp2d4HwwyTuafN4M17EWD0ZKmYp6Dhq6AC6FrrNJ",
-  environment:
-    process.env.NODE_ENV === "production" ? "production" : "production",
-  baseUrl:
-    process.env.NODE_ENV === "production"
-      ? "https://api.intuit.com"
-      : "https://sandbox-quickbooks.api.intuit.com",
+  clientId: process.env.QUICKBOOKS_CLIENT_ID || "",
+  clientSecret: process.env.QUICKBOOKS_CLIENT_SECRET || "",
+  environment: "production",
+  baseUrl: "https://api.intuit.com",
 };
 
-// Debug function to check environment variables
-export function debugQuickBooksConfig() {
-  console.log("QuickBooks Configuration Debug:");
-  console.log("CLIENT_ID exists:", !!process.env.QUICKBOOKS_CLIENT_ID);
-  console.log("CLIENT_SECRET exists:", !!process.env.QUICKBOOKS_CLIENT_SECRET);
-  console.log("NODE_ENV:", process.env.NODE_ENV);
-  console.log("Environment:", quickbooksConfig.environment);
-  console.log("Base URL:", quickbooksConfig.baseUrl);
-  console.log("USE_TEST_PAYMENTS:", process.env.USE_TEST_PAYMENTS);
-
-  if (process.env.QUICKBOOKS_CLIENT_ID) {
-    console.log(
-      "CLIENT_ID preview:",
-      process.env.QUICKBOOKS_CLIENT_ID.substring(0, 10) + "..."
-    );
-  }
-}
-
-// Card validation utilities
 export class CardValidator {
   static validateCardNumber(cardNumber: string): {
     isValid: boolean;
     error?: string;
   } {
+    if (!cardNumber) {
+      return { isValid: false, error: "Card number is required" };
+    }
+
     const cleanNumber = cardNumber.replace(/\s+/g, "");
 
     if (!cleanNumber) {
@@ -110,6 +87,10 @@ export class CardValidator {
 
     const monthNum = Number.parseInt(month, 10);
     const yearNum = Number.parseInt(year, 10);
+
+    if (isNaN(monthNum) || isNaN(yearNum)) {
+      return { isValid: false, error: "Invalid expiry date format" };
+    }
 
     if (monthNum < 1 || monthNum > 12) {
       return { isValid: false, error: "Invalid expiry month" };
@@ -175,6 +156,10 @@ export class CardValidator {
     isValid: boolean;
     error?: string;
   } {
+    if (!address) {
+      return { isValid: false, error: "Address is required" };
+    }
+
     if (!address.streetAddress?.trim()) {
       return { isValid: false, error: "Street address is required" };
     }
@@ -191,11 +176,8 @@ export class CardValidator {
       return { isValid: false, error: "Postal code is required" };
     }
 
-    if (
-      address.country === "US" &&
-      !/^\d{5}(-\d{4})?$/.test(address.postalCode)
-    ) {
-      return { isValid: false, error: "Invalid US postal code format" };
+    if (!address.country?.trim()) {
+      return { isValid: false, error: "Country is required" };
     }
 
     return { isValid: true };
@@ -244,12 +226,12 @@ export class QuickBooksPaymentService {
 
   async createPayment(paymentData: PaymentRequest): Promise<PaymentResponse> {
     try {
-      console.log("Processing payment for order:", paymentData.orderId);
+      console.log(
+        "Processing production payment for order:",
+        paymentData.orderId
+      );
 
-      // Debug configuration
-      debugQuickBooksConfig();
-
-      // Validate payment data first
+      // Validate payment data
       const validation = this.validatePaymentData(paymentData);
       if (!validation.isValid) {
         return {
@@ -258,27 +240,17 @@ export class QuickBooksPaymentService {
         };
       }
 
-      // Check if we should use test payments
-      if (
-        process.env.USE_TEST_PAYMENTS === "true" ||
-        !this.config.clientId ||
-        !this.config.clientSecret
-      ) {
-        console.log("Using test payment processor");
-        return await this.processTestPayment(paymentData);
+      // Check QuickBooks credentials
+      if (!this.config.clientId || !this.config.clientSecret) {
+        return {
+          success: false,
+          error: "QuickBooks credentials not configured",
+          details: "Missing QUICKBOOKS_CLIENT_ID or QUICKBOOKS_CLIENT_SECRET",
+        };
       }
 
-      // Try to get access token
-      let accessToken: string;
-      try {
-        accessToken = await this.getAccessToken();
-      } catch (authError) {
-        console.error(
-          "Authentication failed, falling back to test processor:",
-          authError
-        );
-        return await this.processTestPayment(paymentData);
-      }
+      // Get access token
+      const accessToken = await this.getAccessToken();
 
       // Prepare payment request for QuickBooks
       const quickbooksPayment = {
@@ -304,10 +276,7 @@ export class QuickBooksPaymentService {
         },
       };
 
-      console.log(
-        "Making QuickBooks API request to:",
-        `${this.config.baseUrl}/quickbooks/v4/payments/charges`
-      );
+      console.log("Making QuickBooks payment request...");
 
       // Make payment request to QuickBooks
       const response = await fetch(
@@ -324,31 +293,20 @@ export class QuickBooksPaymentService {
         }
       );
 
-      console.log("QuickBooks API response status:", response.status);
-      console.log(
-        "QuickBooks API response headers:",
-        Object.fromEntries(response.headers.entries())
-      );
+      console.log("QuickBooks response status:", response.status);
 
-      // Get response text first to handle non-JSON responses
       const responseText = await response.text();
-      console.log("QuickBooks API response text:", responseText);
-
       let responseData: any;
+
       try {
         responseData = responseText ? JSON.parse(responseText) : {};
       } catch (parseError) {
-        console.error(
-          "Failed to parse QuickBooks response as JSON:",
-          parseError
-        );
-        console.error("Response text was:", responseText);
-
-        // If we can't parse the response, fall back to test processor
-        console.log(
-          "Falling back to test payment processor due to API response parsing error"
-        );
-        return await this.processTestPayment(paymentData);
+        console.error("Failed to parse QuickBooks response:", responseText);
+        return {
+          success: false,
+          error: "Invalid response from payment processor",
+          details: responseText,
+        };
       }
 
       if (!response.ok) {
@@ -373,17 +331,15 @@ export class QuickBooksPaymentService {
             case "INVALID_CVC":
               errorMessage = "Invalid security code";
               break;
+            case "INVALID_REQUEST":
+              errorMessage = "Invalid payment request";
+              break;
+            case "AUTHENTICATION_FAILED":
+              errorMessage = "Payment authentication failed";
+              break;
             default:
-              errorMessage = error.detail || errorMessage;
+              errorMessage = error.detail || error.message || errorMessage;
           }
-        }
-
-        // For API errors, also fall back to test processor in development
-        if (process.env.NODE_ENV !== "production") {
-          console.log(
-            "API error in development, falling back to test processor"
-          );
-          return await this.processTestPayment(paymentData);
         }
 
         return {
@@ -403,13 +359,6 @@ export class QuickBooksPaymentService {
       };
     } catch (error) {
       console.error("Payment processing error:", error);
-
-      // In case of any error, fall back to test processor in development
-      if (process.env.NODE_ENV !== "production") {
-        console.log("Error occurred, falling back to test processor");
-        return await this.processTestPayment(paymentData);
-      }
-
       return {
         success: false,
         error: "Payment processing failed",
@@ -419,65 +368,9 @@ export class QuickBooksPaymentService {
     }
   }
 
-  // Test payment processor for development
-  private async processTestPayment(
-    paymentData: PaymentRequest
-  ): Promise<PaymentResponse> {
-    console.log("Processing test payment...");
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    const cleanCardNumber = paymentData.cardData.number.replace(/\s+/g, "");
-
-    // Test scenarios based on card numbers
-    if (cleanCardNumber === "4000000000000002") {
-      return {
-        success: false,
-        error: "Card declined",
-        details:
-          "Your card was declined. Please try a different payment method.",
-      };
-    }
-
-    if (cleanCardNumber === "4000000000000127") {
-      return {
-        success: false,
-        error: "Insufficient funds",
-        details: "Your card has insufficient funds for this transaction.",
-      };
-    }
-
-    if (cleanCardNumber === "4000000000000119") {
-      return {
-        success: false,
-        error: "Processing error",
-        details: "A processing error occurred. Please try again.",
-      };
-    }
-
-    // Simulate random failures (10% chance)
-    if (Math.random() < 0.1) {
-      return {
-        success: false,
-        error: "Network error",
-        details: "A network error occurred. Please try again.",
-      };
-    }
-
-    return {
-      success: true,
-      paymentId: `test_pay_${Date.now()}`,
-      transactionId: `test_txn_${Date.now()}`,
-      status: "completed",
-    };
-  }
-
   async getAccessToken(): Promise<string> {
     if (this.accessToken) {
       return this.accessToken;
-    }
-
-    if (!this.config.clientId || !this.config.clientSecret) {
-      throw new Error("QuickBooks credentials not configured");
     }
 
     try {
@@ -501,28 +394,17 @@ export class QuickBooksPaymentService {
         }
       );
 
-      console.log("Auth response status:", response.status);
-
-      const responseText = await response.text();
-      console.log("Auth response text:", responseText);
-
       if (!response.ok) {
-        console.error("QuickBooks auth failed with status:", response.status);
+        const errorText = await response.text();
+        console.error("QuickBooks auth failed:", errorText);
         throw new Error(
-          `Failed to get access token: ${response.status} ${response.statusText}`
+          `Authentication failed: ${response.status} ${response.statusText}`
         );
       }
 
-      let data: any;
-      try {
-        data = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error("Failed to parse auth response:", parseError);
-        throw new Error("Invalid response from QuickBooks auth server");
-      }
+      const data = await response.json();
 
       if (!data.access_token) {
-        console.error("No access token in response:", data);
         throw new Error("No access token received from QuickBooks");
       }
 
@@ -541,63 +423,18 @@ export class QuickBooksPaymentService {
     }
   }
 
-  async getPaymentStatus(paymentId: string): Promise<PaymentResponse> {
-    try {
-      const accessToken = await this.getAccessToken();
-
-      const response = await fetch(
-        `${this.config.baseUrl}/quickbooks/v4/payments/charges/${paymentId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      const responseText = await response.text();
-      let responseData: any;
-
-      try {
-        responseData = responseText ? JSON.parse(responseText) : {};
-      } catch (parseError) {
-        return {
-          success: false,
-          error: "Failed to parse payment status response",
-          details: responseText,
-        };
-      }
-
-      if (!response.ok) {
-        return {
-          success: false,
-          error: "Failed to get payment status",
-          details: responseData,
-        };
-      }
-
-      return {
-        success: true,
-        paymentId: responseData.id,
-        status: responseData.status,
-        details: responseData,
-      };
-    } catch (error) {
-      console.error("Error getting payment status:", error);
-      return {
-        success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to get payment status",
-      };
-    }
-  }
-
   private validatePaymentData(paymentData: PaymentRequest): {
     isValid: boolean;
     error?: string;
   } {
+    if (!paymentData) {
+      return { isValid: false, error: "Payment data is required" };
+    }
+
+    if (!paymentData.cardData) {
+      return { isValid: false, error: "Card data is required" };
+    }
+
     const cardValidation = CardValidator.validateCardNumber(
       paymentData.cardData.number
     );
@@ -637,10 +474,6 @@ export class QuickBooksPaymentService {
 
     if (paymentData.amount <= 0) {
       return { isValid: false, error: "Payment amount must be greater than 0" };
-    }
-
-    if (paymentData.amount > 10000) {
-      return { isValid: false, error: "Payment amount exceeds maximum limit" };
     }
 
     return { isValid: true };
