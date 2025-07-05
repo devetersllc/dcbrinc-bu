@@ -111,7 +111,7 @@ export function PaymentForm({
 
     try {
       const paymentRequest = {
-        amount:1,
+        amount: 1,
         currency,
         description,
         customerName,

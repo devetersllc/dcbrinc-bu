@@ -9,7 +9,7 @@ import Navbar from "./dashboard/user/Navbar/Navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Next.js Authentication App",
+  title: "DCBRINC",
   description: "Role-based authentication with Next.js, Redux, and MongoDB",
   generator: "v0.dev",
 };
