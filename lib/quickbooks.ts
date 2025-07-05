@@ -33,7 +33,7 @@ export interface PaymentResponse {
 export interface QuickBooksConfig {
   clientId: string;
   clientSecret: string;
-  environment: "sandbox" | "production";
+  environment: "sandbox" | "sandbox";
   baseUrl: string;
 }
 
@@ -44,8 +44,9 @@ export const quickbooksConfig: QuickBooksConfig = {
   clientSecret:
     process.env.QUICKBOOKS_CLIENT_SECRET ||
     "pp2d4HwwyTuafN4M17EWD0ZKmYp6Dhq6AC6FrrNJ",
-  environment: "production",
-  baseUrl: "https://api.intuit.com",
+  environment: "sandbox",
+  // baseUrl: "https://api.intuit.com",
+  baseUrl: "https://sandbox-quickbooks.api.intuit.com",
 };
 
 export class CardValidator {
