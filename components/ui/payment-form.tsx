@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { CreditCard, Lock, AlertCircle } from "lucide-react";
+import { CreditCard, Lock } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CardValidator } from "@/lib/quickbooks";
 
@@ -133,10 +133,18 @@ export function PaymentForm({
       if (response.ok && result.success) {
         onPaymentSuccess(result);
       } else {
-        onPaymentError(result.error || "Payment processing failed");
+        // Provide more specific error messages
+        let errorMessage = result.error || "Payment processing failed";
+        if (result.details && typeof result.details === "string") {
+          errorMessage = result.details;
+        }
+        onPaymentError(errorMessage);
       }
     } catch (error) {
-      onPaymentError("Network error occurred. Please try again.");
+      console.error("Payment submission error:", error);
+      onPaymentError(
+        "Network error occurred. Please check your connection and try again."
+      );
     }
   };
 

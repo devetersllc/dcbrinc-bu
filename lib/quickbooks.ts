@@ -46,7 +46,7 @@ export const quickbooksConfig: QuickBooksConfig = {
     process.env.NODE_ENV === "production"
       ? "https://api.intuit.com"
       : "https://api.intuit.com"
-      // : "https://sandbox-quickbooks.api.intuit.com",
+  // : "https://sandbox-quickbooks.api.intuit.com",
 };
 
 // Card validation utilities
@@ -356,17 +356,104 @@ export class QuickBooksPaymentService {
     try {
       console.log("Processing payment for order:", paymentData.orderId);
 
-      // For now, use mock processor until QuickBooks is properly configured
-      if (!this.config.clientId || !this.config.clientSecret) {
-        console.log(
-          "QuickBooks credentials not configured, using mock processor"
-        );
-        return await MockPaymentProcessor.processPayment(paymentData);
+      // Validate payment data first
+      const validation = this.validatePaymentData(paymentData);
+      if (!validation.isValid) {
+        return {
+          success: false,
+          error: validation.error || "Payment validation failed",
+        };
       }
-
-      // TODO: Implement actual QuickBooks API integration
-      // For now, use mock processor
-      return await MockPaymentProcessor.processPayment(paymentData);
+      // Check if QuickBooks credentials are configured
+      if (!this.config.clientId || !this.config.clientSecret) {
+        console.error("QuickBooks credentials not configured");
+        return {
+          success: false,
+          error: "Payment system not configured",
+          details: "QuickBooks credentials are missing",
+        };
+      }
+      // Get access token
+      const accessToken = await this.getAccessToken();
+      // Prepare payment request for QuickBooks
+      const quickbooksPayment = {
+        amount: paymentData.amount.toFixed(2),
+        currency: paymentData.currency,
+        card: {
+          number: paymentData.cardData.number.replace(/\s+/g, ""),
+          expMonth: paymentData.cardData.expMonth.padStart(2, "0"),
+          expYear: `20${paymentData.cardData.expYear}`,
+          cvc: paymentData.cardData.cvc,
+          name: paymentData.cardData.name,
+          address: {
+            streetAddress: paymentData.cardData.address.streetAddress,
+            city: paymentData.cardData.address.city,
+            region: paymentData.cardData.address.region,
+            country: paymentData.cardData.address.country,
+            postalCode: paymentData.cardData.address.postalCode,
+          },
+        },
+        context: {
+          mobile: false,
+          isEcommerce: true,
+        },
+      };
+      // Make payment request to QuickBooks
+      const response = await fetch(
+        `${this.config.baseUrl}/quickbooks/v4/payments/charges`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "Request-Id": `${paymentData.orderId}-${Date.now()}`,
+          },
+          body: JSON.stringify(quickbooksPayment),
+        }
+      );
+      const responseData = await response.json();
+      if (!response.ok) {
+        console.error("QuickBooks payment failed:", responseData);
+        // Handle specific QuickBooks error codes
+        let errorMessage = "Payment processing failed";
+        if (responseData.errors && responseData.errors.length > 0) {
+          const error = responseData.errors[0];
+          switch (error.code) {
+            case "INVALID_CARD_NUMBER":
+              errorMessage = "Invalid card number";
+              break;
+            case "CARD_EXPIRED":
+              errorMessage = "Card has expired";
+              break;
+            case "INSUFFICIENT_FUNDS":
+              errorMessage = "Insufficient funds";
+              break;
+            case "CARD_DECLINED":
+              errorMessage = "Card was declined";
+              break;
+            case "INVALID_CVC":
+              errorMessage = "Invalid security code";
+              break;
+            default:
+              errorMessage = error.detail || errorMessage;
+          }
+        }
+        return {
+          success: false,
+          error: errorMessage,
+          details: responseData,
+        };
+      }
+      // Payment successful
+      console.log("Payment processed successfully:", responseData.id);
+      return {
+        success: true,
+        paymentId: responseData.id,
+        transactionId: responseData.id,
+        status: responseData.status,
+        details: responseData,
+      };
     } catch (error) {
       console.error("Payment processing error:", error);
       return {
@@ -393,6 +480,7 @@ export class QuickBooksPaymentService {
             Authorization: `Basic ${Buffer.from(
               `${this.config.clientId}:${this.config.clientSecret}`
             ).toString("base64")}`,
+            Accept: "application/json",
           },
           body: new URLSearchParams({
             grant_type: "client_credentials",
@@ -402,11 +490,17 @@ export class QuickBooksPaymentService {
       );
 
       if (!response.ok) {
+        const errorData = await response.json();
+        console.error("QuickBooks auth error:", errorData);
         throw new Error(`Failed to get access token: ${response.statusText}`);
       }
 
       const data = await response.json();
       this.accessToken = data.access_token;
+      // Set token expiration (QuickBooks tokens typically expire in 1 hour)
+      setTimeout(() => {
+        this.accessToken = null;
+      }, (data.expires_in - 60) * 1000); // Refresh 1 minute before expiry
       return this.accessToken as string;
     } catch (error) {
       console.error("Error getting QuickBooks access token:", error);
@@ -454,5 +548,55 @@ export class QuickBooksPaymentService {
             : "Failed to get payment status",
       };
     }
+  }
+  private validatePaymentData(paymentData: PaymentRequest): {
+    isValid: boolean;
+    error?: string;
+  } {
+    // Validate card number
+    const cardValidation = CardValidator.validateCardNumber(
+      paymentData.cardData.number
+    );
+    if (!cardValidation.isValid) {
+      return cardValidation;
+    }
+    // Validate expiry
+    const expiryValidation = CardValidator.validateExpiry(
+      paymentData.cardData.expMonth,
+      paymentData.cardData.expYear
+    );
+    if (!expiryValidation.isValid) {
+      return expiryValidation;
+    }
+    // Validate CVC
+    const cvcValidation = CardValidator.validateCVC(
+      paymentData.cardData.cvc,
+      paymentData.cardData.number
+    );
+    if (!cvcValidation.isValid) {
+      return cvcValidation;
+    }
+    // Validate name
+    const nameValidation = CardValidator.validateName(
+      paymentData.cardData.name
+    );
+    if (!nameValidation.isValid) {
+      return nameValidation;
+    }
+    // Validate address
+    const addressValidation = CardValidator.validateAddress(
+      paymentData.cardData.address
+    );
+    if (!addressValidation.isValid) {
+      return addressValidation;
+    }
+    // Validate amount
+    if (paymentData.amount <= 0) {
+      return { isValid: false, error: "Payment amount must be greater than 0" };
+    }
+    if (paymentData.amount > 10000) {
+      return { isValid: false, error: "Payment amount exceeds maximum limit" };
+    }
+    return { isValid: true };
   }
 }
