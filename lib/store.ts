@@ -17,7 +17,7 @@ export const store = configureStore({
     price: priceReducer,
     general: generalReducer,
   },
-  devTools: process.env.NODE_ENV !== "sandbox",
+  devTools: process.env.NODE_ENV !== "production",
 });
 
 export type RootState = ReturnType<typeof store.getState>

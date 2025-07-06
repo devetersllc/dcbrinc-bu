@@ -34,7 +34,7 @@ export async function setAuthCookie(token: string) {
     value: token,
     httpOnly: true,
     path: "/",
-    secure: process.env.NODE_ENV === "sandbox",
+    secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60 * 24 * 7, // 1 week
   });
 }
