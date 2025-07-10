@@ -257,6 +257,7 @@ export class QuickBooksPaymentService {
           }),
         }
       );
+      console.log(`${this.config.clientId}:${this.config.clientSecret}`);
 
       if (!response.ok) {
         const errorText = await response.text();
