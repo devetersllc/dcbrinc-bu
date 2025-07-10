@@ -80,33 +80,71 @@ export async function POST(request: NextRequest) {
     // Initialize QuickBooks payment service
     const paymentService = new QuickBooksPaymentService(quickbooksConfig);
 
-    // Step 1: Get access token using client credentials flow
-    console.log("Step 1: Getting access token...");
-    const tokenResult = await paymentService.getClientCredentialsToken();
+    // Check if we have existing tokens in cookies
+    const accessToken = request.cookies.get("qb_access_token")?.value;
+    const refreshToken = request.cookies.get("qb_refresh_token")?.value;
 
-    if (!tokenResult.success || !tokenResult.accessToken) {
-      console.error("Failed to get access token:", tokenResult.error);
+    let validAccessToken = accessToken;
+
+    // If we have a refresh token but no access token, try to refresh
+    if (!validAccessToken && refreshToken) {
+      console.log("No access token found, attempting to refresh...");
+      const refreshResult = await paymentService.refreshAccessToken(
+        refreshToken
+      );
+
+      if (refreshResult.success && refreshResult.accessToken) {
+        validAccessToken = refreshResult.accessToken;
+        console.log("Token refreshed successfully");
+      } else {
+        console.log("Token refresh failed:", refreshResult.error);
+      }
+    }
+
+    // If we still don't have a valid token, return authorization required error
+    if (!validAccessToken) {
+      console.log("No valid access token available, authorization required");
       return NextResponse.json(
         {
           success: false,
-          error: "Failed to authenticate with payment processor",
-          details: tokenResult.error,
+          error: "QuickBooks authorization required",
+          requiresAuth: true,
+          authUrl: `/api/auth/quickbooks/connect`,
         },
-        { status: 500 }
+        { status: 401 }
       );
     }
 
-    console.log("Access token obtained successfully");
+    console.log("Using existing access token for payment processing");
 
-    // Step 2: Process the payment directly
-    console.log("Step 2: Processing payment...");
+    // Process the payment directly with the valid token
     const paymentResult = await paymentService.createDirectPayment(
       paymentData,
-      tokenResult.accessToken
+      validAccessToken
     );
 
     if (!paymentResult.success) {
       console.error("Payment failed:", paymentResult.error);
+
+      // If it's an auth error, clear tokens and require re-authorization
+      if (paymentResult.requiresAuth) {
+        const response = NextResponse.json(
+          {
+            success: false,
+            error: "QuickBooks authorization expired",
+            requiresAuth: true,
+            authUrl: `/api/auth/quickbooks/connect`,
+          },
+          { status: 401 }
+        );
+
+        // Clear expired tokens
+        response.cookies.delete("qb_access_token");
+        response.cookies.delete("qb_refresh_token");
+
+        return response;
+      }
+
       return NextResponse.json(
         {
           success: false,
@@ -119,13 +157,25 @@ export async function POST(request: NextRequest) {
 
     console.log("Payment processed successfully:", paymentResult.paymentId);
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       paymentId: paymentResult.paymentId,
       transactionId: paymentResult.transactionId,
       status: paymentResult.status,
       message: "Payment processed successfully",
     });
+
+    // Update tokens if we refreshed them
+    if (!accessToken && validAccessToken) {
+      response.cookies.set("qb_access_token", validAccessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 3600, // 1 hour
+      });
+    }
+
+    return response;
   } catch (error) {
     console.error("Direct payment processing error:", error);
 

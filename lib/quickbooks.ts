@@ -230,62 +230,6 @@ export class QuickBooksPaymentService {
     this.config = config;
   }
 
-  // Get access token using client credentials flow (no user interaction needed)
-  async getClientCredentialsToken(): Promise<{
-    success: boolean;
-    accessToken?: string;
-    expiresIn?: number;
-    error?: string;
-  }> {
-    try {
-      console.log("Getting client credentials token...");
-
-      const response = await fetch(
-        "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            Authorization: `Basic ${Buffer.from(
-              `${this.config.clientId}:${this.config.clientSecret}`
-            ).toString("base64")}`,
-            Accept: "application/json",
-          },
-          body: new URLSearchParams({
-            grant_type: "client_credentials",
-            scope: "com.intuit.quickbooks.payment",
-          }),
-        }
-      );
-      console.log(`${this.config.clientId}:${this.config.clientSecret}`);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Client credentials token failed:", errorText);
-        return {
-          success: false,
-          error: `Token request failed: ${response.status} ${response.statusText}`,
-        };
-      }
-
-      const tokenData = await response.json();
-      console.log("Client credentials token obtained successfully");
-
-      return {
-        success: true,
-        accessToken: tokenData.access_token,
-        expiresIn: tokenData.expires_in,
-      };
-    } catch (error) {
-      console.error("Error getting client credentials token:", error);
-      return {
-        success: false,
-        error:
-          error instanceof Error ? error.message : "Unknown error occurred",
-      };
-    }
-  }
-
   // Generate OAuth authorization URL (Step 1 in the diagram)
   generateAuthUrl(redirectUri: string, state?: string): string {
     const authUrl = new URL("https://appcenter.intuit.com/connect/oauth2");
@@ -418,7 +362,7 @@ export class QuickBooksPaymentService {
     }
   }
 
-  // Create direct payment without user OAuth (using client credentials)
+  // Create direct payment using existing access token
   async createDirectPayment(
     paymentData: PaymentRequest,
     accessToken: string
@@ -494,6 +438,16 @@ export class QuickBooksPaymentService {
 
       if (!response.ok) {
         console.error("QuickBooks direct payment failed:", responseData);
+
+        // Check if it's an authentication error
+        if (response.status === 401 || response.status === 403) {
+          return {
+            success: false,
+            error: "QuickBooks authorization expired",
+            requiresAuth: true,
+            details: responseData,
+          };
+        }
 
         let errorMessage = "Payment processing failed";
         if (responseData.errors && responseData.errors.length > 0) {
