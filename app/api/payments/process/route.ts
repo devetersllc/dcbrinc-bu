@@ -1,25 +1,15 @@
-import { type NextRequest, NextResponse } from "next/server";
-import {
-  QuickBooksPaymentService,
-  quickbooksConfig,
-  type PaymentRequest,
-} from "@/lib/quickbooks";
+import { type NextRequest, NextResponse } from "next/server"
+import { QuickBooksPaymentService, quickbooksConfig, type PaymentRequest } from "@/lib/quickbooks"
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("=== UNIFIED PAYMENT PROCESSING STARTED ===");
+    console.log("Processing production payment request")
 
-    const paymentData: PaymentRequest = await request.json();
+    const paymentData: PaymentRequest = await request.json()
 
     // Validate required fields
-    const requiredFields = [
-      "amount",
-      "currency",
-      "description",
-      "customerName",
-      "customerEmail",
-      "orderId",
-    ];
+    const requiredFields = ["amount", "currency", "description", "customerName", "customerEmail", "orderId"]
+
     for (const field of requiredFields) {
       if (!paymentData[field as keyof PaymentRequest]) {
         return NextResponse.json(
@@ -27,8 +17,8 @@ export async function POST(request: NextRequest) {
             success: false,
             error: `Missing required field: ${field}`,
           },
-          { status: 400 }
-        );
+          { status: 400 },
+        )
       }
     }
 
@@ -39,18 +29,11 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Missing card data",
         },
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
-    const requiredCardFields = [
-      "number",
-      "expMonth",
-      "expYear",
-      "cvc",
-      "name",
-      "address",
-    ];
+    const requiredCardFields = ["number", "expMonth", "expYear", "cvc", "name", "address"]
     for (const field of requiredCardFields) {
       if (!paymentData.cardData[field as keyof typeof paymentData.cardData]) {
         return NextResponse.json(
@@ -58,8 +41,8 @@ export async function POST(request: NextRequest) {
             success: false,
             error: `Missing card field: ${field}`,
           },
-          { status: 400 }
-        );
+          { status: 400 },
+        )
       }
     }
 
@@ -70,91 +53,102 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Payment amount must be a positive number",
         },
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
-    console.log("✅ Payment data validation passed");
+    // Get access token from cookies
+    const accessToken = request.cookies.get("qb_access_token")?.value
+    const refreshToken = request.cookies.get("qb_refresh_token")?.value
 
-    // Initialize QuickBooks payment service
-    const paymentService = new QuickBooksPaymentService(quickbooksConfig);
-
-    // Check existing tokens
-    let accessToken = request.cookies.get("qb_access_token")?.value;
-    const refreshToken = request.cookies.get("qb_refresh_token")?.value;
-
-    console.log("🔍 Token status:", {
-      hasAccessToken: !!accessToken,
-      hasRefreshToken: !!refreshToken,
-    });
-
-    // STEP 1: Try to refresh token if we have refresh token but no access token
-    if (!accessToken && refreshToken) {
-      console.log("🔄 Attempting to refresh access token...");
-      const refreshResult = await paymentService.refreshAccessToken(
-        refreshToken
-      );
-
-      if (refreshResult.success && refreshResult.accessToken) {
-        accessToken = refreshResult.accessToken;
-        console.log("✅ Token refreshed successfully");
-      } else {
-        console.log("❌ Token refresh failed:", refreshResult.error);
-        // Clear invalid refresh token
-        const response = NextResponse.json(
-          {
-            success: false,
-            error: "QuickBooks authorization expired",
-            requiresAuth: true,
-            authUrl: `/api/payments/oauth-connect`,
-          },
-          { status: 401 }
-        );
-        response.cookies.delete("qb_refresh_token");
-        return response;
-      }
-    }
-
-    // STEP 2: If no valid access token, return OAuth requirement
-    if (!accessToken) {
-      console.log("🔐 No valid access token - OAuth required");
+    if (!accessToken && !refreshToken) {
       return NextResponse.json(
         {
           success: false,
           error: "QuickBooks authorization required",
           requiresAuth: true,
-          authUrl: `/api/payments/oauth-connect`,
+          authUrl: "/api/auth/quickbooks/connect",
         },
-        { status: 401 }
-      );
+        { status: 401 },
+      )
     }
 
-    // STEP 3: Process payment with valid access token
-    console.log("💳 Processing payment with valid access token...");
-    const paymentResult = await paymentService.createPayment(
-      paymentData,
-      accessToken
-    );
+    // Initialize QuickBooks payment service
+    const paymentService = new QuickBooksPaymentService(quickbooksConfig)
 
-    if (!paymentResult.success) {
-      console.error("❌ Payment failed:", paymentResult.error);
+    let currentAccessToken = accessToken
 
-      // If auth error, clear tokens and require re-authorization
-      if (paymentResult.requiresAuth) {
-        const response = NextResponse.json(
+    // If no access token but we have refresh token, try to refresh
+    if (!currentAccessToken && refreshToken) {
+      console.log("Attempting to refresh access token...")
+      const refreshResult = await paymentService.refreshAccessToken(refreshToken)
+
+      if (refreshResult) {
+        currentAccessToken = refreshResult.accessToken
+
+        // Update cookies with new tokens
+        const response = NextResponse.json({ success: true, message: "Token refreshed" })
+        response.cookies.set("qb_access_token", refreshResult.accessToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 3600,
+        })
+
+        if (refreshResult.refreshToken) {
+          response.cookies.set("qb_refresh_token", refreshResult.refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 8640000,
+          })
+        }
+      } else {
+        return NextResponse.json(
           {
             success: false,
-            error: "QuickBooks authorization expired - please reconnect",
+            error: "QuickBooks authorization expired",
             requiresAuth: true,
-            authUrl: `/api/payments/oauth-connect`,
+            authUrl: "/api/auth/quickbooks/connect",
           },
-          { status: 401 }
-        );
+          { status: 401 },
+        )
+      }
+    }
 
-        // Clear expired tokens
-        response.cookies.delete("qb_access_token");
-        response.cookies.delete("qb_refresh_token");
-        return response;
+    if (!currentAccessToken) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "QuickBooks authorization required",
+          requiresAuth: true,
+          authUrl: "/api/auth/quickbooks/connect",
+        },
+        { status: 401 },
+      )
+    }
+
+    // Process the payment
+    const paymentResult = await paymentService.createPayment(paymentData, currentAccessToken)
+    console.log(
+      "paymentResult----------------------------------------------------------------------------",
+      paymentResult,
+    )
+
+    if (!paymentResult.success) {
+      console.error("Payment failed:", paymentResult.error)
+
+      // Check if it's an auth error
+      if (paymentResult.error?.includes("authentication") || paymentResult.error?.includes("unauthorized")) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "QuickBooks authorization expired",
+            requiresAuth: true,
+            authUrl: "/api/auth/quickbooks/connect",
+          },
+          { status: 401 },
+        )
       }
 
       return NextResponse.json(
@@ -163,40 +157,20 @@ export async function POST(request: NextRequest) {
           error: paymentResult.error || "Payment processing failed",
           details: paymentResult.details,
         },
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
-    console.log("✅ Payment processed successfully:", paymentResult.paymentId);
-
-    // Create success response
-    const response = NextResponse.json({
+    console.log("Payment processed successfully")
+    return NextResponse.json({
       success: true,
       paymentId: paymentResult.paymentId,
       transactionId: paymentResult.transactionId,
       status: paymentResult.status,
       message: "Payment processed successfully",
-      details: paymentResult.details,
-    });
-
-    // Update access token cookie if we refreshed it
-    if (
-      refreshToken &&
-      accessToken &&
-      !request.cookies.get("qb_access_token")?.value
-    ) {
-      response.cookies.set("qb_access_token", accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 3600, // 1 hour
-      });
-      console.log("🍪 Updated access token cookie");
-    }
-
-    return response;
+    })
   } catch (error) {
-    console.error("💥 Payment processing error:", error);
+    console.error("Payment processing error:", error)
 
     if (error instanceof SyntaxError) {
       return NextResponse.json(
@@ -205,8 +179,8 @@ export async function POST(request: NextRequest) {
           error: "Invalid request format",
           details: "Request body must be valid JSON",
         },
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
     return NextResponse.json(
@@ -215,69 +189,8 @@ export async function POST(request: NextRequest) {
         error: "Internal server error during payment processing",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
-    );
-  }
-}
-
-// Handle OAuth initiation in the same endpoint
-export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const action = searchParams.get("action");
-
-    if (action === "oauth-connect") {
-      console.log("🔗 Initiating OAuth connection...");
-
-      // Generate state for security
-      const state =
-        Math.random().toString(36).substring(2, 15) +
-        Math.random().toString(36).substring(2, 15);
-
-      // Get redirect URI
-      const redirectUri = `${
-        process.env.NEXT_PUBLIC_APP_URL || "https://lulu-seven.vercel.app"
-      }/api/payments/oauth-callback`;
-
-      // Initialize QuickBooks service
-      const paymentService = new QuickBooksPaymentService(quickbooksConfig);
-
-      // Generate authorization URL
-      const authUrl = paymentService.generateAuthUrl(redirectUri, state);
-
-      console.log("🚀 Redirecting to QuickBooks OAuth...");
-
-      // Create redirect response
-      const response = NextResponse.redirect(authUrl);
-
-      // Store state for validation
-      response.cookies.set("qb_oauth_state", state, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 600, // 10 minutes
-      });
-
-      return response;
-    }
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Invalid action parameter",
-      },
-      { status: 400 }
-    );
-  } catch (error) {
-    console.error("OAuth initiation error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to initiate OAuth",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
+      { status: 500 },
+    )
   }
 }
 
@@ -286,8 +199,8 @@ export async function OPTIONS(request: NextRequest) {
     status: 200,
     headers: {
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     },
-  });
+  })
 }

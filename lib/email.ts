@@ -2,17 +2,17 @@ import nodemailer from "nodemailer";
 
 // Email configuration
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: Number.parseInt("587"),
+  host: process.env.SMTP_HOST || "smtp.gmail.com",
+  port: Number.parseInt(process.env.SMTP_PORT || "587"),
   secure: false, // true for 465, false for other ports
   auth: {
-    user: "ahmadrazakhalid11.0@gmail.com",
-    pass: "imgf vzzg potw utte",
+    user: process.env.SMTP_USER || "ahmadrazakhalid11.0@gmail.com",
+    pass: process.env.SMTP_PASS || "imgf vzzg potw utte",
   },
 });
 
 export async function sendOrderNotificationEmail(orderData: any) {
-  const adminEmail = "ahmadrazakhalid9.0@gmail.com";
+  const adminEmail = process.env.ADMIN_EMAIL || "ahmadrazakhalid9.0@gmail.com";
 
   const emailContent = `
     <h2>New Order Received</h2>
@@ -48,7 +48,7 @@ export async function sendOrderNotificationEmail(orderData: any) {
   `;
 
   const mailOptions = {
-    from: "smtp.gmail.com",
+    from: process.env.SMTP_USER,
     to: adminEmail,
     subject: `New Book Order - ${orderData.name}`,
     html: emailContent,
