@@ -50,7 +50,7 @@ export default function MainTabs() {
   return (
     <Tabs
       defaultValue="Start"
-      className={`w-[100%]`}
+      className={`w-[100%] `}
       onValueChange={(e: string) => {
         const index = TabsArray.findIndex((tab) => tab.name === e);
         dispatch(setActiveTab(index));
