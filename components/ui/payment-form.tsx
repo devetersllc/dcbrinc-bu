@@ -30,6 +30,23 @@ interface PaymentFormProps {
   description?: string;
   onSuccess?: (paymentId: string) => void;
   onError?: (error: string) => void;
+  customerName?: string;
+  customerEmail?: string;
+  cardNumber?: string;
+  expMonth?: string;
+  expYear?: string;
+  cvc?: string;
+  cardholderName?: string;
+  streetAddress?: string;
+  city?: string;
+  region?: string;
+  postalCode?: string;
+  country?: string;
+  orderId?: string;
+  onPaymentSuccess?: (paymentId: string) => void;
+  onPaymentError?: (error: string) => void;
+  isProcessing?: boolean;
+  error?: string | null;
 }
 
 export function PaymentForm({
@@ -44,17 +61,28 @@ export function PaymentForm({
   const [success, setSuccess] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    customerName: "",
-    customerEmail: "",
-    cardNumber: "",
-    expMonth: "",
-    expYear: "",
-    cvc: "",
-    cardholderName: "",
-    streetAddress: "",
-    city: "",
-    region: "",
-    postalCode: "",
+    // customerName: "",
+    // customerEmail: "",
+    // cardNumber: "",
+    // expMonth: "",
+    // expYear: "",
+    // cvc: "",
+    // cardholderName: "",
+    // streetAddress: "",
+    // city: "",
+    // region: "",
+    // postalCode: "",
+    customerName: "Ahmad Raza",
+    customerEmail: "ahmadrazakhalid9.0@gmail.com",
+    cardNumber: "4375840123008631",
+    expMonth: "01",
+    expYear: "30",
+    cvc: "903",
+    cardholderName: "Ahmad Raza",
+    streetAddress: "280 block 2 sector AII, Township, Lahore",
+    city: "Lahore",
+    region: "Pubjab",
+    postalCode: "54770",
     country: "US",
   });
 

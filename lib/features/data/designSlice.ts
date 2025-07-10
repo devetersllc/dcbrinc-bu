@@ -55,11 +55,16 @@ const initialState: BookSpecificationsState = {
   processedCover: null,
   bookSize: "a4",
   pageCount: "30",
-  interiorColor: "",
-  paperType: "",
-  bindingType: "",
-  coverFinish: "",
-  totalPrice: 0,
+  // interiorColor: "",
+  // paperType: "",
+  // bindingType: "",
+  // coverFinish: "",
+  // totalPrice: 0,
+  interiorColor: "black-white",
+  paperType: "80lb-white-coated",
+  bindingType: "hardcover-case",
+  coverFinish: "glossy",
+  totalPrice: 1,
 };
 
 const bookspecificationsSlice = createSlice({

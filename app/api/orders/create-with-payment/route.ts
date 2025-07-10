@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db";
+import { sendOrderNotificationEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -67,6 +68,12 @@ export async function POST(request: NextRequest) {
 
     // Save the order to database
     const result = await db.collection("orders").insertOne(order);
+    try {
+      const mailResult = await sendOrderNotificationEmail(order);
+      console.log("Admin notification email sent for order:", mailResult);
+    } catch (emailError) {
+      console.error("Failed to send admin notification email:", emailError);
+    }
 
     return NextResponse.json({
       success: true,

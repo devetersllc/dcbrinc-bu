@@ -183,7 +183,7 @@ async function validateCoverProperties(buffer: Buffer) {
         content.includes("/FontFile3"));
 
     if (!hasEmbeddedFonts) {
-      errors.push("Cover PDF must have embedded fonts");
+      // errors.push("Cover PDF must have embedded fonts");
     }
 
     // Check for layers
@@ -192,7 +192,7 @@ async function validateCoverProperties(buffer: Buffer) {
       content.includes("/OCProperties") ||
       content.includes("/Layer");
     if (hasLayers) {
-      errors.push("Cover PDF must have flattened layers (layers detected)");
+      // errors.push("Cover PDF must have flattened layers (layers detected)");
     }
 
     // Extract dimensions (simplified approach)
@@ -208,19 +208,19 @@ async function validateCoverProperties(buffer: Buffer) {
       const heightDiff = Math.abs(dimensions.height - expectedHeight);
 
       if (widthDiff > tolerance || heightDiff > tolerance) {
-        errors.push(
-          `Cover dimensions must be 16.79 x 11.94 inches (found ${dimensions.width.toFixed(
-            2
-          )} x ${dimensions.height.toFixed(2)} inches)`
-        );
+        // errors.push(
+        //   `Cover dimensions must be 16.79 x 11.94 inches (found ${dimensions.width.toFixed(
+        //     2
+        //   )} x ${dimensions.height.toFixed(2)} inches)`
+        // );
       }
     } else {
-      errors.push("Could not determine cover dimensions");
+      // errors.push("Could not determine cover dimensions");
     }
 
     // Check spine width (should be 0)
     if (content.includes("/Spine") || content.includes("spine")) {
-      errors.push("Cover must have 0 inch spine width");
+      // errors.push("Cover must have 0 inch spine width");
     }
 
     return {
@@ -285,7 +285,7 @@ function fallbackCoverValidation(buffer: Buffer) {
   const hasEmbeddedFonts =
     content.includes("/FontDescriptor") && content.includes("/FontFile");
   if (!hasEmbeddedFonts) {
-    errors.push("Cover PDF should have embedded fonts");
+    // errors.push("Cover PDF should have embedded fonts");
   }
 
   // Check for layers

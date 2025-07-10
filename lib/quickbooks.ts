@@ -40,10 +40,10 @@ export interface QuickBooksConfig {
 export const quickbooksConfig: QuickBooksConfig = {
   clientId:
     process.env.QUICKBOOKS_CLIENT_ID ||
-    "ABDRA2OcO8b4jHQefcUuQQlJUPcaOVGkR75iXjRucxhMdhtzEu",
+    "ABk4W8oUzny7ps6GOllS8ooE7q6W9surDtV9YUbIeULHxJIgIN",
   clientSecret:
     process.env.QUICKBOOKS_CLIENT_SECRET ||
-    "pp2d4HwwyTuafN4M17EWD0ZKmYp6Dhq6AC6FrrNJ",
+    "UKTeACJSQztEH0hrdk9G25P8l21vVdSWIdnR5sRl",
   environment: "production",
   baseUrl: "https://api.intuit.com",
   // baseUrl: "https://sandbox-quickbooks.api.intuit.com",
@@ -259,7 +259,7 @@ export class QuickBooksPaymentService {
 
       // Prepare payment request for QuickBooks
       const quickbooksPayment = {
-        amount: paymentData.amount.toFixed(2),
+        amount: Number(paymentData.amount.toFixed(2)),
         currency: paymentData.currency,
         card: {
           number: paymentData.cardData.number.replace(/\s+/g, ""),
@@ -285,7 +285,7 @@ export class QuickBooksPaymentService {
 
       // Make payment request to QuickBooks
       const response = await fetch(
-        `${this.config.baseUrl}/quickbooks/v4/payments/charges`,
+        `https://api.intuit.com/quickbooks/v4/payments/charges`,
         {
           method: "POST",
           headers: {
