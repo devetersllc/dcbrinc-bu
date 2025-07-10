@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CreditCard, Lock, ExternalLink } from "lucide-react";
+import { Loader2, CreditCard, Lock } from "lucide-react";
 
 interface PaymentFormProps {
   amount: number;
@@ -48,7 +48,7 @@ export function PaymentForm({
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [requiresAuth, setRequiresAuth] = useState(false);
+  const [processingStep, setProcessingStep] = useState<string>("");
 
   const [formData, setFormData] = useState({
     customerName: "Ahmad Raza",
@@ -68,7 +68,6 @@ export function PaymentForm({
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setError(null);
-    setRequiresAuth(false);
   };
 
   const formatCardNumber = (value: string) => {
@@ -95,19 +94,75 @@ export function PaymentForm({
     }
   };
 
-  const handleQuickBooksAuth = () => {
-    // Redirect to QuickBooks OAuth flow
-    window.location.href = "/api/auth/quickbooks/connect";
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
     setError(null);
     setSuccess(null);
-    setRequiresAuth(false);
+    setProcessingStep("");
 
     try {
+      // Step 1: Auto-connect to QuickBooks
+      setProcessingStep("Connecting to QuickBooks...");
+      console.log("Step 1: Checking QuickBooks connection...");
+
+      const connectResponse = await fetch("/api/auth/quickbooks/auto-connect", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const connectResult = await connectResponse.json();
+
+      if (!connectResult.success) {
+        if (connectResult.requiresAuth && connectResult.authUrl) {
+          // Need to redirect to QuickBooks OAuth
+          setProcessingStep("Redirecting to QuickBooks authorization...");
+          console.log("Redirecting to QuickBooks OAuth...");
+
+          // Store payment data in sessionStorage to resume after OAuth
+          const paymentData = {
+            amount: amount,
+            currency,
+            description,
+            customerName: formData.customerName,
+            customerEmail: formData.customerEmail,
+            orderId: `order-${Date.now()}`,
+            cardData: {
+              number: formData.cardNumber,
+              expMonth: formData.expMonth,
+              expYear: formData.expYear,
+              cvc: formData.cvc,
+              name: formData.cardholderName,
+              address: {
+                streetAddress: formData.streetAddress,
+                city: formData.city,
+                region: formData.region,
+                country: formData.country,
+                postalCode: formData.postalCode,
+              },
+            },
+          };
+
+          sessionStorage.setItem("pendingPayment", JSON.stringify(paymentData));
+
+          // Redirect to QuickBooks OAuth
+          window.location.href = connectResult.authUrl;
+          return;
+        } else {
+          throw new Error(
+            connectResult.error || "Failed to connect to QuickBooks"
+          );
+        }
+      }
+
+      console.log("QuickBooks connection established successfully");
+
+      // Step 2: Process the payment
+      setProcessingStep("Processing payment...");
+      console.log("Step 2: Processing payment...");
+
       const paymentData = {
         amount: amount,
         currency,
@@ -131,9 +186,7 @@ export function PaymentForm({
         },
       };
 
-      console.log("Submitting payment request...");
-
-      const response = await fetch("/api/payments/process", {
+      const paymentResponse = await fetch("/api/payments/process", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -141,35 +194,31 @@ export function PaymentForm({
         body: JSON.stringify(paymentData),
       });
 
-      const result = await response.json();
+      const paymentResult = await paymentResponse.json();
 
-      if (result.success) {
-        const successMessage = `Payment successful! Transaction ID: ${result.paymentId}`;
+      if (paymentResult.success) {
+        const successMessage = `Payment successful! Transaction ID: ${paymentResult.paymentId}`;
         setSuccess(successMessage);
+        console.log("Payment processed successfully:", paymentResult.paymentId);
 
         // Call the success callback with payment data
         onPaymentSuccess?.({
-          paymentId: result.paymentId,
-          transactionId: result.transactionId,
-          status: result.status,
+          paymentId: paymentResult.paymentId,
+          transactionId: paymentResult.transactionId,
+          status: paymentResult.status,
         });
       } else {
-        // Check if QuickBooks authorization is required
-        if (result.requiresAuth) {
-          setRequiresAuth(true);
-          setError("QuickBooks authorization required to process payments");
-        } else {
-          setError(result.error || "Payment failed");
-          onPaymentError?.(result.error || "Payment failed");
-        }
+        throw new Error(paymentResult.error || "Payment failed");
       }
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Payment processing failed";
+      console.error("Payment error:", errorMessage);
       setError(errorMessage);
       onPaymentError?.(errorMessage);
     } finally {
       setIsProcessing(false);
+      setProcessingStep("");
     }
   };
 
@@ -414,26 +463,15 @@ export function PaymentForm({
             </div>
           </div>
 
-          {/* QuickBooks Authorization Alert */}
-          {/* {requiresAuth && ( */}
-          <Alert>
-            <AlertDescription className="flex items-center justify-between">
-              <span>
-                QuickBooks authorization is required to process payments.
-              </span>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleQuickBooksAuth}
-                className="ml-2 bg-transparent"
-              >
-                <ExternalLink className="mr-2 h-4 w-4" />
-                Connect QuickBooks
-              </Button>
-            </AlertDescription>
-          </Alert>
-          {/* )} */}
+          {/* Processing Step Indicator */}
+          {processingStep && (
+            <Alert>
+              <AlertDescription className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {processingStep}
+              </AlertDescription>
+            </Alert>
+          )}
 
           {error && (
             <Alert variant="destructive">
@@ -456,7 +494,7 @@ export function PaymentForm({
             {isFormProcessing ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing Payment...
+                {processingStep || "Processing Payment..."}
               </>
             ) : (
               <>

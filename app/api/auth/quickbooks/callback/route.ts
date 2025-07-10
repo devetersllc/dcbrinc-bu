@@ -3,112 +3,101 @@ import { QuickBooksPaymentService, quickbooksConfig } from "@/lib/quickbooks";
 
 export async function GET(request: NextRequest) {
   try {
-    console.log("Processing QuickBooks OAuth callback...");
-
     const { searchParams } = new URL(request.url);
     const code = searchParams.get("code");
     const state = searchParams.get("state");
     const error = searchParams.get("error");
-    const errorDescription = searchParams.get("error_description");
+
+    console.log("QuickBooks callback received:", {
+      code: !!code,
+      state,
+      error,
+    });
 
     // Check for OAuth errors
     if (error) {
-      console.error("QuickBooks OAuth error:", error, errorDescription);
-      return NextResponse.redirect(
-        new URL(
-          `/dashboard/user?error=oauth_failed&details=${encodeURIComponent(
-            errorDescription || error
-          )}`,
-          request.url
-        )
-      );
+      console.error("OAuth error:", error);
+      const redirectUrl = new URL("/test-payment", request.url);
+      redirectUrl.searchParams.set("error", error);
+      return NextResponse.redirect(redirectUrl);
     }
 
     // Validate required parameters
     if (!code) {
       console.error("No authorization code received");
-      return NextResponse.redirect(
-        new URL("/dashboard/user?error=no_authorization_code", request.url)
-      );
+      const redirectUrl = new URL("/test-payment", request.url);
+      redirectUrl.searchParams.set("error", "No authorization code received");
+      return NextResponse.redirect(redirectUrl);
     }
 
-    // Validate state parameter for security
+    // Validate state parameter
     const storedState = request.cookies.get("qb_oauth_state")?.value;
     if (!storedState || storedState !== state) {
-      console.error("Invalid or missing state parameter");
-      return NextResponse.redirect(
-        new URL("/dashboard/user?error=invalid_state", request.url)
-      );
+      console.error("Invalid state parameter");
+      const redirectUrl = new URL("/test-payment", request.url);
+      redirectUrl.searchParams.set("error", "Invalid state parameter");
+      return NextResponse.redirect(redirectUrl);
     }
 
-    console.log("Authorization code received:", code.substring(0, 10) + "...");
-
-    // Initialize QuickBooks service
+    // Exchange code for tokens
     const paymentService = new QuickBooksPaymentService(quickbooksConfig);
-
-    // Get redirect URI (must match the one used in connect route)
     const redirectUri = `${
       process.env.NEXT_PUBLIC_APP_URL || "https://lulu-seven.vercel.app"
     }/api/auth/quickbooks/callback`;
 
-    // Exchange authorization code for access token
     const tokenResult = await paymentService.exchangeCodeForToken(
       code,
       redirectUri
     );
 
-    if (!tokenResult.success) {
+    if (!tokenResult.success || !tokenResult.accessToken) {
       console.error("Token exchange failed:", tokenResult.error);
-      return NextResponse.redirect(
-        new URL(
-          `/dashboard/user?error=token_exchange_failed&details=${encodeURIComponent(
-            tokenResult.error || "Unknown error"
-          )}`,
-          request.url
-        )
+      const redirectUrl = new URL("/test-payment", request.url);
+      redirectUrl.searchParams.set(
+        "error",
+        tokenResult.error || "Token exchange failed"
       );
+      return NextResponse.redirect(redirectUrl);
     }
 
     console.log("Token exchange successful");
 
-    // Create response and set secure cookies with tokens
-    const response = NextResponse.redirect(
-      new URL("/dashboard/user?success=quickbooks_connected", request.url)
+    // Create response and set cookies
+    const redirectUrl = new URL("/test-payment", request.url);
+    redirectUrl.searchParams.set("success", "true");
+    redirectUrl.searchParams.set(
+      "message",
+      "QuickBooks connected successfully"
     );
 
-    // Clear the state cookie
-    response.cookies.delete("qb_oauth_state");
+    const response = NextResponse.redirect(redirectUrl);
 
     // Set access token cookie
-    if (tokenResult.accessToken) {
-      response.cookies.set("qb_access_token", tokenResult.accessToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "lax",
-        maxAge: tokenResult.expiresIn || 3600, // Default to 1 hour if not specified
-      });
-    }
+    response.cookies.set("qb_access_token", tokenResult.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: tokenResult.expiresIn || 3600, // Default 1 hour
+    });
 
-    // Set refresh token cookie (if provided)
+    // Set refresh token cookie if available
     if (tokenResult.refreshToken) {
       response.cookies.set("qb_refresh_token", tokenResult.refreshToken, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
-        maxAge: 8640000, // 100 days (typical refresh token lifetime)
+        maxAge: 8640000, // 100 days
       });
     }
 
+    // Clear state cookie
+    response.cookies.delete("qb_oauth_state");
+
     return response;
   } catch (error) {
-    console.error("OAuth callback error:", error);
-    return NextResponse.redirect(
-      new URL(
-        `/dashboard/user?error=callback_failed&details=${encodeURIComponent(
-          error instanceof Error ? error.message : "Unknown error"
-        )}`,
-        request.url
-      )
-    );
+    console.error("Callback processing error:", error);
+    const redirectUrl = new URL("/test-payment", request.url);
+    redirectUrl.searchParams.set("error", "Callback processing failed");
+    return NextResponse.redirect(redirectUrl);
   }
 }
