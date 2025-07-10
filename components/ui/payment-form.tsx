@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,7 +30,6 @@ export function PaymentForm({
     message: string;
     details?: any;
   } | null>(null);
-  const [requiresAuth, setRequiresAuth] = useState(false);
 
   const [formData, setFormData] = useState({
     amount: 29.99,
@@ -54,6 +53,54 @@ export function PaymentForm({
       },
     },
   });
+
+  // Check for OAuth return and auto-process payment
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get("success");
+    const autoProcess = urlParams.get("auto_process");
+    const error = urlParams.get("error");
+
+    if (error) {
+      setResult({
+        success: false,
+        message: `OAuth Error: ${error}`,
+      });
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    }
+
+    if (success && autoProcess === "true") {
+      // Auto-process pending payment after successful OAuth
+      const pendingPayment = sessionStorage.getItem("pendingPaymentData");
+      if (pendingPayment) {
+        try {
+          const paymentData = JSON.parse(pendingPayment);
+          setFormData(paymentData);
+          setResult({
+            success: true,
+            message: success,
+          });
+          // Auto-process the payment
+          setTimeout(() => {
+            processPayment(paymentData);
+          }, 2000);
+        } catch (e) {
+          console.error("Failed to parse pending payment data:", e);
+        }
+      }
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (success) {
+      setResult({
+        success: true,
+        message: success,
+      });
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
 
   const handleInputChange = (field: string, value: string | number) => {
     if (field.includes(".")) {
@@ -89,22 +136,24 @@ export function PaymentForm({
     }));
   };
 
-  const handleDirectPayment = async () => {
+  const processPayment = async (paymentData = formData) => {
     setIsProcessing(true);
     setResult(null);
-    setRequiresAuth(false);
     setProcessingStep("Validating payment information...");
 
     try {
-      // First, try direct payment
+      // Store payment data for potential OAuth flow
+      sessionStorage.setItem("pendingPaymentData", JSON.stringify(paymentData));
+
       setProcessingStep("Processing payment...");
 
-      const response = await fetch("/api/payments/direct-process", {
+      // Call the unified payment API
+      const response = await fetch("/api/payments/process", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(paymentData),
       });
 
       const data = await response.json();
@@ -112,20 +161,27 @@ export function PaymentForm({
       if (data.success) {
         setResult({
           success: true,
-          message: "Payment processed successfully!",
+          message: "🎉 Payment processed successfully!",
           details: data,
         });
         onPaymentSuccess?.(data);
+        // Clear stored payment data on success
+        sessionStorage.removeItem("pendingPaymentData");
       } else {
         // Check if authorization is required
         if (data.requiresAuth) {
-          setRequiresAuth(true);
+          setProcessingStep("Redirecting to QuickBooks authorization...");
           setResult({
             success: false,
-            message:
-              "QuickBooks authorization required. Please connect your account first.",
+            message: "🔐 QuickBooks authorization required. Redirecting...",
             details: data,
           });
+
+          // Auto-redirect to OAuth
+          setTimeout(() => {
+            window.location.href = "/api/payments/oauth-connect";
+          }, 2000);
+          return; // Don't set isProcessing to false
         } else {
           setResult({
             success: false,
@@ -148,9 +204,8 @@ export function PaymentForm({
     }
   };
 
-  const handleQuickBooksAuth = () => {
-    // Redirect to QuickBooks OAuth
-    window.location.href = "/api/auth/quickbooks/connect";
+  const handlePayment = () => {
+    processPayment();
   };
 
   return (
@@ -158,10 +213,11 @@ export function PaymentForm({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CreditCard className="h-5 w-5" />
-          Payment Information
+          Unified Payment System
         </CardTitle>
         <CardDescription>
-          Enter your payment details to complete the transaction
+          One API handles everything: validation, OAuth, token refresh, and
+          payment processing
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -180,6 +236,7 @@ export function PaymentForm({
                   Number.parseFloat(e.target.value) || 0
                 )
               }
+              disabled={isProcessing}
             />
           </div>
           <div className="space-y-2">
@@ -188,6 +245,7 @@ export function PaymentForm({
               id="currency"
               value={formData.currency}
               onChange={(e) => handleInputChange("currency", e.target.value)}
+              disabled={isProcessing}
             />
           </div>
         </div>
@@ -198,6 +256,7 @@ export function PaymentForm({
             id="description"
             value={formData.description}
             onChange={(e) => handleInputChange("description", e.target.value)}
+            disabled={isProcessing}
           />
         </div>
 
@@ -211,6 +270,7 @@ export function PaymentForm({
               onChange={(e) =>
                 handleInputChange("customerName", e.target.value)
               }
+              disabled={isProcessing}
             />
           </div>
           <div className="space-y-2">
@@ -222,6 +282,7 @@ export function PaymentForm({
               onChange={(e) =>
                 handleInputChange("customerEmail", e.target.value)
               }
+              disabled={isProcessing}
             />
           </div>
         </div>
@@ -239,6 +300,7 @@ export function PaymentForm({
               onChange={(e) =>
                 handleInputChange("cardData.number", e.target.value)
               }
+              disabled={isProcessing}
             />
           </div>
 
@@ -253,6 +315,7 @@ export function PaymentForm({
                 onChange={(e) =>
                   handleInputChange("cardData.expMonth", e.target.value)
                 }
+                disabled={isProcessing}
               />
             </div>
             <div className="space-y-2">
@@ -265,6 +328,7 @@ export function PaymentForm({
                 onChange={(e) =>
                   handleInputChange("cardData.expYear", e.target.value)
                 }
+                disabled={isProcessing}
               />
             </div>
             <div className="space-y-2">
@@ -277,6 +341,7 @@ export function PaymentForm({
                 onChange={(e) =>
                   handleInputChange("cardData.cvc", e.target.value)
                 }
+                disabled={isProcessing}
               />
             </div>
           </div>
@@ -289,6 +354,7 @@ export function PaymentForm({
               onChange={(e) =>
                 handleInputChange("cardData.name", e.target.value)
               }
+              disabled={isProcessing}
             />
           </div>
         </div>
@@ -305,6 +371,7 @@ export function PaymentForm({
               onChange={(e) =>
                 handleAddressChange("streetAddress", e.target.value)
               }
+              disabled={isProcessing}
             />
           </div>
 
@@ -315,6 +382,7 @@ export function PaymentForm({
                 id="city"
                 value={formData.cardData.address.city}
                 onChange={(e) => handleAddressChange("city", e.target.value)}
+                disabled={isProcessing}
               />
             </div>
             <div className="space-y-2">
@@ -323,6 +391,7 @@ export function PaymentForm({
                 id="region"
                 value={formData.cardData.address.region}
                 onChange={(e) => handleAddressChange("region", e.target.value)}
+                disabled={isProcessing}
               />
             </div>
           </div>
@@ -336,6 +405,7 @@ export function PaymentForm({
                 onChange={(e) =>
                   handleAddressChange("postalCode", e.target.value)
                 }
+                disabled={isProcessing}
               />
             </div>
             <div className="space-y-2">
@@ -344,6 +414,7 @@ export function PaymentForm({
                 id="country"
                 value={formData.cardData.address.country}
                 onChange={(e) => handleAddressChange("country", e.target.value)}
+                disabled={isProcessing}
               />
             </div>
           </div>
@@ -381,29 +452,9 @@ export function PaymentForm({
           </Alert>
         )}
 
-        {/* Authorization Required */}
-        {requiresAuth && (
-          <div className="space-y-4">
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                QuickBooks authorization is required to process payments. Please
-                connect your account first.
-              </AlertDescription>
-            </Alert>
-            <Button
-              onClick={handleQuickBooksAuth}
-              variant="outline"
-              className="w-full bg-transparent"
-            >
-              Connect QuickBooks Account
-            </Button>
-          </div>
-        )}
-
-        {/* Payment Button */}
+        {/* Single Payment Button */}
         <Button
-          onClick={handleDirectPayment}
+          onClick={handlePayment}
           disabled={isProcessing}
           className="w-full"
           size="lg"
@@ -420,6 +471,33 @@ export function PaymentForm({
             </>
           )}
         </Button>
+
+        {/* API Architecture Info */}
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+          <h4 className="font-semibold text-sm mb-2">
+            🚀 Unified API Architecture
+          </h4>
+          <ul className="text-xs text-gray-600 space-y-1">
+            <li>
+              • <strong>One main endpoint:</strong> /api/payments/process
+            </li>
+            <li>
+              • <strong>Handles everything:</strong> validation, auth check,
+              token refresh, payment
+            </li>
+            <li>
+              • <strong>OAuth callback:</strong> /api/payments/oauth-callback
+              (required by QuickBooks)
+            </li>
+            <li>
+              • <strong>Auto-redirect:</strong> Seamless OAuth flow with
+              auto-processing
+            </li>
+            <li>
+              • <strong>Smart tokens:</strong> Automatic refresh and management
+            </li>
+          </ul>
+        </div>
       </CardContent>
     </Card>
   );

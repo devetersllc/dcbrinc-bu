@@ -7,7 +7,7 @@ import {
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("Processing payment request...");
+    console.log("=== UNIFIED PAYMENT PROCESSING STARTED ===");
 
     const paymentData: PaymentRequest = await request.json();
 
@@ -20,7 +20,6 @@ export async function POST(request: NextRequest) {
       "customerEmail",
       "orderId",
     ];
-
     for (const field of requiredFields) {
       if (!paymentData[field as keyof PaymentRequest]) {
         return NextResponse.json(
@@ -75,96 +74,87 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get tokens from cookies
-    let accessToken = request.cookies.get("qb_access_token")?.value;
-    const refreshToken = request.cookies.get("qb_refresh_token")?.value;
+    console.log("✅ Payment data validation passed");
 
     // Initialize QuickBooks payment service
     const paymentService = new QuickBooksPaymentService(quickbooksConfig);
 
-    // If no access token but we have refresh token, try to refresh
-    if (!accessToken && refreshToken) {
-      console.log("Access token missing, attempting to refresh...");
+    // Check existing tokens
+    let accessToken = request.cookies.get("qb_access_token")?.value;
+    const refreshToken = request.cookies.get("qb_refresh_token")?.value;
 
+    console.log("🔍 Token status:", {
+      hasAccessToken: !!accessToken,
+      hasRefreshToken: !!refreshToken,
+    });
+
+    // STEP 1: Try to refresh token if we have refresh token but no access token
+    if (!accessToken && refreshToken) {
+      console.log("🔄 Attempting to refresh access token...");
       const refreshResult = await paymentService.refreshAccessToken(
         refreshToken
       );
 
       if (refreshResult.success && refreshResult.accessToken) {
         accessToken = refreshResult.accessToken;
-        console.log("Access token refreshed successfully");
-
-        // Update cookies with new tokens
-        const tempResponse = new NextResponse();
-        tempResponse.cookies.set("qb_access_token", refreshResult.accessToken, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "lax",
-          maxAge: refreshResult.expiresIn || 3600,
-        });
-
-        if (refreshResult.refreshToken) {
-          tempResponse.cookies.set(
-            "qb_refresh_token",
-            refreshResult.refreshToken,
-            {
-              httpOnly: true,
-              secure: true,
-              sameSite: "lax",
-              maxAge: 8640000,
-            }
-          );
-        }
+        console.log("✅ Token refreshed successfully");
       } else {
-        console.error("Token refresh failed:", refreshResult.error);
-        return NextResponse.json(
+        console.log("❌ Token refresh failed:", refreshResult.error);
+        // Clear invalid refresh token
+        const response = NextResponse.json(
           {
             success: false,
             error: "QuickBooks authorization expired",
             requiresAuth: true,
-            authUrl: "/api/auth/quickbooks/connect",
+            authUrl: `/api/payments/oauth-connect`,
           },
           { status: 401 }
         );
+        response.cookies.delete("qb_refresh_token");
+        return response;
       }
     }
 
-    // Check if we have an access token
+    // STEP 2: If no valid access token, return OAuth requirement
     if (!accessToken) {
-      console.log("No access token available, authorization required");
+      console.log("🔐 No valid access token - OAuth required");
       return NextResponse.json(
         {
           success: false,
           error: "QuickBooks authorization required",
           requiresAuth: true,
-          authUrl: "/api/auth/quickbooks/connect",
+          authUrl: `/api/payments/oauth-connect`,
         },
         { status: 401 }
       );
     }
 
-    console.log("Processing payment with access token...");
-
-    // Process the payment using the access token
+    // STEP 3: Process payment with valid access token
+    console.log("💳 Processing payment with valid access token...");
     const paymentResult = await paymentService.createPayment(
       paymentData,
       accessToken
     );
 
     if (!paymentResult.success) {
-      console.error("Payment failed:", paymentResult.error);
+      console.error("❌ Payment failed:", paymentResult.error);
 
-      // Check if it's an auth error and requires re-authorization
+      // If auth error, clear tokens and require re-authorization
       if (paymentResult.requiresAuth) {
-        return NextResponse.json(
+        const response = NextResponse.json(
           {
             success: false,
-            error: paymentResult.error || "QuickBooks authorization expired",
+            error: "QuickBooks authorization expired - please reconnect",
             requiresAuth: true,
-            authUrl: "/api/auth/quickbooks/connect",
+            authUrl: `/api/payments/oauth-connect`,
           },
           { status: 401 }
         );
+
+        // Clear expired tokens
+        response.cookies.delete("qb_access_token");
+        response.cookies.delete("qb_refresh_token");
+        return response;
       }
 
       return NextResponse.json(
@@ -177,30 +167,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("Payment processed successfully:", paymentResult.paymentId);
+    console.log("✅ Payment processed successfully:", paymentResult.paymentId);
 
-    // Create successful response
+    // Create success response
     const response = NextResponse.json({
       success: true,
       paymentId: paymentResult.paymentId,
       transactionId: paymentResult.transactionId,
       status: paymentResult.status,
       message: "Payment processed successfully",
+      details: paymentResult.details,
     });
 
-    // If we refreshed tokens during this request, update the cookies in the response
-    if (!request.cookies.get("qb_access_token")?.value && accessToken) {
+    // Update access token cookie if we refreshed it
+    if (
+      refreshToken &&
+      accessToken &&
+      !request.cookies.get("qb_access_token")?.value
+    ) {
       response.cookies.set("qb_access_token", accessToken, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
-        maxAge: 3600,
+        maxAge: 3600, // 1 hour
       });
+      console.log("🍪 Updated access token cookie");
     }
 
     return response;
   } catch (error) {
-    console.error("Payment processing error:", error);
+    console.error("💥 Payment processing error:", error);
 
     if (error instanceof SyntaxError) {
       return NextResponse.json(
@@ -224,12 +220,73 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Handle OAuth initiation in the same endpoint
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const action = searchParams.get("action");
+
+    if (action === "oauth-connect") {
+      console.log("🔗 Initiating OAuth connection...");
+
+      // Generate state for security
+      const state =
+        Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15);
+
+      // Get redirect URI
+      const redirectUri = `${
+        process.env.NEXT_PUBLIC_APP_URL || "https://lulu-seven.vercel.app"
+      }/api/payments/oauth-callback`;
+
+      // Initialize QuickBooks service
+      const paymentService = new QuickBooksPaymentService(quickbooksConfig);
+
+      // Generate authorization URL
+      const authUrl = paymentService.generateAuthUrl(redirectUri, state);
+
+      console.log("🚀 Redirecting to QuickBooks OAuth...");
+
+      // Create redirect response
+      const response = NextResponse.redirect(authUrl);
+
+      // Store state for validation
+      response.cookies.set("qb_oauth_state", state, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 600, // 10 minutes
+      });
+
+      return response;
+    }
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Invalid action parameter",
+      },
+      { status: 400 }
+    );
+  } catch (error) {
+    console.error("OAuth initiation error:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to initiate OAuth",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
+  }
+}
+
 export async function OPTIONS(request: NextRequest) {
   return new NextResponse(null, {
     status: 200,
     headers: {
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     },
   });
