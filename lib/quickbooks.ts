@@ -28,6 +28,7 @@ export interface PaymentResponse {
   status?: string;
   error?: string;
   details?: any;
+  requiresAuth?: boolean;
 }
 
 export interface QuickBooksConfig {

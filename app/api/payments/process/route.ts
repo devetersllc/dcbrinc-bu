@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "QuickBooks authorization required",
           requiresAuth: true,
-          authUrl: "/api/auth/quickbooks/connect",
+          authUrl: `https://lulu-seven.vercel.app/api/auth/quickbooks/connect`,
         },
         { status: 401 }
       );
@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
             success: false,
             error: "QuickBooks authorization expired",
             requiresAuth: true,
-            authUrl: "/api/auth/quickbooks/connect",
+            authUrl: `https://lulu-seven.vercel.app/api/auth/quickbooks/connect`,
           },
           { status: 401 }
         );
@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "QuickBooks authorization required",
           requiresAuth: true,
-          authUrl: "/api/auth/quickbooks/connect",
+          authUrl: `https://lulu-seven.vercel.app/api/auth/quickbooks/connect`,
         },
         { status: 401 }
       );
@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
             success: false,
             error: "QuickBooks authorization expired",
             requiresAuth: true,
-            authUrl: "/api/auth/quickbooks/connect",
+            authUrl: `https://lulu-seven.vercel.app/api/auth/quickbooks/connect`,
           },
           { status: 401 }
         );
