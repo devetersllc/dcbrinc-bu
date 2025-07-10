@@ -40,8 +40,12 @@ export interface QuickBooksConfig {
 }
 
 export const quickbooksConfig: QuickBooksConfig = {
-  clientId: "ABk4W8oUzny7ps6GOllS8ooE7q6W9surDtV9YUbIeULHxJIgIN",
-  clientSecret: "UKTeACJSQztEH0hrdk9G25P8l21vVdSWIdnR5sRl",
+  clientId:
+    process.env.QUICKBOOKS_CLIENT_ID ||
+    "ABk4W8oUzny7ps6GOllS8ooE7q6W9surDtV9YUbIeULHxJIgIN",
+  clientSecret:
+    process.env.QUICKBOOKS_CLIENT_SECRET ||
+    "UKTeACJSQztEH0hrdk9G25P8l21vVdSWIdnR5sRl",
   environment: "production",
   baseUrl: "https://api.intuit.com",
   paymentsBaseUrl: "https://api.intuit.com/quickbooks/v4/payments",
@@ -226,6 +230,61 @@ export class QuickBooksPaymentService {
     this.config = config;
   }
 
+  // Get access token using client credentials flow (no user interaction needed)
+  async getClientCredentialsToken(): Promise<{
+    success: boolean;
+    accessToken?: string;
+    expiresIn?: number;
+    error?: string;
+  }> {
+    try {
+      console.log("Getting client credentials token...");
+
+      const response = await fetch(
+        "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: `Basic ${Buffer.from(
+              `${this.config.clientId}:${this.config.clientSecret}`
+            ).toString("base64")}`,
+            Accept: "application/json",
+          },
+          body: new URLSearchParams({
+            grant_type: "client_credentials",
+            scope: "com.intuit.quickbooks.payment",
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Client credentials token failed:", errorText);
+        return {
+          success: false,
+          error: `Token request failed: ${response.status} ${response.statusText}`,
+        };
+      }
+
+      const tokenData = await response.json();
+      console.log("Client credentials token obtained successfully");
+
+      return {
+        success: true,
+        accessToken: tokenData.access_token,
+        expiresIn: tokenData.expires_in,
+      };
+    } catch (error) {
+      console.error("Error getting client credentials token:", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      };
+    }
+  }
+
   // Generate OAuth authorization URL (Step 1 in the diagram)
   generateAuthUrl(redirectUri: string, state?: string): string {
     const authUrl = new URL("https://appcenter.intuit.com/connect/oauth2");
@@ -353,6 +412,139 @@ export class QuickBooksPaymentService {
       return {
         success: false,
         error:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      };
+    }
+  }
+
+  // Create direct payment without user OAuth (using client credentials)
+  async createDirectPayment(
+    paymentData: PaymentRequest,
+    accessToken: string
+  ): Promise<PaymentResponse> {
+    try {
+      console.log("Processing direct payment for order:", paymentData.orderId);
+
+      // Validate payment data
+      const validation = this.validatePaymentData(paymentData);
+      if (!validation.isValid) {
+        return {
+          success: false,
+          error: validation.error || "Payment validation failed",
+        };
+      }
+
+      // Prepare payment request for QuickBooks Payments API
+      const quickbooksPayment = {
+        amount: Number(paymentData.amount.toFixed(2)),
+        currency: paymentData.currency,
+        card: {
+          number: paymentData.cardData.number.replace(/\s+/g, ""),
+          expMonth: paymentData.cardData.expMonth.padStart(2, "0"),
+          expYear: `20${paymentData.cardData.expYear}`,
+          cvc: paymentData.cardData.cvc,
+          name: paymentData.cardData.name,
+          address: {
+            streetAddress: paymentData.cardData.address.streetAddress,
+            city: paymentData.cardData.address.city,
+            region: paymentData.cardData.address.region,
+            country: paymentData.cardData.address.country,
+            postalCode: paymentData.cardData.address.postalCode,
+          },
+        },
+        context: {
+          mobile: false,
+          isEcommerce: true,
+        },
+      };
+
+      console.log("Making direct QuickBooks payment request...");
+
+      // Make payment request to QuickBooks Payments API
+      const response = await fetch(`${this.config.paymentsBaseUrl}/charges`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Request-Id": `${paymentData.orderId}-${Date.now()}`,
+        },
+        body: JSON.stringify(quickbooksPayment),
+      });
+
+      console.log(
+        "QuickBooks direct payment response status:",
+        response.status
+      );
+
+      const responseText = await response.text();
+      let responseData: any;
+
+      try {
+        responseData = responseText ? JSON.parse(responseText) : {};
+      } catch (parseError) {
+        console.error("Failed to parse QuickBooks response:", responseText);
+        return {
+          success: false,
+          error: "Invalid response from payment processor",
+          details: responseText,
+        };
+      }
+
+      if (!response.ok) {
+        console.error("QuickBooks direct payment failed:", responseData);
+
+        let errorMessage = "Payment processing failed";
+        if (responseData.errors && responseData.errors.length > 0) {
+          const error = responseData.errors[0];
+          switch (error.code) {
+            case "INVALID_CARD_NUMBER":
+              errorMessage = "Invalid card number";
+              break;
+            case "CARD_EXPIRED":
+              errorMessage = "Card has expired";
+              break;
+            case "INSUFFICIENT_FUNDS":
+              errorMessage = "Insufficient funds";
+              break;
+            case "CARD_DECLINED":
+              errorMessage = "Card was declined";
+              break;
+            case "INVALID_CVC":
+              errorMessage = "Invalid security code";
+              break;
+            case "INVALID_REQUEST":
+              errorMessage = "Invalid payment request";
+              break;
+            case "AUTHENTICATION_FAILED":
+              errorMessage = "Payment authentication failed";
+              break;
+            default:
+              errorMessage = error.detail || error.message || errorMessage;
+          }
+        }
+
+        return {
+          success: false,
+          error: errorMessage,
+          details: responseData,
+        };
+      }
+
+      console.log("Direct payment processed successfully:", responseData.id);
+      return {
+        success: true,
+        paymentId: responseData.id,
+        transactionId: responseData.id,
+        status: responseData.status,
+        details: responseData,
+      };
+    } catch (error) {
+      console.error("Direct payment processing error:", error);
+      return {
+        success: false,
+        error: "Payment processing failed",
+        details:
           error instanceof Error ? error.message : "Unknown error occurred",
       };
     }

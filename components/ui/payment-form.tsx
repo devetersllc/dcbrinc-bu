@@ -102,66 +102,9 @@ export function PaymentForm({
     setProcessingStep("");
 
     try {
-      // Step 1: Auto-connect to QuickBooks
-      setProcessingStep("Connecting to QuickBooks...");
-      console.log("Step 1: Checking QuickBooks connection...");
-
-      const connectResponse = await fetch("/api/auth/quickbooks/auto-connect", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const connectResult = await connectResponse.json();
-
-      if (!connectResult.success) {
-        if (connectResult.requiresAuth && connectResult.authUrl) {
-          // Need to redirect to QuickBooks OAuth
-          setProcessingStep("Redirecting to QuickBooks authorization...");
-          console.log("Redirecting to QuickBooks OAuth...");
-
-          // Store payment data in sessionStorage to resume after OAuth
-          const paymentData = {
-            amount: amount,
-            currency,
-            description,
-            customerName: formData.customerName,
-            customerEmail: formData.customerEmail,
-            orderId: `order-${Date.now()}`,
-            cardData: {
-              number: formData.cardNumber,
-              expMonth: formData.expMonth,
-              expYear: formData.expYear,
-              cvc: formData.cvc,
-              name: formData.cardholderName,
-              address: {
-                streetAddress: formData.streetAddress,
-                city: formData.city,
-                region: formData.region,
-                country: formData.country,
-                postalCode: formData.postalCode,
-              },
-            },
-          };
-
-          sessionStorage.setItem("pendingPayment", JSON.stringify(paymentData));
-
-          // Redirect to QuickBooks OAuth
-          window.location.href = connectResult.authUrl;
-          return;
-        } else {
-          throw new Error(
-            connectResult.error || "Failed to connect to QuickBooks"
-          );
-        }
-      }
-
-      console.log("QuickBooks connection established successfully");
-
-      // Step 2: Process the payment
-      setProcessingStep("Processing payment...");
-      console.log("Step 2: Processing payment...");
+      // Direct payment processing - no redirects!
+      setProcessingStep("Authenticating with payment processor...");
+      console.log("Starting direct payment processing...");
 
       const paymentData = {
         amount: amount,
@@ -186,7 +129,9 @@ export function PaymentForm({
         },
       };
 
-      const paymentResponse = await fetch("/api/payments/process", {
+      setProcessingStep("Processing payment...");
+
+      const response = await fetch("/api/payments/direct-process", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -194,26 +139,26 @@ export function PaymentForm({
         body: JSON.stringify(paymentData),
       });
 
-      const paymentResult = await paymentResponse.json();
+      const result = await response.json();
 
-      if (paymentResult.success) {
-        const successMessage = `Payment successful! Transaction ID: ${paymentResult.paymentId}`;
+      if (result.success) {
+        const successMessage = `Payment successful! Transaction ID: ${result.paymentId}`;
         setSuccess(successMessage);
-        console.log("Payment processed successfully:", paymentResult.paymentId);
+        console.log("Direct payment processed successfully:", result.paymentId);
 
         // Call the success callback with payment data
         onPaymentSuccess?.({
-          paymentId: paymentResult.paymentId,
-          transactionId: paymentResult.transactionId,
-          status: paymentResult.status,
+          paymentId: result.paymentId,
+          transactionId: result.transactionId,
+          status: result.status,
         });
       } else {
-        throw new Error(paymentResult.error || "Payment failed");
+        throw new Error(result.error || "Payment failed");
       }
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Payment processing failed";
-      console.error("Payment error:", errorMessage);
+      console.error("Direct payment error:", errorMessage);
       setError(errorMessage);
       onPaymentError?.(errorMessage);
     } finally {

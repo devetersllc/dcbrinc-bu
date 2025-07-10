@@ -3,7 +3,7 @@ import { QuickBooksPaymentService, quickbooksConfig } from "@/lib/quickbooks";
 
 export async function GET(request: NextRequest) {
   try {
-    console.log("Initiating QuickBooks OAuth flow...");
+    console.log("Initiating QuickBooks OAuth connection...");
 
     // Generate a random state parameter for security
     const state =
@@ -20,16 +20,18 @@ export async function GET(request: NextRequest) {
     // Initialize QuickBooks service
     const paymentService = new QuickBooksPaymentService(quickbooksConfig);
 
-    // Generate authorization URL following the OAuth 2 flow
+    // Generate authorization URL
     const authUrl = paymentService.generateAuthUrl(redirectUri, state);
 
-    console.log("Generated auth URL:", authUrl);
+    console.log("Generated auth URL, redirecting...");
 
-    // Store state in a cookie for validation in callback
+    // Create response with redirect
     const response = NextResponse.redirect(authUrl);
+
+    // Store state in cookie for validation
     response.cookies.set("qb_oauth_state", state, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 600, // 10 minutes
     });
@@ -39,7 +41,8 @@ export async function GET(request: NextRequest) {
     console.error("OAuth initiation error:", error);
     return NextResponse.json(
       {
-        error: "Failed to initiate OAuth flow",
+        success: false,
+        error: "Failed to initiate QuickBooks connection",
         details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
