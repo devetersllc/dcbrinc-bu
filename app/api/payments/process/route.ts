@@ -75,53 +75,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const returnUrl =
-      request.cookies.get("oauth_return_url")?.value || "/dashboard/user";
-
-    // Exchange authorization code for access token
-    const redirectUri = `https://lulu-seven.vercel.app/api/auth/quickbooks/callback`;
-
-    const tokenResponse = await fetch(
-      "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Authorization: `Basic ${Buffer.from(
-            `${quickbooksConfig.clientId}:${quickbooksConfig.clientSecret}`
-          ).toString("base64")}`,
-          Accept: "application/json",
-        },
-        body: new URLSearchParams({
-          grant_type: "authorization_code",
-          // code: code,
-          redirect_uri: redirectUri,
-        }),
-      }
-    );
-
-    console.log("Token exchange response status:", tokenResponse);
-
-    if (!tokenResponse.ok) {
-      const errorText = await tokenResponse.text();
-      console.error("Token exchange failed:", errorText);
-      const response = NextResponse.redirect(
-        new URL(`${returnUrl}?error=token_exchange_failed`, request.url)
-      );
-      response.cookies.delete("oauth_state");
-      response.cookies.delete("oauth_return_url");
-      return response;
-    }
-
-    const tokenData = await tokenResponse.json();
-    console.log("Token exchange successful, expires in:", tokenData.expires_in);
-    console.log("Token exchange successful, tokenData:", tokenData);
     // Get access token from cookies
-    let accessToken =
-      request.cookies.get("qb_access_token")?.value || tokenData?.access_token;
-    let refreshToken =
-      request.cookies.get("qb_refresh_token")?.value ||
-      tokenData?.refresh_token;
+    let accessToken = request.cookies.get("qb_access_token")?.value;
+    let refreshToken = request.cookies.get("qb_refresh_token")?.value;
     console.log("refreshToken--------------------", refreshToken);
     console.log("accessToken---------------------", accessToken);
     console.log(
