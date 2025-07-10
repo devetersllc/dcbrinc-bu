@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    console.log("Token exchange response status:", tokenResponse.status);
+    console.log("Token exchange response status:", tokenResponse);
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
