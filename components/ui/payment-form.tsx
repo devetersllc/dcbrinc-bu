@@ -415,25 +415,25 @@ export function PaymentForm({
           </div>
 
           {/* QuickBooks Authorization Alert */}
-          {requiresAuth && (
-            <Alert>
-              <AlertDescription className="flex items-center justify-between">
-                <span>
-                  QuickBooks authorization is required to process payments.
-                </span>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleQuickBooksAuth}
-                  className="ml-2 bg-transparent"
-                >
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Connect QuickBooks
-                </Button>
-              </AlertDescription>
-            </Alert>
-          )}
+          {/* {requiresAuth && ( */}
+          <Alert>
+            <AlertDescription className="flex items-center justify-between">
+              <span>
+                QuickBooks authorization is required to process payments.
+              </span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleQuickBooksAuth}
+                className="ml-2 bg-transparent"
+              >
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Connect QuickBooks
+              </Button>
+            </AlertDescription>
+          </Alert>
+          {/* )} */}
 
           {error && (
             <Alert variant="destructive">
