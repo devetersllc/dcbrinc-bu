@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       body: new URLSearchParams({
         grant_type: "authorization_code",
         code: code,
-        redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL || "https://lulu-seven.vercel.app"}/api/auth/quickbooks/callback`,
+        redirect_uri: `https://lulu-seven.vercel.app/api/auth/quickbooks/callback`,
       }),
     })
 
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     }
 
     const tokenData = await tokenResponse.json()
-    console.log("Token exchange successful")
+    console.log("Token exchange successful", tokenResponse);
 
     // Store tokens in a simple way (in production, use a proper database)
     const response = NextResponse.redirect(new URL("/dashboard/user?success=connected", request.url))
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     // Set secure cookies with the tokens
     response.cookies.set("qb_access_token", tokenData.access_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "lax",
       maxAge: tokenData.expires_in || 3600,
     })
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
     if (tokenData.refresh_token) {
       response.cookies.set("qb_refresh_token", tokenData.refresh_token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: true,
         sameSite: "lax",
         maxAge: 8640000, // 100 days
       })

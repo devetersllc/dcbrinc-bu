@@ -4,7 +4,7 @@ import { quickbooksConfig } from "@/lib/quickbooks"
 export async function GET(request: NextRequest) {
   try {
     const state = Math.random().toString(36).substring(2, 15)
-    const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL || "https://lulu-seven.vercel.app"}/api/auth/quickbooks/callback`
+    const redirectUri = `https://lulu-seven.vercel.app/api/auth/quickbooks/callback`
 
     const authUrl = new URL("https://appcenter.intuit.com/connect/oauth2")
     authUrl.searchParams.set("client_id", quickbooksConfig.clientId)

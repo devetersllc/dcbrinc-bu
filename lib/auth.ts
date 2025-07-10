@@ -2,7 +2,7 @@ import { compare, hash } from "bcryptjs";
 import { sign, verify } from "jsonwebtoken";
 import { cookies } from "next/headers";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const JWT_SECRET = "your-secret-key";
 
 export async function hashPassword(password: string): Promise<string> {
   return hash(password, 12);
