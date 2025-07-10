@@ -7,7 +7,7 @@ import {
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("Processing production payment request");
+    console.log("Processing payment request...");
 
     const paymentData: PaymentRequest = await request.json();
 
@@ -75,116 +75,93 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get access token from cookies
+    // Get tokens from cookies
     let accessToken = request.cookies.get("qb_access_token")?.value;
-    let refreshToken = request.cookies.get("qb_refresh_token")?.value;
-    console.log("refreshToken--------------------", refreshToken);
-    console.log("accessToken---------------------", accessToken);
-    console.log(
-      "qb_access_token--------------------",
-      request.cookies.get("qb_access_token")
-    );
-    console.log(
-      "qb_refresh_token--------------------",
-      request.cookies.get("qb_refresh_token")
-    );
-
-    if (!accessToken && !refreshToken) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "QuickBooks authorization required",
-          requiresAuth: true,
-          authUrl: `https://lulu-seven.vercel.app/api/auth/quickbooks/connect`,
-        },
-        { status: 401 }
-      );
-    }
+    const refreshToken = request.cookies.get("qb_refresh_token")?.value;
 
     // Initialize QuickBooks payment service
     const paymentService = new QuickBooksPaymentService(quickbooksConfig);
 
-    let currentAccessToken = accessToken;
-
     // If no access token but we have refresh token, try to refresh
-    if (!currentAccessToken && refreshToken) {
-      console.log("Attempting to refresh access token...");
+    if (!accessToken && refreshToken) {
+      console.log("Access token missing, attempting to refresh...");
+
       const refreshResult = await paymentService.refreshAccessToken(
         refreshToken
       );
 
-      if (refreshResult) {
-        currentAccessToken = refreshResult.accessToken;
+      if (refreshResult.success && refreshResult.accessToken) {
+        accessToken = refreshResult.accessToken;
+        console.log("Access token refreshed successfully");
 
         // Update cookies with new tokens
-        const response = NextResponse.json({
-          success: true,
-          message: "Token refreshed",
-        });
-        response.cookies.set("qb_access_token", refreshResult.accessToken, {
+        const tempResponse = new NextResponse();
+        tempResponse.cookies.set("qb_access_token", refreshResult.accessToken, {
           httpOnly: true,
           secure: true,
           sameSite: "lax",
-          maxAge: 3600,
+          maxAge: refreshResult.expiresIn || 3600,
         });
 
         if (refreshResult.refreshToken) {
-          response.cookies.set("qb_refresh_token", refreshResult.refreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "lax",
-            maxAge: 8640000,
-          });
+          tempResponse.cookies.set(
+            "qb_refresh_token",
+            refreshResult.refreshToken,
+            {
+              httpOnly: true,
+              secure: true,
+              sameSite: "lax",
+              maxAge: 8640000,
+            }
+          );
         }
       } else {
+        console.error("Token refresh failed:", refreshResult.error);
         return NextResponse.json(
           {
             success: false,
             error: "QuickBooks authorization expired",
             requiresAuth: true,
-            authUrl: `https://lulu-seven.vercel.app/api/auth/quickbooks/connect`,
+            authUrl: "/api/auth/quickbooks/connect",
           },
           { status: 401 }
         );
       }
     }
-    console.log("currentAccessToken--------------------", currentAccessToken);
-    if (!currentAccessToken) {
+
+    // Check if we have an access token
+    if (!accessToken) {
+      console.log("No access token available, authorization required");
       return NextResponse.json(
         {
           success: false,
           error: "QuickBooks authorization required",
           requiresAuth: true,
-          authUrl: `https://lulu-seven.vercel.app/api/auth/quickbooks/connect`,
+          authUrl: "/api/auth/quickbooks/connect",
         },
         { status: 401 }
       );
     }
 
-    // Process the payment
+    console.log("Processing payment with access token...");
+
+    // Process the payment using the access token
     const paymentResult = await paymentService.createPayment(
       paymentData,
-      currentAccessToken
-    );
-    console.log(
-      "paymentResult----------------------------------------------------------------------------",
-      paymentResult
+      accessToken
     );
 
     if (!paymentResult.success) {
       console.error("Payment failed:", paymentResult.error);
 
-      // Check if it's an auth error
-      if (
-        paymentResult.error?.includes("authentication") ||
-        paymentResult.error?.includes("unauthorized")
-      ) {
+      // Check if it's an auth error and requires re-authorization
+      if (paymentResult.requiresAuth) {
         return NextResponse.json(
           {
             success: false,
-            error: "QuickBooks authorization expired",
+            error: paymentResult.error || "QuickBooks authorization expired",
             requiresAuth: true,
-            authUrl: `https://lulu-seven.vercel.app/api/auth/quickbooks/connect`,
+            authUrl: "/api/auth/quickbooks/connect",
           },
           { status: 401 }
         );
@@ -200,14 +177,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("Payment processed successfully");
-    return NextResponse.json({
+    console.log("Payment processed successfully:", paymentResult.paymentId);
+
+    // Create successful response
+    const response = NextResponse.json({
       success: true,
       paymentId: paymentResult.paymentId,
       transactionId: paymentResult.transactionId,
       status: paymentResult.status,
       message: "Payment processed successfully",
     });
+
+    // If we refreshed tokens during this request, update the cookies in the response
+    if (!request.cookies.get("qb_access_token")?.value && accessToken) {
+      response.cookies.set("qb_access_token", accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        maxAge: 3600,
+      });
+    }
+
+    return response;
   } catch (error) {
     console.error("Payment processing error:", error);
 

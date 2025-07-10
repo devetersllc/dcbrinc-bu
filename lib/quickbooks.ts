@@ -34,8 +34,9 @@ export interface PaymentResponse {
 export interface QuickBooksConfig {
   clientId: string;
   clientSecret: string;
-  environment: "production";
+  environment: "production" | "sandbox";
   baseUrl: string;
+  paymentsBaseUrl: string;
 }
 
 export const quickbooksConfig: QuickBooksConfig = {
@@ -43,6 +44,7 @@ export const quickbooksConfig: QuickBooksConfig = {
   clientSecret: "UKTeACJSQztEH0hrdk9G25P8l21vVdSWIdnR5sRl",
   environment: "production",
   baseUrl: "https://api.intuit.com",
+  paymentsBaseUrl: "https://api.intuit.com/quickbooks/v4/payments",
 };
 
 export class CardValidator {
@@ -224,15 +226,145 @@ export class QuickBooksPaymentService {
     this.config = config;
   }
 
+  // Generate OAuth authorization URL (Step 1 in the diagram)
+  generateAuthUrl(redirectUri: string, state?: string): string {
+    const authUrl = new URL("https://appcenter.intuit.com/connect/oauth2");
+    authUrl.searchParams.set("client_id", this.config.clientId);
+    authUrl.searchParams.set("scope", "com.intuit.quickbooks.payment");
+    authUrl.searchParams.set("redirect_uri", redirectUri);
+    authUrl.searchParams.set("response_type", "code");
+    authUrl.searchParams.set("access_type", "offline");
+    if (state) {
+      authUrl.searchParams.set("state", state);
+    }
+    return authUrl.toString();
+  }
+
+  // Exchange authorization code for access token (Step 3 in the diagram)
+  async exchangeCodeForToken(
+    code: string,
+    redirectUri: string
+  ): Promise<{
+    success: boolean;
+    accessToken?: string;
+    refreshToken?: string;
+    expiresIn?: number;
+    error?: string;
+  }> {
+    try {
+      console.log("Exchanging authorization code for access token...");
+
+      const response = await fetch(
+        "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: `Basic ${Buffer.from(
+              `${this.config.clientId}:${this.config.clientSecret}`
+            ).toString("base64")}`,
+            Accept: "application/json",
+          },
+          body: new URLSearchParams({
+            grant_type: "authorization_code",
+            code: code,
+            redirect_uri: redirectUri,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Token exchange failed:", errorText);
+        return {
+          success: false,
+          error: `Token exchange failed: ${response.status} ${response.statusText}`,
+        };
+      }
+
+      const tokenData = await response.json();
+      console.log("Token exchange successful");
+
+      return {
+        success: true,
+        accessToken: tokenData.access_token,
+        refreshToken: tokenData.refresh_token,
+        expiresIn: tokenData.expires_in,
+      };
+    } catch (error) {
+      console.error("Error exchanging code for token:", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      };
+    }
+  }
+
+  // Refresh access token using refresh token
+  async refreshAccessToken(refreshToken: string): Promise<{
+    success: boolean;
+    accessToken?: string;
+    refreshToken?: string;
+    expiresIn?: number;
+    error?: string;
+  }> {
+    try {
+      console.log("Refreshing access token...");
+
+      const response = await fetch(
+        "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: `Basic ${Buffer.from(
+              `${this.config.clientId}:${this.config.clientSecret}`
+            ).toString("base64")}`,
+            Accept: "application/json",
+          },
+          body: new URLSearchParams({
+            grant_type: "refresh_token",
+            refresh_token: refreshToken,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Token refresh failed:", errorText);
+        return {
+          success: false,
+          error: `Token refresh failed: ${response.status} ${response.statusText}`,
+        };
+      }
+
+      const tokenData = await response.json();
+      console.log("Token refresh successful");
+
+      return {
+        success: true,
+        accessToken: tokenData.access_token,
+        refreshToken: tokenData.refresh_token || refreshToken, // Some responses don't include new refresh token
+        expiresIn: tokenData.expires_in,
+      };
+    } catch (error) {
+      console.error("Error refreshing token:", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      };
+    }
+  }
+
+  // Create payment using access token (Step 5 in the diagram)
   async createPayment(
     paymentData: PaymentRequest,
-    accessToken?: string
+    accessToken: string
   ): Promise<PaymentResponse> {
     try {
-      console.log(
-        "Processing production payment for order:",
-        paymentData.orderId
-      );
+      console.log("Processing payment for order:", paymentData.orderId);
 
       // Validate payment data
       const validation = this.validatePaymentData(paymentData);
@@ -243,32 +375,7 @@ export class QuickBooksPaymentService {
         };
       }
 
-      // Check QuickBooks credentials
-      if (!this.config.clientId || !this.config.clientSecret) {
-        return {
-          success: false,
-          error: "QuickBooks credentials not configured",
-          details: "Missing QUICKBOOKS_CLIENT_ID or QUICKBOOKS_CLIENT_SECRET",
-        };
-      }
-
-      // Use provided access token or try to get one
-      console.log("accessToken in qb helper--------------------", accessToken);
-
-      const token = accessToken;
-      if (!token) {
-        console.log("No access token provided, attempting to get one...");
-        return {
-          success: false,
-          error: "QuickBooks authorization required",
-          details: "Please connect your QuickBooks account first",
-          requiresAuth: true,
-        };
-      }
-
-      console.log("Using access token for payment processing");
-
-      // Prepare payment request for QuickBooks
+      // Prepare payment request for QuickBooks Payments API
       const quickbooksPayment = {
         amount: Number(paymentData.amount.toFixed(2)),
         currency: paymentData.currency,
@@ -294,20 +401,17 @@ export class QuickBooksPaymentService {
 
       console.log("Making QuickBooks payment request...");
 
-      // Make payment request to QuickBooks
-      const response = await fetch(
-        `https://api.intuit.com/quickbooks/v4/payments/charges`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "Request-Id": `${paymentData.orderId}-${Date.now()}`,
-          },
-          body: JSON.stringify(quickbooksPayment),
-        }
-      );
+      // Make payment request to QuickBooks Payments API
+      const response = await fetch(`${this.config.paymentsBaseUrl}/charges`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Request-Id": `${paymentData.orderId}-${Date.now()}`,
+        },
+        body: JSON.stringify(quickbooksPayment),
+      });
 
       console.log("QuickBooks response status:", response.status);
 
@@ -327,6 +431,16 @@ export class QuickBooksPaymentService {
 
       if (!response.ok) {
         console.error("QuickBooks payment failed:", responseData);
+
+        // Check if it's an authentication error
+        if (response.status === 401 || response.status === 403) {
+          return {
+            success: false,
+            error: "QuickBooks authorization expired",
+            requiresAuth: true,
+            details: responseData,
+          };
+        }
 
         let errorMessage = "Payment processing failed";
         if (responseData.errors && responseData.errors.length > 0) {
@@ -381,44 +495,6 @@ export class QuickBooksPaymentService {
         details:
           error instanceof Error ? error.message : "Unknown error occurred",
       };
-    }
-  }
-
-  async refreshAccessToken(
-    refreshToken: string
-  ): Promise<{ accessToken: string; refreshToken?: string } | null> {
-    try {
-      const response = await fetch(
-        "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            Authorization: `Basic ${Buffer.from(
-              `${this.config.clientId}:${this.config.clientSecret}`
-            ).toString("base64")}`,
-            Accept: "application/json",
-          },
-          body: new URLSearchParams({
-            grant_type: "refresh_token",
-            refresh_token: refreshToken,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        console.error("Token refresh failed:", await response.text());
-        return null;
-      }
-
-      const data = await response.json();
-      return {
-        accessToken: data.access_token,
-        refreshToken: data.refresh_token,
-      };
-    } catch (error) {
-      console.error("Error refreshing token:", error);
-      return null;
     }
   }
 

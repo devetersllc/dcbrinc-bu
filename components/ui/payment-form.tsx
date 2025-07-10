@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CreditCard, Lock } from "lucide-react";
+import { Loader2, CreditCard, Lock, ExternalLink } from "lucide-react";
 
 interface PaymentFormProps {
   amount: number;
@@ -32,46 +31,26 @@ interface PaymentFormProps {
   onError?: (error: string) => void;
   customerName?: string;
   customerEmail?: string;
-  cardNumber?: string;
-  expMonth?: string;
-  expYear?: string;
-  cvc?: string;
-  cardholderName?: string;
-  streetAddress?: string;
-  city?: string;
-  region?: string;
-  postalCode?: string;
-  country?: string;
   orderId?: string;
-  onPaymentSuccess?: (paymentId: string) => void;
+  onPaymentSuccess?: (paymentData: any) => void;
   onPaymentError?: (error: string) => void;
   isProcessing?: boolean;
-  error?: string | null;
 }
 
 export function PaymentForm({
   amount,
   currency = "USD",
   description = "Payment",
-  onSuccess,
-  onError,
+  onPaymentSuccess,
+  onPaymentError,
+  isProcessing: externalProcessing = false,
 }: PaymentFormProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [requiresAuth, setRequiresAuth] = useState(false);
 
   const [formData, setFormData] = useState({
-    // customerName: "",
-    // customerEmail: "",
-    // cardNumber: "",
-    // expMonth: "",
-    // expYear: "",
-    // cvc: "",
-    // cardholderName: "",
-    // streetAddress: "",
-    // city: "",
-    // region: "",
-    // postalCode: "",
     customerName: "Ahmad Raza",
     customerEmail: "ahmadrazakhalid9.0@gmail.com",
     cardNumber: "4375840123008631",
@@ -81,7 +60,7 @@ export function PaymentForm({
     cardholderName: "Ahmad Raza",
     streetAddress: "280 block 2 sector AII, Township, Lahore",
     city: "Lahore",
-    region: "Pubjab",
+    region: "Punjab",
     postalCode: "54770",
     country: "US",
   });
@@ -89,6 +68,7 @@ export function PaymentForm({
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setError(null);
+    setRequiresAuth(false);
   };
 
   const formatCardNumber = (value: string) => {
@@ -115,15 +95,21 @@ export function PaymentForm({
     }
   };
 
+  const handleQuickBooksAuth = () => {
+    // Redirect to QuickBooks OAuth flow
+    window.location.href = "/api/auth/quickbooks/connect";
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
     setError(null);
     setSuccess(null);
+    setRequiresAuth(false);
 
     try {
       const paymentData = {
-        amount: 1,
+        amount: amount,
         currency,
         description,
         customerName: formData.customerName,
@@ -145,6 +131,8 @@ export function PaymentForm({
         },
       };
 
+      console.log("Submitting payment request...");
+
       const response = await fetch("/api/payments/process", {
         method: "POST",
         headers: {
@@ -156,17 +144,30 @@ export function PaymentForm({
       const result = await response.json();
 
       if (result.success) {
-        setSuccess(`Payment successful! Transaction ID: ${result.paymentId}`);
-        onSuccess?.(result.paymentId);
+        const successMessage = `Payment successful! Transaction ID: ${result.paymentId}`;
+        setSuccess(successMessage);
+
+        // Call the success callback with payment data
+        onPaymentSuccess?.({
+          paymentId: result.paymentId,
+          transactionId: result.transactionId,
+          status: result.status,
+        });
       } else {
-        setError(result.error || "Payment failed");
-        onError?.(result.error || "Payment failed");
+        // Check if QuickBooks authorization is required
+        if (result.requiresAuth) {
+          setRequiresAuth(true);
+          setError("QuickBooks authorization required to process payments");
+        } else {
+          setError(result.error || "Payment failed");
+          onPaymentError?.(result.error || "Payment failed");
+        }
       }
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Payment processing failed";
       setError(errorMessage);
-      onError?.(errorMessage);
+      onPaymentError?.(errorMessage);
     } finally {
       setIsProcessing(false);
     }
@@ -174,6 +175,8 @@ export function PaymentForm({
 
   const currentYear = new Date().getFullYear() % 100;
   const years = Array.from({ length: 20 }, (_, i) => currentYear + i);
+
+  const isFormProcessing = isProcessing || externalProcessing;
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
@@ -202,6 +205,7 @@ export function PaymentForm({
                   }
                   placeholder="John Doe"
                   required
+                  disabled={isFormProcessing}
                 />
               </div>
               <div className="space-y-2">
@@ -215,6 +219,7 @@ export function PaymentForm({
                   }
                   placeholder="john@example.com"
                   required
+                  disabled={isFormProcessing}
                 />
               </div>
             </div>
@@ -238,6 +243,7 @@ export function PaymentForm({
                   placeholder="1234 5678 9012 3456"
                   maxLength={19}
                   required
+                  disabled={isFormProcessing}
                 />
               </div>
               <div className="grid grid-cols-3 gap-4">
@@ -248,6 +254,7 @@ export function PaymentForm({
                     onValueChange={(value) =>
                       handleInputChange("expMonth", value)
                     }
+                    disabled={isFormProcessing}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="MM" />
@@ -273,6 +280,7 @@ export function PaymentForm({
                     onValueChange={(value) =>
                       handleInputChange("expYear", value)
                     }
+                    disabled={isFormProcessing}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="YY" />
@@ -303,6 +311,7 @@ export function PaymentForm({
                     placeholder="123"
                     maxLength={4}
                     required
+                    disabled={isFormProcessing}
                   />
                 </div>
               </div>
@@ -316,6 +325,7 @@ export function PaymentForm({
                   }
                   placeholder="Name on card"
                   required
+                  disabled={isFormProcessing}
                 />
               </div>
             </div>
@@ -337,6 +347,7 @@ export function PaymentForm({
                   }
                   placeholder="123 Main St"
                   required
+                  disabled={isFormProcessing}
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -348,6 +359,7 @@ export function PaymentForm({
                     onChange={(e) => handleInputChange("city", e.target.value)}
                     placeholder="New York"
                     required
+                    disabled={isFormProcessing}
                   />
                 </div>
                 <div className="space-y-2">
@@ -360,6 +372,7 @@ export function PaymentForm({
                     }
                     placeholder="NY"
                     required
+                    disabled={isFormProcessing}
                   />
                 </div>
               </div>
@@ -374,6 +387,7 @@ export function PaymentForm({
                     }
                     placeholder="10001"
                     required
+                    disabled={isFormProcessing}
                   />
                 </div>
                 <div className="space-y-2">
@@ -383,6 +397,7 @@ export function PaymentForm({
                     onValueChange={(value) =>
                       handleInputChange("country", value)
                     }
+                    disabled={isFormProcessing}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -398,6 +413,27 @@ export function PaymentForm({
               </div>
             </div>
           </div>
+
+          {/* QuickBooks Authorization Alert */}
+          {requiresAuth && (
+            <Alert>
+              <AlertDescription className="flex items-center justify-between">
+                <span>
+                  QuickBooks authorization is required to process payments.
+                </span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleQuickBooksAuth}
+                  className="ml-2 bg-transparent"
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Connect QuickBooks
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
 
           {error && (
             <Alert variant="destructive">
@@ -415,9 +451,9 @@ export function PaymentForm({
             type="submit"
             className="w-full"
             size="lg"
-            disabled={isProcessing}
+            disabled={isFormProcessing}
           >
-            {isProcessing ? (
+            {isFormProcessing ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Processing Payment...

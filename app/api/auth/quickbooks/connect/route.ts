@@ -1,56 +1,46 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { quickbooksConfig } from "@/lib/quickbooks";
+import { QuickBooksPaymentService, quickbooksConfig } from "@/lib/quickbooks";
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const returnUrl = searchParams.get("returnUrl") || "/dashboard/user";
+    console.log("Initiating QuickBooks OAuth flow...");
 
     // Generate a random state parameter for security
     const state =
       Math.random().toString(36).substring(2, 15) +
       Math.random().toString(36).substring(2, 15);
 
-    // Store the state and return URL in cookies for validation
-    const response = new NextResponse();
-    response.cookies.set("oauth_state", state, {
+    // Get the redirect URI from environment or use default
+    const redirectUri = `${
+      process.env.NEXT_PUBLIC_APP_URL || "https://lulu-seven.vercel.app"
+    }/api/auth/quickbooks/callback`;
+
+    console.log("Redirect URI:", redirectUri);
+
+    // Initialize QuickBooks service
+    const paymentService = new QuickBooksPaymentService(quickbooksConfig);
+
+    // Generate authorization URL following the OAuth 2 flow
+    const authUrl = paymentService.generateAuthUrl(redirectUri, state);
+
+    console.log("Generated auth URL:", authUrl);
+
+    // Store state in a cookie for validation in callback
+    const response = NextResponse.redirect(authUrl);
+    response.cookies.set("qb_oauth_state", state, {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
       maxAge: 600, // 10 minutes
     });
-    response.cookies.set("oauth_return_url", returnUrl, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      maxAge: 600, // 10 minutes
-    });
 
-    // Build the QuickBooks OAuth URL
-    const baseUrl = "https://appcenter.intuit.com/connect/oauth2";
-    const redirectUri = `https://lulu-seven.vercel.app/api/auth/quickbooks/callback`;
-
-    const params = new URLSearchParams({
-      client_id: quickbooksConfig.clientId,
-      scope: "com.intuit.quickbooks.payment",
-      redirect_uri: redirectUri,
-      response_type: "code",
-      access_type: "offline",
-      state: state,
-    });
-
-    const authUrl = `${baseUrl}?${params.toString()}`;
-
-    console.log("Redirecting to QuickBooks OAuth:", authUrl);
-
-    // Redirect to QuickBooks OAuth
-    return NextResponse.redirect(authUrl);
+    return response;
   } catch (error) {
-    console.error("Error initiating QuickBooks OAuth:", error);
+    console.error("OAuth initiation error:", error);
     return NextResponse.json(
       {
-        success: false,
-        error: "Failed to initiate QuickBooks connection",
+        error: "Failed to initiate OAuth flow",
+        details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );
