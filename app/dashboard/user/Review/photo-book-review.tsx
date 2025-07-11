@@ -68,7 +68,7 @@ export default function PhotoBookReview() {
                 <div className="mb-4">
                   <Image
                     src="/placeholder.svg?height=40&width=80"
-                    alt="Lulu logo"
+                    alt="DCBRINC logo"
                     className="h-10"
                     width={10}
                     height={10}

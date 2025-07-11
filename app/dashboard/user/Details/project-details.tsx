@@ -53,7 +53,7 @@ export function ProjectDetails() {
               value={detail.description}
               onChange={(e) => dispatch(setDescription(e.target.value))}
               className="min-h-32 border-gray-300 resize-none"
-              placeholder="The Photo Book description will appear on the Lulu Bookstore and any retail sites if your Photo Book uses Global Distribution. Please note: Your description must be a minimum of 50 characters."
+              placeholder="The Photo Book description will appear on the DCBRINC Bookstore and any retail sites if your Photo Book uses Global Distribution. Please note: Your description must be a minimum of 50 characters."
             />
             {detail.description.length === 0 && (
               <div className="flex items-center gap-2 mt-2 text-red-500">
@@ -103,7 +103,7 @@ export function ProjectDetails() {
               value={detail.tableOfContents}
               onChange={(e) => dispatch(setTableOfContents(e.target.value))}
               className="min-h-32 border-gray-300 resize-none"
-              placeholder="Add a Table of Contents for your Photo Book using a comma separated list. The Table of Contents entered here assists users searching for specific terms online. Please note that the Table of Contents entered here does not appear in the Lulu Bookstore and will only assist users searching for your Photo Book if it uses Global Distribution."
+              placeholder="Add a Table of Contents for your Photo Book using a comma separated list. The Table of Contents entered here assists users searching for specific terms online. Please note that the Table of Contents entered here does not appear in the DCBRINC Bookstore and will only assist users searching for your Photo Book if it uses Global Distribution."
             />
           </div>
         </div>

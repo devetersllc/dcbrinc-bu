@@ -260,12 +260,12 @@ export default function PaymentInformationForm() {
         <div className="border rounded-md p-4 space-y-4">
           <h3 className="font-semibold">Tax-Related Information (Optional)</h3>
           <p className="text-sm text-gray-600">
-            Lulu is located in the United States and is subject to US tax laws.
+            DCBRINC is located in the United States and is subject to US tax laws.
             When we make a payment, we may be required to withhold certain
             amounts from your payment for certain eligible sales.
           </p>
           <p className="text-sm text-gray-600">
-            If your book is published with a free Lulu ISBN, US income taxes
+            If your book is published with a free DCBRINC ISBN, US income taxes
             will be withheld on revenue earned from US sales, unless a completed
             and valid tax form has been provided. Please consult a tax
             professional for any questions regarding your tax liability.
@@ -305,8 +305,8 @@ export default function PaymentInformationForm() {
             <p className="text-sm text-gray-600 mb-2">
               A tax form is not required to publish.
               <br />
-              Books for sale using a Lulu-owned ISBN are subject to US tax
-              withholding. Lulu will use the default IRS withholding rates
+              Books for sale using a DCBRINC-owned ISBN are subject to US tax
+              withholding. DCBRINC will use the default IRS withholding rates
               unless a valid tax form is provided for this Payee.
             </p>
             <a
@@ -351,7 +351,7 @@ export default function PaymentInformationForm() {
               <p className="text-sm">
                 Attn: Creator Revenues
                 <br />
-                Lulu Press, Inc.
+                DCBRINC Press, Inc.
                 <br />
                 Durham, NC 27709
               </p>

@@ -5,12 +5,11 @@ import { RootState } from "@/lib/store";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/hooks";
+import Image from "next/image";
 
 export default function Home() {
   const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
-  const { isAuthenticated } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   useAuth();
 
@@ -21,7 +20,14 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 text-center">
       <div className="max-w-3xl space-y-6">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Lulu</h1>
+        <Image
+          src="https://dcbrinc.com/wp-content/uploads/2025/03/IMG_6463-2-1024x779-1.png"
+          alt="Color book example"
+          className="object-cover h-20 w-fit"
+          width={20}
+          height={10}
+        />
+
         <p className="text-lg text-muted-foreground">
           A complete Book Publishing Platform
         </p>

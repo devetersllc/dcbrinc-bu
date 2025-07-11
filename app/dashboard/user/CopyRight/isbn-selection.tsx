@@ -47,7 +47,7 @@ export default function ISBNSelection() {
           <div>
             <h4 className="font-semibold text-purple-900">ISBN Not Required</h4>
             <p className="text-sm text-purple-800">
-              If you are only selling your book on the Lulu Bookstore, an ISBN
+              If you are only selling your book on the DCBRINC Bookstore, an ISBN
               is not required. You can add an ISBN at any time if you decide
               later to sell your book through retailers.
             </p>
@@ -77,7 +77,7 @@ export default function ISBNSelection() {
                     Use a free ISBN
                   </Label>
                   <p className="text-sm text-gray-600 mt-1">
-                    Use a free Lulu ISBN, with Lulu assigned as the publishing
+                    Use a free DCBRINC ISBN, with DCBRINC assigned as the publishing
                     imprint. Once your Photo Book is published and the proof
                     copy approved, the ISBN will never expire and remain
                     attached to your published Photo Book indefinitely.
@@ -98,7 +98,7 @@ export default function ISBNSelection() {
             {expandedSections.freeIsbn && (
               <div className="p-4 border-t bg-gray-50">
                 <p className="text-sm text-gray-600">
-                  By selecting this option, Lulu will be listed as the publisher
+                  By selecting this option, DCBRINC will be listed as the publisher
                   of your book.
                 </p>
                 <Button className="mt-3 bg-blue-600 hover:bg-blue-700">

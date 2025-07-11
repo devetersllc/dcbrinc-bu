@@ -36,7 +36,7 @@ export function CategoriesAndKeywords() {
             htmlFor="lulu-category"
             className="text-xs font-semibold uppercase mb-2 block"
           >
-            Lulu Bookstore Category
+            DCBRINC Bookstore Category
           </Label>
           <div className="relative">
             <Select

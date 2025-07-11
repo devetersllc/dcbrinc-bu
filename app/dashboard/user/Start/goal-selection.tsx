@@ -114,10 +114,10 @@ export function GoalSelection() {
                           htmlFor="lulu-bookstore"
                           className="font-bold text-sm cursor-pointer"
                         >
-                          Lulu Bookstore
+                          DCBRINC Bookstore
                         </Label>
                         <p className="text-sm text-gray-600">
-                          Sell your Photo Book on the Lulu Bookstore.
+                          Sell your Photo Book on the DCBRINC Bookstore.
                         </p>
                       </div>
                     </div>
@@ -138,7 +138,7 @@ export function GoalSelection() {
                           htmlFor="lulu-direct"
                           className="font-bold text-sm cursor-pointer"
                         >
-                          Lulu Direct
+                          DCBRINC Direct
                         </Label>
                         <p className="text-sm text-gray-600">
                           Sell your Photo Book on your website or ecommerce
@@ -172,7 +172,7 @@ export function GoalSelection() {
                         </div>
                         <p className="text-sm text-gray-600">
                           Sell your Photo Book through 40,000+ global retailers
-                          using Lulu's distribution service. Please note that a
+                          using DCBRINC's distribution service. Please note that a
                           title page, copyright page, and ISBN are required.
                         </p>
                       </div>
