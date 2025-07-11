@@ -319,7 +319,7 @@ export default function SuccessPage() {
       {/* <div className="mt-8 text-center">
         <p className="text-sm text-gray-600">
           Need help? Contact our support team at{" "}
-          <a href="mailto:support@yourcompany.com" className="text-blue-600 hover:underline">
+          <a href="mailto:support@yourcompany.com" className="text-[#1B463C] hover:underline">
             support@yourcompany.com
           </a>
         </p>

@@ -206,7 +206,7 @@ export default function PaymentInformationForm() {
                   </Label>
                   <button
                     onClick={() => setIsPaypalExpanded(!isPaypalExpanded)}
-                    className="text-blue-600 hover:bg-blue-50 p-1 rounded"
+                    className="text-[#1B463C] hover:bg-blue-50 p-1 rounded"
                   >
                     {isPaypalExpanded ? (
                       <ChevronUp size={16} />
@@ -311,7 +311,7 @@ export default function PaymentInformationForm() {
             </p>
             <a
               href="#"
-              className="text-blue-600 text-sm hover:underline block mb-4"
+              className="text-[#1B463C] text-sm hover:underline block mb-4"
             >
               Learn more about tax withholdings.
             </a>
@@ -332,11 +332,11 @@ export default function PaymentInformationForm() {
             {/* Upload Area */}
             <div className="border-2 border-dashed border-blue-300 rounded-md p-6 text-center bg-blue-50 mb-4">
               <div className="flex justify-center mb-2">
-                <Upload className="text-blue-600" size={24} />
+                <Upload className="text-[#1B463C]" size={24} />
               </div>
               <a
                 href="#"
-                className="text-blue-600 font-medium hover:underline block"
+                className="text-[#1B463C] font-medium hover:underline block"
               >
                 Upload Payee W-9 or W-8BEN tax form
               </a>

@@ -41,7 +41,7 @@ export default function BookMetadataForm() {
                 Enter additional title and edition information for your Photo
                 Book.
               </p>
-              <a href="#" className="text-blue-600 text-sm hover:underline">
+              <a href="#" className="text-[#1B463C] text-sm hover:underline">
                 Learn more about Editions
               </a>
             </div>

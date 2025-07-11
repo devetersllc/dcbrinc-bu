@@ -152,7 +152,7 @@ export function InteriorFileUpload() {
             Your Interior File must be a {getFileTypeDisplay()} including all
             interior content for your {type.replace("-", " ")}. For detailed
             file creation instructions, see our{" "}
-            <Link href="#" className="text-blue-900 font-medium">
+            <Link href="#" className="text-[#1B463C] font-medium">
               File Creation Guide
             </Link>
             .
@@ -224,7 +224,7 @@ export function InteriorFileUpload() {
         onDrop={handleDrop}
         onDragOver={handleDragOver}
       >
-        <Upload className="h-10 w-10 text-blue-900 mb-2" />
+        <Upload className="h-10 w-10 text-[#1B463C] mb-2" />
         <label
           htmlFor="fileUpload"
           className="text-lg font-medium text-gray-900 mb-2 cursor-pointer"
@@ -256,34 +256,34 @@ export function InteriorFileUpload() {
       </div>
 
       <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-        <h4 className="font-semibold text-blue-900 mb-3">
+        <h4 className="font-semibold text-[#1B463C] mb-3">
           Requirements for {type.replace("-", " ")}:
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
           <div className="flex items-center">
-            <CheckCircle className="h-4 w-4 text-blue-600 mr-2 flex-shrink-0" />
+            <CheckCircle className="h-4 w-4 text-[#1B463C] mr-2 flex-shrink-0" />
             <span>File Type: {dataAccordingToType[type]?.fileType}</span>
           </div>
           <div className="flex items-center">
-            <CheckCircle className="h-4 w-4 text-blue-600 mr-2 flex-shrink-0" />
+            <CheckCircle className="h-4 w-4 text-[#1B463C] mr-2 flex-shrink-0" />
             <span>Page Count: {dataAccordingToType[type]?.pageCount}</span>
           </div>
           <div className="flex items-center">
-            <CheckCircle className="h-4 w-4 text-blue-600 mr-2 flex-shrink-0" />
+            <CheckCircle className="h-4 w-4 text-[#1B463C] mr-2 flex-shrink-0" />
             <span>Fonts: {dataAccordingToType[type]?.fonts}</span>
           </div>
           <div className="flex items-center">
-            <CheckCircle className="h-4 w-4 text-blue-600 mr-2 flex-shrink-0" />
+            <CheckCircle className="h-4 w-4 text-[#1B463C] mr-2 flex-shrink-0" />
             <span>Layers: {dataAccordingToType[type]?.layers}</span>
           </div>
           {dataAccordingToType[type]?.pageSize && (
             <div className="flex items-center">
-              <CheckCircle className="h-4 w-4 text-blue-600 mr-2 flex-shrink-0" />
+              <CheckCircle className="h-4 w-4 text-[#1B463C] mr-2 flex-shrink-0" />
               <span>Page Size: {dataAccordingToType[type].pageSize}</span>
             </div>
           )}
           <div className="flex items-center">
-            <CheckCircle className="h-4 w-4 text-blue-600 mr-2 flex-shrink-0" />
+            <CheckCircle className="h-4 w-4 text-[#1B463C] mr-2 flex-shrink-0" />
             <span>Max File Size: 50MB</span>
           </div>
         </div>
@@ -319,7 +319,7 @@ export function InteriorFileUpload() {
             </div>
             {processedPDF.properties.pageCount && (
               <div className="flex items-center">
-                <CheckCircle className="h-4 w-4 text-blue-600 mr-2" />
+                <CheckCircle className="h-4 w-4 text-[#1B463C] mr-2" />
                 <span>Page Count: {processedPDF.properties.pageCount}</span>
               </div>
             )}

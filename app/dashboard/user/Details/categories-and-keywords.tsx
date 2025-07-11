@@ -62,7 +62,7 @@ export function CategoriesAndKeywords() {
 
         <div>
           <div className="flex items-center mb-2">
-            <Link href="#" className="text-xs font-semibold text-blue-900">
+            <Link href="#" className="text-xs font-semibold text-[#1B463C]">
               LEARN MORE ABOUT BISAC
             </Link>
           </div>

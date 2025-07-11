@@ -83,7 +83,7 @@ export default function AudienceForm() {
                   <div>
                     <a
                       href="#"
-                      className="text-blue-600 text-sm hover:underline"
+                      className="text-[#1B463C] text-sm hover:underline"
                     >
                       Learn more about Explicit Content
                     </a>

@@ -181,7 +181,7 @@ export function PhotoBookCoverDesign() {
                   onDrop={handleDrop}
                   onDragOver={handleDragOver}
                 >
-                  <Upload className="h-10 w-10 text-blue-900 mb-2" />
+                  <Upload className="h-10 w-10 text-[#1B463C] mb-2" />
                   <label
                     htmlFor="coverUpload"
                     className="text-lg font-medium text-gray-900 mb-2"
@@ -213,32 +213,32 @@ export function PhotoBookCoverDesign() {
                 </div>
 
                 <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-blue-900 mb-3">
+                  <h4 className="font-semibold text-[#1B463C] mb-3">
                     Cover Requirements:
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                     <div className="flex items-center">
-                      <CheckCircle className="h-4 w-4 text-blue-600 mr-2" />
+                      <CheckCircle className="h-4 w-4 text-[#1B463C] mr-2" />
                       <span>File Type: PDF</span>
                     </div>
                     <div className="flex items-center">
-                      <CheckCircle className="h-4 w-4 text-blue-600 mr-2" />
+                      <CheckCircle className="h-4 w-4 text-[#1B463C] mr-2" />
                       <span>Page Count: 1</span>
                     </div>
                     <div className="flex items-center">
-                      <CheckCircle className="h-4 w-4 text-blue-600 mr-2" />
+                      <CheckCircle className="h-4 w-4 text-[#1B463C] mr-2" />
                       <span>Dimensions: 16.79 x 11.94 inches</span>
                     </div>
                     <div className="flex items-center">
-                      <CheckCircle className="h-4 w-4 text-blue-600 mr-2" />
+                      <CheckCircle className="h-4 w-4 text-[#1B463C] mr-2" />
                       <span>Spine Width: 0 inches</span>
                     </div>
                     <div className="flex items-center">
-                      <CheckCircle className="h-4 w-4 text-blue-600 mr-2" />
+                      <CheckCircle className="h-4 w-4 text-[#1B463C] mr-2" />
                       <span>Fonts: Embedded</span>
                     </div>
                     <div className="flex items-center">
-                      <CheckCircle className="h-4 w-4 text-blue-600 mr-2" />
+                      <CheckCircle className="h-4 w-4 text-[#1B463C] mr-2" />
                       <span>Layers: Flattened</span>
                     </div>
                   </div>

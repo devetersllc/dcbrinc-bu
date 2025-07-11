@@ -448,7 +448,7 @@ export function PhotoBookPreview() {
 
             <div className="flex items-center space-x-2">
               {currentPage === 0 && hasCover && (
-                <div className="flex items-center text-sm text-blue-600 mr-2">
+                <div className="flex items-center text-sm text-[#1B463C] mr-2">
                   <BookOpen className="h-4 w-4 mr-1" />
                   Cover
                 </div>

@@ -15,7 +15,7 @@ export function ProjectDetails() {
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-blue-900">
+        <h1 className="text-2xl font-bold text-[#1B463C]">
           Promotional Information and Photo Book Details
         </h1>
         <p className="text-gray-600">
@@ -29,7 +29,7 @@ export function ProjectDetails() {
           <h1 className="text-xl font-bold">Project Details</h1>
           <div className="text-sm">
             Provide all important metadata to help readers find your book.{" "}
-            <Link href="#" className="text-blue-900 font-medium">
+            <Link href="#" className="text-[#1B463C] font-medium">
               Learn more about Metadata
             </Link>
           </div>

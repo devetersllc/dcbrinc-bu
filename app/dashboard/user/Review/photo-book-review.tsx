@@ -101,21 +101,21 @@ export default function PhotoBookReview() {
                 <span>{pageCount} Pages</span>
 
                 <span className="text-gray-600">Interior Color:</span>
-                <span className="text-blue-600">{interiorColor}</span>
+                <span className="text-[#1B463C]">{interiorColor}</span>
 
                 <span className="text-gray-600">Paper Type:</span>
-                <span className="text-blue-600">{paperType}</span>
+                <span className="text-[#1B463C]">{paperType}</span>
 
                 <span className="text-gray-600">Binding Type:</span>
-                <span className="text-blue-600">{bindingType}</span>
+                <span className="text-[#1B463C]">{bindingType}</span>
 
                 <span className="text-gray-600">Cover Finish:</span>
-                <span className="text-blue-600">{coverFinish}</span>
+                <span className="text-[#1B463C]">{coverFinish}</span>
               </div>
 
               <div className="pt-2">
                 <span className="text-gray-600 text-sm">Print Cost:</span>
-                <span className="text-blue-600 font-semibold ml-2">
+                <span className="text-[#1B463C] font-semibold ml-2">
                   {totalPrice?.toFixed(2)} USD
                 </span>
               </div>

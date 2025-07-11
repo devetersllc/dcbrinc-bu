@@ -38,7 +38,7 @@ export default function ContributorsCopyrightForm() {
               <p className="text-sm text-gray-600">
                 Select the copyright license that best suits your work. For more
                 information about copyright, please see{" "}
-                <a href="#" className="text-blue-600 hover:underline">
+                <a href="#" className="text-[#1B463C] hover:underline">
                   Copyright Office FAQ
                 </a>
               </p>
@@ -85,7 +85,7 @@ export default function ContributorsCopyrightForm() {
                   </div>
                   <button
                     onClick={() => toggleSection("allRights")}
-                    className="text-blue-600 hover:bg-blue-50 p-1 rounded"
+                    className="text-[#1B463C] hover:bg-blue-50 p-1 rounded"
                   >
                     {expandedSections.allRights ? (
                       <ChevronUp size={16} />
@@ -143,7 +143,7 @@ export default function ContributorsCopyrightForm() {
                     <p className="text-sm text-gray-600 mt-1">
                       Some rights are reserved, based on the specific Creative
                       Commons Licensing you select.{" "}
-                      <a href="#" className="text-blue-600 hover:underline">
+                      <a href="#" className="text-[#1B463C] hover:underline">
                         What is Creative Commons?
                       </a>
                     </p>
