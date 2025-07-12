@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
         const response = NextResponse.json({ success: true, message: "Token refreshed" })
         response.cookies.set("qb_access_token", refreshResult.accessToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
+          secure: true,
           sameSite: "lax",
           maxAge: 3600,
         })
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
         if (refreshResult.refreshToken) {
           response.cookies.set("qb_refresh_token", refreshResult.refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: true,
             sameSite: "lax",
             maxAge: 8640000,
           })
