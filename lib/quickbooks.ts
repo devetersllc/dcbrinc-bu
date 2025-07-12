@@ -213,6 +213,55 @@ export class QuickBooksPaymentService {
     this.config = config
   }
 
+  async getStoredAccessToken(): Promise<string | null> {
+    try {
+      // Import here to avoid circular dependency
+      const { connectToDatabase } = await import("@/lib/db")
+      const db = await connectToDatabase()
+      const tokensCollection = db.collection("quickbooks_tokens")
+
+      const tokenDoc = await tokensCollection.findOne({ isActive: true }, { sort: { createdAt: -1 } })
+
+      if (!tokenDoc) {
+        return null
+      }
+
+      // Check if token is expired
+      const now = new Date()
+      if (tokenDoc.expiresAt < now) {
+        // Try to refresh the token
+        if (tokenDoc.refreshToken) {
+          const refreshResult = await this.refreshAccessToken(tokenDoc.refreshToken)
+          if (refreshResult) {
+            // Update the token in database
+            const expiresAt = new Date(Date.now() + 3600 * 1000)
+            await tokensCollection.updateOne(
+              { _id: tokenDoc._id },
+              {
+                $set: {
+                  accessToken: refreshResult.accessToken,
+                  refreshToken: refreshResult.refreshToken || tokenDoc.refreshToken,
+                  expiresAt: expiresAt,
+                  updatedAt: new Date(),
+                },
+              },
+            )
+            return refreshResult.accessToken
+          }
+        }
+
+        // Mark token as inactive if refresh failed
+        await tokensCollection.updateOne({ _id: tokenDoc._id }, { $set: { isActive: false, updatedAt: now } })
+        return null
+      }
+
+      return tokenDoc.accessToken
+    } catch (error) {
+      console.error("Error getting stored access token:", error)
+      return null
+    }
+  }
+
   async createPayment(paymentData: PaymentRequest, accessToken?: string): Promise<PaymentResponse> {
     try {
       console.log("Processing production payment for order:", paymentData.orderId)
@@ -235,10 +284,10 @@ export class QuickBooksPaymentService {
         }
       }
 
-      // Use provided access token or try to get one
-      const token = accessToken
+      // Use provided access token or get stored one
+      const token = accessToken || (await this.getStoredAccessToken())
       if (!token) {
-        console.log("No access token provided, attempting to get one...")
+        console.log("No access token available")
         return {
           success: false,
           error: "QuickBooks authorization required",

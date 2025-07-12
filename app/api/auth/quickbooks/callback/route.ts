@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { quickbooksConfig } from "@/lib/quickbooks"
+import { connectToDatabase } from "@/lib/db"
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,12 +11,12 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error("QuickBooks OAuth error:", error)
-      return NextResponse.redirect(new URL("/dashboard/user?error=oauth_failed", request.url))
+      return NextResponse.redirect(new URL("/dashboard/admin?error=oauth_failed", request.url))
     }
 
     if (!code) {
       console.error("No authorization code received")
-      return NextResponse.redirect(new URL("/dashboard/user?error=no_code", request.url))
+      return NextResponse.redirect(new URL("/dashboard/admin?error=no_code", request.url))
     }
 
     console.log("Received authorization code:", code)
@@ -38,35 +39,48 @@ export async function GET(request: NextRequest) {
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text()
       console.error("Token exchange failed:", errorText)
-      return NextResponse.redirect(new URL("/dashboard/user?error=token_exchange_failed", request.url))
+      return NextResponse.redirect(new URL("/dashboard/admin?error=token_exchange_failed", request.url))
     }
 
     const tokenData = await tokenResponse.json()
     console.log("Token exchange successful")
 
-    // Store tokens in a simple way (in production, use a proper database)
-    const response = NextResponse.redirect(new URL("/dashboard/user?success=connected", request.url))
+    // Store token in database
+    try {
+      const db = await connectToDatabase()
+      const tokensCollection = db.collection("quickbooks_tokens")
 
-    // Set secure cookies with the tokens
-    response.cookies.set("qb_access_token", tokenData.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: tokenData.expires_in || 3600,
-    })
+      // First, mark any existing tokens as inactive
+      await tokensCollection.updateMany({ isActive: true }, { $set: { isActive: false, updatedAt: new Date() } })
 
-    if (tokenData.refresh_token) {
-      response.cookies.set("qb_refresh_token", tokenData.refresh_token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 8640000, // 100 days
-      })
+      // Calculate expiration time
+      const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000)
+
+      // Insert new token
+      const tokenDocument = {
+        accessToken: tokenData.access_token,
+        refreshToken: tokenData.refresh_token,
+        tokenType: tokenData.token_type || "Bearer",
+        expiresIn: tokenData.expires_in || 3600,
+        expiresAt: expiresAt,
+        scope: tokenData.scope || "",
+        companyId: tokenData.realmId || "",
+        companyName: "QuickBooks Company", // You can fetch this later if needed
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        isActive: true,
+      }
+
+      await tokensCollection.insertOne(tokenDocument)
+      console.log("Token stored in database successfully")
+    } catch (dbError) {
+      console.error("Failed to store token in database:", dbError)
+      return NextResponse.redirect(new URL("/dashboard/admin?error=database_failed", request.url))
     }
 
-    return response
+    return NextResponse.redirect(new URL("/dashboard/admin?success=connected", request.url))
   } catch (error) {
     console.error("Callback error:", error)
-    return NextResponse.redirect(new URL("/dashboard/user?error=callback_failed", request.url))
+    return NextResponse.redirect(new URL("/dashboard/admin?error=callback_failed", request.url))
   }
 }
