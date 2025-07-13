@@ -9,7 +9,7 @@ export interface GeneralState {
 const initialState: GeneralState = {
   activeTab: 0,
   areFieldsEmptyCheck: true,
-  serviceType: "cards",
+  serviceType: "books",
 };
 
 const startpageSlice = createSlice({
