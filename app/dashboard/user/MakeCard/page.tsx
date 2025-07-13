@@ -7,25 +7,27 @@ import { useDispatch } from "react-redux";
 import { setActiveTab } from "@/lib/features/general/general";
 
 const colorsArray: string[] = [
-  "bg-red-200",
-  "bg-blue-200",
-  "bg-green-200",
-  "bg-yellow-200",
-  "bg-purple-200",
-  "bg-pink-200",
-  "bg-orange-200",
-  "bg-gray-200",
+  "#1A1A1A", // Charcoal
+  "#0D47A1", // Navy Blue
+  "#2C3E50", // Dark Slate
+  "#34495E", // Midnight Blue
+  "#ECECEC", // Soft Gray
+  "#004D40", // Teal
+  "#3E2723", // Dark Brown
+  "#B71C1C", // Deep Red
+  "#263238", // Blue Gray
 ];
 
 const textColorsArray: string[] = [
-  "text-red-800",
-  "text-blue-600",
-  "text-green-600",
-  "text-yellow-500",
-  "text-purple-500",
-  "text-pink-400",
-  "text-orange-600",
-  "text-gray-700",
+  "#000000", // Black
+  "#212121", // Dark Gray
+  "#333333", // Almost Black
+  "#F5F5F5", // Off White
+  "#BDBDBD", // Medium Gray
+  "#E0E0E0", // Light Gray
+  "#FFD700", // Gold (for accents)
+  "#1976D2", // Blue Accent
+  "#C62828", // Red Accent
 ];
 
 export default function MakeCard() {
@@ -292,7 +294,8 @@ export function CardPreview({ hideActions = false }) {
     <div className="relative w-full xl:w-[calc(40%-10px)] p-4 rounded-lg border-2 flex flex-col justify-start items-start overflow-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
       <div
         ref={divRef}
-        className={`w-[336px] h-[192px] px-3 border-2 border-black ${makeCard.currentBgColor} ${makeCard.currentTextColor} `}
+        className={`w-[336px] h-[192px] px-3 border-2 border-black`}
+        style={{ backgroundColor: makeCard.currentBgColor, color: makeCard.currentTextColor }}
       >
         <div className="flex items-center justify-start pt-4 w-fit h-fit gap-2">
           <div className="flex items-center justify-center w-[50px] h-[50px] rounded">
@@ -354,10 +357,11 @@ export function CardPreview({ hideActions = false }) {
           <div className=" w-full h-fit mt-6 flex items-center justify-start gap-2 overflow-auto">
             {colorsArray.map((color, index) => (
               <div
-                className={`w-[30px] h-[30px] rounded-full ${color}`}
+                className={`w-[30px] h-[30px] rounded-full cursor-pointer`}
                 onClick={() => {
                   dispatch(setCurrentBgColor(color));
                 }}
+                style={{ backgroundColor: color }}
               ></div>
             ))}
           </div>
@@ -365,13 +369,11 @@ export function CardPreview({ hideActions = false }) {
           <div className=" w-full h-fit mt-6 flex items-center justify-start gap-2 overflow-auto">
             {textColorsArray.map((color, index) => (
               <div
-                className={`w-[30px] h-[30px] rounded-full ${color.replaceAll(
-                  "text-",
-                  "bg-"
-                )}`}
+                className={`w-[30px] h-[30px] rounded-full cursor-pointer`}
                 onClick={() => {
                   dispatch(setCurrentTextColor(color));
                 }}
+                style={{ backgroundColor: color }}
               ></div>
             ))}
           </div>
