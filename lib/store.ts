@@ -6,6 +6,7 @@ import designReducer from "@/lib/features/data/designSlice";
 import detailReducer from "@/lib/features/data/detailSlice";
 import priceReducer from "@/lib/features/data/priceSlice";
 import generalReducer from "@/lib/features/general/general";
+import makeCardReducer from "@/lib/features/data/makeCard";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     detail: detailReducer,
     price: priceReducer,
     general: generalReducer,
+    makeCard: makeCardReducer,
   },
   devTools: process.env.NODE_ENV !== "production",
 });

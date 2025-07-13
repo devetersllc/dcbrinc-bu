@@ -11,30 +11,26 @@ import Review from "./Review/page";
 import { setActiveTab } from "@/lib/features/general/general";
 import { useDispatch } from "react-redux";
 import { useCallback, useMemo } from "react";
+import MakeCard from "./MakeCard/page";
 
 export default function MainTabs() {
   const dispatch = useDispatch();
   const state = useSelector((state: RootState) => state);
   const general = useSelector((state: RootState) => state.general);
   const startPage = useSelector((state: RootState) => state.startPage);
-  console.log("state", state.design);
+  console.log("general.serviceType", general.serviceType);
 
   const TabsArray = useMemo(
     () => [
-      { name: "Start", page: Start },
-      // ...(startPage.goal === "publish"
-      //   ? [{ name: "CopyRight", page: CopyRight }]
-      //   : []),
-      { name: "Design", page: Design },
-      // ...(startPage.goal === "publish"
-      //   ? [
-      //       { name: "Details", page: Details },
-      //       { name: "Pricing", page: Pricing },
-      //     ]
-      //   : []),
+      ...(general.serviceType === "books"
+        ? [
+            { name: "Start", page: Start },
+            { name: "Design", page: Design },
+          ]
+        : [{ name: "Make Card", page: MakeCard }]),
       { name: "Review", page: Review },
     ],
-    [startPage.goal]
+    [general.serviceType]
   );
 
   const tabEnabled = useCallback(
@@ -60,7 +56,7 @@ export default function MainTabs() {
       <div className="px- w-full sticky top-1 z-10">
         <TabsList
           className={`grid border-2 ${
-            startPage.goal === "publish" ? "grid-cols-3" : "grid-cols-3"
+            general.serviceType === "books" ? "grid-cols-3" : "grid-cols-2"
           }`}
         >
           {TabsArray.map((tab, index) => (

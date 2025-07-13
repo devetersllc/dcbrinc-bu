@@ -30,7 +30,7 @@ export function PhotoBookDetails() {
 
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
-      <div className="bg-white p-8 rounded-lg mb-4">
+      <div className="bg-white p- rounded-lg mb-4">
         <h1 className="text-xl font-bold mb-6">Photo Book Details</h1>
 
         <div className="space-y-6">

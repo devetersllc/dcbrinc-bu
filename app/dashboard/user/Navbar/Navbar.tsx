@@ -2,12 +2,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import ProfileDropDown from "./ProfileDropDown";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
+import { setServiceType } from "@/lib/features/general/general";
 
 export default function Navbar() {
+  const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector(
     (state: RootState) => state.auth
   );
@@ -28,15 +30,36 @@ export default function Navbar() {
           height={10}
         />
       </Link>
-      <div className="flex justify-start gap-4 items-center ">
-        {user && (
-          <div className="flex items-center space-x-4">
-            <div className="text-sm text-gray-600">
-              Welcome, <span className="font-medium">{user.name}</span>
+
+      <div className="flex justify-start gap-2 md:gap-6 items-center">
+        <div className="flex justify-start gap-2 md:gap-4 items-center">
+          <span
+            className="text-sm text-gray-600 cursor-pointer hover:underline"
+            onClick={() => {
+              dispatch(setServiceType("books"));
+            }}
+          >
+            Books
+          </span>
+          <span
+            className="text-sm text-gray-600 cursor-pointer hover:underline"
+            onClick={() => {
+              dispatch(setServiceType("cards"));
+            }}
+          >
+            Cards
+          </span>
+        </div>
+        <div className="flex justify-start gap-4 items-center border-l pl-2 md:pl-4">
+          {user && (
+            <div className="items-center space-x-4 hidden md:flex">
+              <div className="text-sm text-gray-600">
+                Welcome, <span className="font-medium">{user.name}</span>
+              </div>
             </div>
-          </div>
-        )}
-        <ProfileDropDown />
+          )}
+          <ProfileDropDown />
+        </div>
       </div>
     </div>
   );

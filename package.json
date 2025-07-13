@@ -45,8 +45,10 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "latest",
+    "downloadjs": "^1.4.7",
     "embla-carousel-react": "latest",
     "gcp-metadata": "latest",
+    "html-to-image": "^1.11.13",
     "input-otp": "latest",
     "jsonwebtoken": "latest",
     "kerberos": "latest",
@@ -72,6 +74,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@types/downloadjs": "^1.4.6",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
