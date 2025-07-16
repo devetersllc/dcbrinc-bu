@@ -116,7 +116,7 @@ export function LoginForm({ userType }: LoginFormProps) {
           />
           {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
         </div>
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button variant={"main"} type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Signing in..." : "Sign In"}
         </Button>
       </form>

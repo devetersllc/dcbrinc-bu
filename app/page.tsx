@@ -33,7 +33,7 @@ export default function Home() {
         </p>
         {!isAuthenticated && (
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <Button asChild size="lg">
+            <Button asChild size="lg" variant="main">
               <Link href="/auth/login">Login</Link>
             </Button>
             {isAdmin === false && (

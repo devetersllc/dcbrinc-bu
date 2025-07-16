@@ -11,6 +11,7 @@
   "dependencies": {
     "@aws-sdk/credential-providers": "latest",
     "@hookform/resolvers": "latest",
+    "@lottiefiles/dotlottie-react": "^0.14.3",
     "@mongodb-js/zstd": "latest",
     "@radix-ui/react-accordion": "latest",
     "@radix-ui/react-alert-dialog": "latest",
