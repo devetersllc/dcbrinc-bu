@@ -1,6 +1,7 @@
 "use client";
 import { useSelector } from "react-redux";
-import { RootState } from "@/lib/store";
+import type React from "react";
+import type { RootState } from "@/lib/store";
 import { useDispatch } from "react-redux";
 import { toPng } from "html-to-image";
 import download from "downloadjs";
@@ -10,7 +11,7 @@ import {
   setCurrentBgColor,
   setCurrentTextColor,
 } from "@/lib/features/data/makeCard";
-import { Download, PaintBucket, PenLine, Text, Type } from "lucide-react";
+import { Download, PaintBucket, PenLine } from "lucide-react";
 
 const colorsArray: string[] = [
   "#1A1A1A",
@@ -47,7 +48,7 @@ export default function CardPreview({ hideActions = false }) {
     if (divRef.current === null) return;
 
     const dataUrl = await toPng(divRef.current);
-    download(dataUrl, "downloaded-div.png");
+    download(dataUrl, "business-card.png");
   };
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -73,7 +74,7 @@ export default function CardPreview({ hideActions = false }) {
           {makeCard.imageUrl?.previewUrl && (
             <div className="flex items-center justify-center max-w-[50px] max-h-[50px] rounded">
               <Image
-                src={makeCard.imageUrl?.previewUrl}
+                src={makeCard.imageUrl?.previewUrl || "/placeholder.svg"}
                 alt="Company Logo"
                 className="object-contain h-full w-full"
                 width={500}

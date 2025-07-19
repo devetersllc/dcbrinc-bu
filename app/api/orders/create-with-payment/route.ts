@@ -8,51 +8,67 @@ export async function POST(request: NextRequest) {
     const { orderData, paymentData } = requestData;
 
     // Validate required fields
-    const requiredOrderFields = [
-      "name",
-      "email",
-      "pdfCloudinaryUrl",
-      "coverCloudinaryUrl",
-      "bookSize",
-      "pageCount",
-      "interiorColor",
-      "paperType",
-      "bindingType",
-      "coverFinish",
-      "totalPrice",
-    ];
-
-    for (const field of requiredOrderFields) {
-      if (!orderData[field]) {
-        return NextResponse.json(
-          { error: `Missing required order field: ${field}` },
-          { status: 400 }
-        );
-      }
-    }
-
-    // Validate payment data
     if (!paymentData?.paymentId || !paymentData?.transactionId) {
       return NextResponse.json(
         { error: "Valid payment information is required" },
         { status: 400 }
       );
     }
+    const orderType = orderData.type || "book";
+    if (orderType === "book") {
+      const requiredBookFields = [
+        "name",
+        "email",
+        "pdfCloudinaryUrl",
+        "coverCloudinaryUrl",
+        "bookSize",
+        "pageCount",
+        "interiorColor",
+        "paperType",
+        "bindingType",
+        "coverFinish",
+        "totalPrice",
+      ];
+
+      for (const field of requiredBookFields) {
+        if (!orderData[field]) {
+          return NextResponse.json(
+            { error: `Missing required book field: ${field}` },
+            { status: 400 }
+          );
+        }
+      }
+    } else if (orderType === "card") {
+      const requiredCardFields = [
+        "name",
+        "email",
+        "cardImageUrl",
+        "cardData",
+        "totalPrice",
+      ];
+      for (const field of requiredCardFields) {
+        if (!orderData[field]) {
+          return NextResponse.json(
+            { error: `Missing required card field: ${field}` },
+            { status: 400 }
+          );
+        }
+      }
+      if (!orderData.cardData.companyName || !orderData.cardData.jobTitle) {
+        return NextResponse.json(
+          { error: "Missing required card data fields" },
+          { status: 400 }
+        );
+      }
+    }
 
     const db = await connectToDatabase();
 
     // Create the order object with payment information
-    const order = {
+    let order: any = {
+      type: orderType,
       name: orderData.name,
       email: orderData.email,
-      pdfCloudinaryUrl: orderData.pdfCloudinaryUrl,
-      coverCloudinaryUrl: orderData.coverCloudinaryUrl,
-      bookSize: orderData.bookSize,
-      pageCount: Number.parseInt(orderData.pageCount),
-      interiorColor: orderData.interiorColor,
-      paperType: orderData.paperType,
-      bindingType: orderData.bindingType,
-      coverFinish: orderData.coverFinish,
       totalPrice: Number.parseFloat(orderData.totalPrice),
       status: "pending",
       orderDate: new Date(),
@@ -65,6 +81,25 @@ export async function POST(request: NextRequest) {
         currency: "USD",
       },
     };
+    if (orderType === "book") {
+      order = {
+        ...order,
+        pdfCloudinaryUrl: orderData.pdfCloudinaryUrl,
+        coverCloudinaryUrl: orderData.coverCloudinaryUrl,
+        bookSize: orderData.bookSize,
+        pageCount: Number.parseInt(orderData.pageCount),
+        interiorColor: orderData.interiorColor,
+        paperType: orderData.paperType,
+        bindingType: orderData.bindingType,
+        coverFinish: orderData.coverFinish,
+      };
+    } else if (orderType === "card") {
+      order = {
+        ...order,
+        cardImageUrl: orderData.cardImageUrl,
+        cardData: orderData.cardData,
+      };
+    }
 
     // Save the order to database
     const result = await db.collection("orders").insertOne(order);
@@ -79,7 +114,9 @@ export async function POST(request: NextRequest) {
       success: true,
       orderId: result.insertedId,
       paymentId: paymentData.paymentId,
-      message: "Order created successfully with payment confirmation",
+      message: `${
+        orderType === "book" ? "Book" : "Card"
+      } order created successfully with payment confirmation`,
     });
   } catch (error) {
     console.error("Failed to create order with payment:", error);

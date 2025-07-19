@@ -22,11 +22,12 @@ export async function GET(request: NextRequest) {
     const page = Number.parseInt(searchParams.get("page") || "1");
     const limit = Number.parseInt(searchParams.get("limit") || "10");
     const search = searchParams.get("search") || "";
+    const type = searchParams.get("type") || ""; // Filter by order type
 
     const db = await connectToDatabase();
 
     // Build search query
-    let searchQuery = {};
+    let searchQuery: any = {};
     if (search) {
       searchQuery = {
         $or: [
@@ -34,8 +35,12 @@ export async function GET(request: NextRequest) {
           { email: { $regex: search, $options: "i" } },
           { status: { $regex: search, $options: "i" } },
           { bookSize: { $regex: search, $options: "i" } },
+          { type: { $regex: search, $options: "i" } },
         ],
       };
+    }
+    if (type && (type === "book" || type === "card")) {
+      searchQuery.type = type;
     }
 
     // Calculate skip value for pagination
@@ -89,9 +94,14 @@ export async function POST(request: NextRequest) {
     const orderData = await request.json();
 
     // Validate required fields
-    const requiredFields = [
-      "name",
-      "email",
+    if (!orderData.type || !["book", "card"].includes(orderData.type)) {
+      return NextResponse.json(
+        { error: "Invalid or missing order type" },
+        { status: 400 }
+      );
+    }
+    const commonRequiredFields = ["name", "email", "totalPrice", "type"];
+    const bookRequiredFields = [
       "pdfCloudinaryUrl",
       "coverCloudinaryUrl",
       "bookSize",
@@ -100,45 +110,68 @@ export async function POST(request: NextRequest) {
       "paperType",
       "bindingType",
       "coverFinish",
-      "totalPrice",
     ];
 
-    for (const field of requiredFields) {
+    const cardRequiredFields = ["cardImageUrl", "cardData"];
+    for (const field of commonRequiredFields) {
       if (!orderData[field]) {
         return NextResponse.json(
-          {
-            error: `Missing required field: ${field}`,
-          },
+          { error: `Missing required field: ${field}` },
           { status: 400 }
         );
+      }
+    }
+    if (orderData.type === "book") {
+      for (const field of bookRequiredFields) {
+        if (!orderData[field]) {
+          return NextResponse.json(
+            { error: `Missing required field for book order: ${field}` },
+            { status: 400 }
+          );
+        }
+      }
+    } else if (orderData.type === "card") {
+      for (const field of cardRequiredFields) {
+        if (!orderData[field]) {
+          return NextResponse.json(
+            { error: `Missing required field for card order: ${field}` },
+            { status: 400 }
+          );
+        }
       }
     }
 
     const db = await connectToDatabase();
 
     // Create the order object
-    const order = {
+    const order: any = {
       name: orderData.name,
       email: orderData.email,
-      pdfCloudinaryUrl: orderData.pdfCloudinaryUrl,
-      coverCloudinaryUrl: orderData.coverCloudinaryUrl,
-      bookSize: orderData.bookSize,
-      pageCount: Number.parseInt(orderData.pageCount),
-      interiorColor: orderData.interiorColor,
-      paperType: orderData.paperType,
-      bindingType: orderData.bindingType,
-      coverFinish: orderData.coverFinish,
+      type: orderData.type,
       totalPrice: Number.parseFloat(orderData.totalPrice),
       status: "pending",
       orderDate: new Date(),
     };
+    if (orderData.type === "book") {
+      order.pdfCloudinaryUrl = orderData.pdfCloudinaryUrl;
+      order.coverCloudinaryUrl = orderData.coverCloudinaryUrl;
+      order.bookSize = orderData.bookSize;
+      order.pageCount = Number.parseInt(orderData.pageCount);
+      order.interiorColor = orderData.interiorColor;
+      order.paperType = orderData.paperType;
+      order.bindingType = orderData.bindingType;
+      order.coverFinish = orderData.coverFinish;
+    } else if (orderData.type === "card") {
+      order.cardImageUrl = orderData.cardImageUrl;
+      order.cardData = orderData.cardData;
+    }
 
     const result = await db.collection("orders").insertOne(order);
 
     return NextResponse.json({
       success: true,
       orderId: result.insertedId,
-      message: "Order created successfully",
+      message: `${orderData.type} order created successfully`,
     });
   } catch (error) {
     console.error("Failed to create order:", error);

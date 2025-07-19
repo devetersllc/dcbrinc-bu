@@ -4,9 +4,8 @@ import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useSelector } from "react-redux";
-import { RootState } from "@/lib/store";
+import type { RootState } from "@/lib/store";
 import { useRef } from "react";
-import CardPreview from "../MakeCard/CardPreview";
 
 export default function PhotoBookReview() {
   const {
@@ -20,6 +19,7 @@ export default function PhotoBookReview() {
   } = useSelector((state: RootState) => state.design);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const general = useSelector((state: RootState) => state.general);
+  const makeCard = useSelector((state: RootState) => state.makeCard);
 
   const downloadPDF = (cloudinaryUrl: any, fileName: string | undefined) => {
     if (cloudinaryUrl) {
@@ -60,13 +60,11 @@ export default function PhotoBookReview() {
 
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
-      {
-        general.serviceType === "books" ? (
-          <h1 className="text-xl font-bold mb-4">Review Your Photo Book</h1>
-        ) : (
-          <h1 className="text-xl font-bold mb-4">Review Your Card</h1>
-        )
-      }
+      {general.serviceType === "books" ? (
+        <h1 className="text-xl font-bold mb-4">Review Your Photo Book</h1>
+      ) : (
+        <h1 className="text-xl font-bold mb-4">Review Your Card</h1>
+      )}
       {general.serviceType === "books" ? (
         <div className="bg-white p-6 rounded-md shadow-sm">
           <div className="flex flex-col md:flex-row gap-6">
@@ -158,7 +156,134 @@ export default function PhotoBookReview() {
           </div>
         </div>
       ) : (
-        <CardPreview hideActions />
+        <div className="bg-white p-6 rounded-md shadow-sm">
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="flex-shrink-0" data-card-preview>
+              <div
+                className={`w-[336px] h-[192px] px-3 border-2 border-black`}
+                style={{
+                  backgroundColor: makeCard.currentBgColor,
+                  color: makeCard.currentTextColor,
+                }}
+              >
+                <div className="flex items-center justify-start pt-4 w-fit h-fit gap-2">
+                  {makeCard.imageUrl?.previewUrl && (
+                    <div className="flex items-center justify-center max-w-[50px] max-h-[50px] rounded">
+                      <Image
+                        src={
+                          makeCard.imageUrl?.previewUrl || "/placeholder.svg"
+                        }
+                        alt="Company Logo"
+                        className="object-contain h-full w-full"
+                        width={500}
+                        height={300}
+                      />
+                    </div>
+                  )}
+                  <div className="flex flex-col gap-0 ">
+                    <span className="text-sm font-semibold">
+                      {makeCard.companyName || "Company Name"}
+                    </span>
+                    <span className="text-xs font-extralight italic">
+                      {makeCard.companyMessage || "Company Message"}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-end pt-2 w-full h-fit gap-2 ">
+                  <div className="flex flex-col gap-0 items-end">
+                    <span className="text-sm font-normal">
+                      {makeCard.name || "Your Name"}
+                    </span>
+                    <span className="text-xs font-extralight">
+                      {makeCard.jobTitle || "Your Job Title"}
+                    </span>
+                    <span className="text-xs font-extralight">
+                      {makeCard.email || "Your Email"}
+                    </span>
+                  </div>
+                </div>
+                <div
+                  className="h-[1px] w-full mt-2 rounded-full"
+                  style={{
+                    background: `linear-gradient(135deg,transparent, ${makeCard.currentTextColor}, transparent)`,
+                  }}
+                ></div>
+                <div className="flex items-center justify-start pt-2 w-full h-fit gap-2">
+                  <div className="flex flex-col gap-0 items-start w-full">
+                    <span className="text-xs font-normal">
+                      {makeCard.address || "Your Address"}
+                    </span>
+                    <div className="w-full flex justify-between items-center">
+                      <span className="text-xs font-normal">
+                        {makeCard.phone || "Your Phone"}
+                      </span>
+                      {makeCard.website && (
+                        <span className="text-xs font-normal">
+                          {makeCard.website || "Your Website"}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-grow">
+              <div className="space-y-3">
+                <h3 className="font-semibold">Business Card Specifications</h3>
+
+                <div className="grid grid-cols-[auto_1fr] gap-x-2 text-sm">
+                  <span className="text-gray-600">Card Size:</span>
+                  <span>Standard (3.5 x 2 in / 89 x 51 mm)</span>
+
+                  <span className="text-gray-600">Company Name:</span>
+                  <span className="text-[#1B463C]">
+                    {makeCard.companyName || "Not specified"}
+                  </span>
+
+                  <span className="text-gray-600">Your Name:</span>
+                  <span className="text-[#1B463C]">
+                    {makeCard.name || "Not specified"}
+                  </span>
+
+                  <span className="text-gray-600">Job Title:</span>
+                  <span className="text-[#1B463C]">
+                    {makeCard.jobTitle || "Not specified"}
+                  </span>
+
+                  <span className="text-gray-600">Email:</span>
+                  <span className="text-[#1B463C]">
+                    {makeCard.email || "Not specified"}
+                  </span>
+
+                  <span className="text-gray-600">Phone:</span>
+                  <span className="text-[#1B463C]">
+                    {makeCard.phone || "Not specified"}
+                  </span>
+
+                  <span className="text-gray-600">Address:</span>
+                  <span className="text-[#1B463C]">
+                    {makeCard.address || "Not specified"}
+                  </span>
+
+                  {makeCard.website && (
+                    <>
+                      <span className="text-gray-600">Website:</span>
+                      <span className="text-[#1B463C]">{makeCard.website}</span>
+                    </>
+                  )}
+                </div>
+
+                <div className="pt-2">
+                  <span className="text-gray-600 text-sm">Print Cost:</span>
+                  <span className="text-[#1B463C] font-semibold ml-2">
+                    $25.00 USD
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
