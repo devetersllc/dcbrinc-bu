@@ -733,41 +733,18 @@ function AdminDashboardContent() {
 
       {/* QuickBooks Integration Section - Only show for full admin */}
       {isFullAdmin && (
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="space-y-4">
+        <div className="grid gap-6 md:grid-cols-1 w-full">
+          <div className="space-y-4 w-full">
             <h2 className="text-2xl font-semibold tracking-tight">
               Payment Integration
             </h2>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground w-2/3">
               Connect your QuickBooks account to enable payment processing for
               all users. This is a one-time setup that allows the application to
               process payments on behalf of your business.
             </p>
             <QuickBooksConnectButton />
           </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Integration Status</CardTitle>
-              <CardDescription>
-                Current status of third-party integrations
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Email Service</span>
-                <span className="text-sm text-green-600">Connected</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Database</span>
-                <span className="text-sm text-green-600">Connected</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">File Storage</span>
-                <span className="text-sm text-green-600">Connected</span>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       )}
 

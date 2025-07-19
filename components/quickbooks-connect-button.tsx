@@ -112,7 +112,7 @@ export function QuickBooksConnectButton() {
 
   if (isLoading) {
     return (
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-full">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <div className="w-6 h-6 bg-blue-600 rounded"></div>
@@ -131,7 +131,7 @@ export function QuickBooksConnectButton() {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
