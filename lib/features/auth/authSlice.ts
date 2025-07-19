@@ -1,10 +1,17 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
+export interface UserPermissions {
+  cardOrders: boolean;
+  bookOrders: boolean;
+  users: boolean;
+}
+
 export interface User {
   _id: string;
   name: string;
   email: string;
-  role: "user" | "admin";
+  role: "user" | "admin" | "sub-admin";
+  permissions?: UserPermissions;
   createdAt: string;
 }
 
