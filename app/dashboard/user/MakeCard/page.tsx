@@ -18,7 +18,7 @@ import {
   setPhone,
   setWebsite,
 } from "@/lib/features/data/makeCard";
-import { CardPreview } from "./CardPreview";
+import CardPreview from "./CardPreview";
 
 export default function MakeCard() {
   const dispatch = useDispatch();

@@ -10,7 +10,7 @@ import {
   setCurrentBgColor,
   setCurrentTextColor,
 } from "@/lib/features/data/makeCard";
-import { Download } from "lucide-react";
+import { Download, PaintBucket, PenLine, Text, Type } from "lucide-react";
 
 const colorsArray: string[] = [
   "#1A1A1A",
@@ -36,7 +36,7 @@ const textColorsArray: string[] = [
   "#C62828",
 ];
 
-export function CardPreview({ hideActions = false }) {
+export default function CardPreview({ hideActions = false }) {
   const divRef = useRef<HTMLDivElement>(null);
   const makeCard = useSelector((state: RootState) => state.makeCard);
   const dispatch = useDispatch();
@@ -70,8 +70,8 @@ export function CardPreview({ hideActions = false }) {
         }}
       >
         <div className="flex items-center justify-start pt-4 w-fit h-fit gap-2">
-          <div className="flex items-center justify-center max-w-[50px] max-h-[50px] rounded">
-            {makeCard.imageUrl?.previewUrl ? (
+          {makeCard.imageUrl?.previewUrl && (
+            <div className="flex items-center justify-center max-w-[50px] max-h-[50px] rounded">
               <Image
                 src={makeCard.imageUrl?.previewUrl}
                 alt="Company Logo"
@@ -79,10 +79,8 @@ export function CardPreview({ hideActions = false }) {
                 width={500}
                 height={300}
               />
-            ) : (
-              <div className="border-2 border-solid border-black w-full h-full bg-white"></div>
-            )}
-          </div>
+            </div>
+          )}
           <div className="flex flex-col gap-0 ">
             <span className="text-sm font-semibold">
               {makeCard.companyName || "Company Name"}
@@ -105,7 +103,12 @@ export function CardPreview({ hideActions = false }) {
             </span>
           </div>
         </div>
-        <div className="border-[1px] border-black mt-2 rounded-full"></div>
+        <div
+          className="h-[1px] w-full mt-2 rounded-full"
+          style={{
+            background: `linear-gradient(135deg,transparent, ${makeCard.currentTextColor}, transparent)`,
+          }}
+        ></div>
         <div className="flex items-center justify-start pt-2 w-full h-fit gap-2">
           <div className="flex flex-col gap-0 items-start w-full">
             <span className="text-xs font-normal">
@@ -127,17 +130,9 @@ export function CardPreview({ hideActions = false }) {
       {!hideActions && (
         <div className="flex flex-col justify-start items-start w-full">
           <div className=" w-full h-fit mt-6 flex items-center justify-start gap-2 overflow-auto">
-            {colorsArray.map((color, index) => (
-              <div
-                className={`w-[30px] h-[30px] rounded-full cursor-pointer`}
-                onClick={() => {
-                  dispatch(setCurrentBgColor(color));
-                }}
-                style={{ backgroundColor: color }}
-              ></div>
-            ))}
+            <PaintBucket />
             <div
-              className={`w-[30px] h-[30px] rounded-full cursor-pointer overflow-hidden flex items-center justify-center`}
+              className={`w-[30px] h-[30px] rounded-full overflow-hidden flex items-center justify-center`}
               style={{
                 background: `linear-gradient(135deg, ${
                   bgCustomColor || "#000000"
@@ -152,20 +147,22 @@ export function CardPreview({ hideActions = false }) {
                 className="w-[150%] h-[150%] rounded-full border-none outline-none opacity-0"
               />
             </div>
-          </div>
-
-          <div className=" w-full h-fit mt-6 flex items-center justify-start gap-2 overflow-auto">
-            {textColorsArray.map((color, index) => (
+            {colorsArray.map((color, index) => (
               <div
+                key={index}
                 className={`w-[30px] h-[30px] rounded-full cursor-pointer`}
                 onClick={() => {
-                  dispatch(setCurrentTextColor(color));
+                  dispatch(setCurrentBgColor(color));
                 }}
                 style={{ backgroundColor: color }}
               ></div>
             ))}
+          </div>
+
+          <div className=" w-full h-fit mt-6 flex items-center justify-start gap-2 overflow-auto">
+            <PenLine size={20} />
             <div
-              className={`w-[30px] h-[30px] rounded-full cursor-pointer overflow-hidden flex items-center justify-center`}
+              className={`w-[30px] h-[30px] rounded-full overflow-hidden flex items-center justify-center`}
               style={{
                 background: `linear-gradient(135deg, ${
                   textCustomColor || "#000000"
@@ -180,6 +177,16 @@ export function CardPreview({ hideActions = false }) {
                 className="w-[150%] h-[150%] rounded-full border-none outline-none opacity-0"
               />
             </div>
+            {textColorsArray.map((color, index) => (
+              <div
+                key={index}
+                className={`w-[30px] h-[30px] rounded-full cursor-pointer`}
+                onClick={() => {
+                  dispatch(setCurrentTextColor(color));
+                }}
+                style={{ backgroundColor: color }}
+              ></div>
+            ))}
           </div>
         </div>
       )}

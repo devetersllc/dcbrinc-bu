@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import { useRef } from "react";
-import { CardPreview } from "../MakeCard/page";
+import CardPreview from "../MakeCard/CardPreview";
 
 export default function PhotoBookReview() {
   const {
