@@ -709,7 +709,7 @@ function AdminDashboardContent() {
       {/* Stats Grid - Only show for full admin */}
       {isFullAdmin && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {statsData.map((stat, index) => {
+          {statsData?.map((stat, index) => {
             const Icon = stat.icon;
             return (
               <Card key={index}>
