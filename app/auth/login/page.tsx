@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/hooks";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import loginPage from "@/public/assets/Login-amico.svg";
+import loginPage from "@/public/assets/Login-bro.svg";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/lib/store";
@@ -42,7 +42,7 @@ export default function LoginPage() {
     <div className="flex h-screen w-full items-center bg-white justify-between">
       <Link
         href="/"
-        className="absolute left-4 top-4 md:left-24 md:top-24 2xl:left-40 2xl:top-40"
+        className="absolute left-4 top-4 md:left-24 md:top-12 2xl:left-40 2xl:top-24"
       >
         <Image
           src="https://dcbrinc.com/wp-content/uploads/2025/03/IMG_6463-2-1024x779-1.png"
