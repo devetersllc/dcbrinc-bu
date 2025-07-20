@@ -1,85 +1,91 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { CheckCircle2, Eye, Home, Package } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Skeleton } from "@/components/ui/skeleton"
+import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { CheckCircle2, Eye, Home, Package } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface OrderDetails {
-  _id: string
-  name: string
-  email: string
-  bookSize: string
-  pageCount: number
-  interiorColor: string
-  paperType: string
-  bindingType: string
-  coverFinish: string
-  totalPrice: number
-  status: string
-  orderDate: string
+  _id: string;
+  name: string;
+  email: string;
+  bookSize: string;
+  pageCount: number;
+  interiorColor: string;
+  paperType: string;
+  bindingType: string;
+  coverFinish: string;
+  totalPrice: number;
+  status: string;
+  orderDate: string;
   paymentInfo: {
-    paymentId: string
-    transactionId: string
-    status: string
-    amount: number
-    currency: string
-  }
+    paymentId: string;
+    transactionId: string;
+    status: string;
+    amount: number;
+    currency: string;
+  };
 }
 
 export default function SuccessPage() {
-  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const searchParams = useSearchParams()
-  const router = useRouter()
+  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  const orderId = searchParams.get("orderId")
-  const paymentId = searchParams.get("paymentId")
+  const orderId = searchParams.get("orderId");
+  const paymentId = searchParams.get("paymentId");
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
       if (!orderId) {
-        setError("Order ID not found")
-        setLoading(false)
-        return
+        setError("Order ID not found");
+        setLoading(false);
+        return;
       }
 
       try {
-        const response = await fetch(`/api/orders/${orderId}`)
-        const result = await response.json()
+        const response = await fetch(`/api/orders/${orderId}`);
+        const result = await response.json();
 
         if (response.ok && result.success) {
-          setOrderDetails(result.order)
+          setOrderDetails(result.order);
         } else {
-          setError(result.error || "Failed to fetch order details")
+          setError(result.error || "Failed to fetch order details");
         }
       } catch (err) {
-        setError("Network error occurred")
+        setError("Network error occurred");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchOrderDetails()
-  }, [orderId])
+    fetchOrderDetails();
+  }, [orderId]);
 
   const handleGoToDashboard = () => {
-    router.push("/dashboard/user")
-  }
+    router.push("/");
+  };
 
   const handleViewOrders = () => {
-    router.push("/dashboard/user/orders")
-  }
+    router.push("/dashboard/user/orders");
+  };
 
   const handleGoHome = () => {
-    router.push("/")
-  }
+    router.push("/");
+  };
 
   if (loading) {
     return (
@@ -100,7 +106,7 @@ export default function SuccessPage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -113,7 +119,7 @@ export default function SuccessPage() {
           <Button onClick={handleGoToDashboard}>Go to Dashboard</Button>
         </div>
       </div>
-    )
+    );
   }
 
   return (

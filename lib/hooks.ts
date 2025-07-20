@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/lib/store";
@@ -10,24 +10,48 @@ import {
   setUser,
   logoutUser,
   type UserPermissions,
+  User,
 } from "./features/auth/authSlice";
 import { verifyToken } from "./auth";
 
-export function useAuth(requiredRole?: "user" | "admin" | "sub-admin") {
+export function useAuth(
+  requiredRole?: "user" | "admin" | "sub-admin",
+  requireAuth = true
+) {
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.auth
   );
+  console.log("user-----------", user);
 
+  const userDataFetch = async () => {
+    const response = await fetch(`/api/auth/me?_id=${user?._id}`);
+
+    let resultData: User = await response.json();
+    dispatch(
+      setUser({
+        createdAt: resultData?.createdAt,
+        email: resultData?.email,
+        name: resultData?.name,
+        permissions: resultData?.permissions,
+        role: resultData?.role,
+        _id: resultData?._id,
+      })
+    );
+  };
   useEffect(() => {
     // Check token and update user data with permissions
     const token = document.cookie
       .split("; ")
       .find((row) => row.startsWith("auth-token="))
       ?.split("=")[1];
+    // console.log("user", user?._id);
 
+    if (user?.role === "sub-admin") {
+      userDataFetch();
+    }
     if (token) {
       const decoded = verifyToken(token);
       if (decoded && decoded.id) {
@@ -46,14 +70,14 @@ export function useAuth(requiredRole?: "user" | "admin" | "sub-admin") {
       }
     }
 
-    if (!isAuthenticated && pathname !== "/" && pathname !== "/auth/login") {
-      if (pathname === "/auth/signup") {
-        router.push("/auth/signup");
-        return;
-      } else {
-        router.push("/auth/login");
-        return;
-      }
+    if (
+      requireAuth &&
+      !isAuthenticated &&
+      pathname !== "/" &&
+      !pathname.startsWith("/auth/")
+    ) {
+      router.push("/auth/login");
+      return;
     }
 
     if (isAuthenticated && user) {
@@ -62,11 +86,26 @@ export function useAuth(requiredRole?: "user" | "admin" | "sub-admin") {
         if (user.role === "admin" || user.role === "sub-admin") {
           router.push("/dashboard/admin");
         } else {
-          router.push("/dashboard/user");
+          router.push("/");
         }
       }
     }
-  }, [isAuthenticated, requiredRole, router, user, dispatch, pathname]);
+  }, [
+    isAuthenticated,
+    requiredRole,
+    router,
+    user?._id,
+    user?.createdAt,
+    user?.email,
+    user?.name,
+    user?.permissions?.bookOrders,
+    user?.permissions?.cardOrders,
+    user?.permissions?.users,
+    user?.role,
+    dispatch,
+    pathname,
+    requireAuth,
+  ]);
 
   // Check if user has specific permission
   const hasPermission = (permission: keyof UserPermissions): boolean => {

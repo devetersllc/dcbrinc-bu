@@ -1,18 +1,18 @@
 "use client";
 import { useAuth } from "@/lib/hooks";
 import MainTabs from "./MainTabs";
-import SkeletonLoader from "./Component/SkeletonLoader";
+import Navbar from "./Navbar/Navbar";
 
 export default function UserDashboard() {
-  const { user } = useAuth("user");
-
-  if (!user) {
-    return <SkeletonLoader />;
-  }
+  // Allow access without authentication
+  useAuth(undefined, false);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start py-1 px-1 sm:px-2 md:px-6 lg:px-16 pb-8 ">
-      <MainTabs />
+    <div className="min-h-screen bg-gray-50">
+      {/* <Navbar /> */}
+      <div className="container mx-auto px-4 py-8">
+        <MainTabs />
+      </div>
     </div>
   );
 }

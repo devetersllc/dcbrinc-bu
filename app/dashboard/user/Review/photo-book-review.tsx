@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/lib/store";
 import { useRef } from "react";
+import CardPreview from "../MakeCard/CardPreview";
 
 export default function PhotoBookReview() {
   const {
@@ -158,75 +159,7 @@ export default function PhotoBookReview() {
       ) : (
         <div className="bg-white p-6 rounded-md shadow-sm">
           <div className="flex flex-col md:flex-row gap-6">
-            <div className="flex-shrink-0" data-card-preview>
-              <div
-                className={`w-[336px] h-[192px] px-3 border-2 border-black`}
-                style={{
-                  backgroundColor: makeCard.currentBgColor,
-                  color: makeCard.currentTextColor,
-                }}
-              >
-                <div className="flex items-center justify-start pt-4 w-fit h-fit gap-2">
-                  {makeCard.imageUrl?.previewUrl && (
-                    <div className="flex items-center justify-center max-w-[50px] max-h-[50px] rounded">
-                      <Image
-                        src={
-                          makeCard.imageUrl?.previewUrl || "/placeholder.svg"
-                        }
-                        alt="Company Logo"
-                        className="object-contain h-full w-full"
-                        width={500}
-                        height={300}
-                      />
-                    </div>
-                  )}
-                  <div className="flex flex-col gap-0 ">
-                    <span className="text-sm font-semibold">
-                      {makeCard.companyName || "Company Name"}
-                    </span>
-                    <span className="text-xs font-extralight italic">
-                      {makeCard.companyMessage || "Company Message"}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-end pt-2 w-full h-fit gap-2 ">
-                  <div className="flex flex-col gap-0 items-end">
-                    <span className="text-sm font-normal">
-                      {makeCard.name || "Your Name"}
-                    </span>
-                    <span className="text-xs font-extralight">
-                      {makeCard.jobTitle || "Your Job Title"}
-                    </span>
-                    <span className="text-xs font-extralight">
-                      {makeCard.email || "Your Email"}
-                    </span>
-                  </div>
-                </div>
-                <div
-                  className="h-[1px] w-full mt-2 rounded-full"
-                  style={{
-                    background: `linear-gradient(135deg,transparent, ${makeCard.currentTextColor}, transparent)`,
-                  }}
-                ></div>
-                <div className="flex items-center justify-start pt-2 w-full h-fit gap-2">
-                  <div className="flex flex-col gap-0 items-start w-full">
-                    <span className="text-xs font-normal">
-                      {makeCard.address || "Your Address"}
-                    </span>
-                    <div className="w-full flex justify-between items-center">
-                      <span className="text-xs font-normal">
-                        {makeCard.phone || "Your Phone"}
-                      </span>
-                      {makeCard.website && (
-                        <span className="text-xs font-normal">
-                          {makeCard.website || "Your Website"}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <CardPreview hideActions={true} adminPreview={true} />
 
             <div className="flex-grow">
               <div className="space-y-3">

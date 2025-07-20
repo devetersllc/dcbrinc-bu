@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { toPng } from "html-to-image";
 
 export default function Review() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -38,6 +37,14 @@ export default function Review() {
   );
 
   const handleInitiatePayment = () => {
+    // Check if user is authenticated first
+    if (!authData.isAuthenticated) {
+      // Store current path to redirect back after login
+      sessionStorage.setItem("redirectAfterLogin", window.location.pathname);
+      router.push("/auth/login");
+      return;
+    }
+
     if (general.serviceType === "books") {
       // Validate book data
       if (!cloudinaryUrl) {
@@ -84,6 +91,13 @@ export default function Review() {
   };
 
   const handlePaymentSuccess = async (paymentData: any) => {
+    if (!authData.isAuthenticated) {
+      // Store current path to redirect back after login
+      sessionStorage.setItem("redirectAfterLogin", window.location.pathname);
+      router.push("/auth/login");
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
@@ -136,17 +150,9 @@ export default function Review() {
           );
         }
       } else if (general.serviceType === "cards") {
-        const cardElement = document.querySelector(
-          "[data-card-preview]"
-        ) as HTMLElement;
-        if (!cardElement) {
-          throw new Error("Card preview not found");
-        }
-        const dataUrl = await toPng(cardElement);
-        const response = await fetch(dataUrl);
-        const blob = await response.blob();
+        console.log("nfjkvnsfkjvsndfvkjdfk");
         const uploadFormData = new FormData();
-        uploadFormData.append("image", blob);
+        uploadFormData.append("image", makeCard.companyLogo?.file);
         uploadFormData.append("fileName", `card_${Date.now()}`);
         const uploadResponse = await fetch("/api/cards/upload-image", {
           method: "POST",
@@ -160,11 +166,11 @@ export default function Review() {
           type: "card",
           name: authData.user?.name,
           email: authData.user?.email,
-          cardImageUrl: uploadResult.imageUrl,
           cardData: {
+            email: makeCard.email,
             companyName: makeCard.companyName,
             companyMessage: makeCard.companyMessage,
-            companyLogo: makeCard.imageUrl?.previewUrl || null,
+            companyLogo: uploadResult.imageUrl || null,
             jobTitle: makeCard.jobTitle,
             phone: makeCard.phone.toString(),
             address: makeCard.address,
@@ -266,8 +272,11 @@ export default function Review() {
       >
         {isProcessing
           ? "Processing..."
-          : `Confirm & Pay $${getPrice().toFixed(2)}`}
+          : authData.isAuthenticated
+          ? `Confirm & Pay $${getPrice().toFixed(2)}`
+          : `Sign in to Pay $${getPrice().toFixed(2)}`}
       </Button>
+
       <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
         <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto custom-scroll">
           <DialogHeader>

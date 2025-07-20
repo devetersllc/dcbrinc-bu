@@ -5,13 +5,38 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import loginPage from "@/public/assets/Login-amico.svg";
+import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/lib/store";
 
 export default function LoginPage() {
   const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
-  useAuth();
+  const router = useRouter();
+  const { isAuthenticated, user } = useSelector(
+    (state: RootState) => state.auth
+  );
+
+  useAuth(undefined, false);
+
   useEffect(() => {
     setIsAdmin(window.location.hostname.includes("admin"));
   }, []);
+  console.log("user?.role-----------", user?.role);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Check if there's a redirect path stored
+      const redirectPath = sessionStorage.getItem("redirectAfterLogin");
+      if (redirectPath) {
+        sessionStorage.removeItem("redirectAfterLogin");
+        router.push(redirectPath);
+      } else if (user?.role === "admin" || user?.role === "sub-admin") {
+        router.push("/dashboard/admin");
+      } else {
+        router.push("/");
+      }
+    }
+  }, [isAuthenticated, router]);
 
   return (
     <div className="flex h-screen w-full items-center bg-white justify-between">
@@ -53,14 +78,8 @@ export default function LoginPage() {
       </div>
       <div className="w-1/2 bg-white h-[100%] p-2 hidden md:block">
         <div className="w-full rounded-lg bg-[rgba(0,160,153,0.4)] h-[100%] flex items-center justify-center md:justify-end p-4 md:p-24">
-          {/* <DotLottieReact
-            src="../../../public/assets/Hd0YIUY4ON.json"
-            loop
-            autoplay
-            height={"100%"}
-          /> */}
           <Image
-            src={loginPage}
+            src={loginPage || "/placeholder.svg"}
             alt="Login Animation"
             width={500}
             height={500}

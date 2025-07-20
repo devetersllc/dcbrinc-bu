@@ -42,7 +42,6 @@ export async function POST(request: NextRequest) {
       const requiredCardFields = [
         "name",
         "email",
-        "cardImageUrl",
         "cardData",
         "totalPrice",
       ];
@@ -96,7 +95,6 @@ export async function POST(request: NextRequest) {
     } else if (orderType === "card") {
       order = {
         ...order,
-        cardImageUrl: orderData.cardImageUrl,
         cardData: orderData.cardData,
       };
     }

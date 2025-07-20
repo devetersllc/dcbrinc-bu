@@ -27,7 +27,7 @@ export default function ProfileDropDown() {
         method: "POST",
       });
       dispatch(logoutUser());
-      router.push("/auth/login");
+      router.push("/");
     } catch (error) {
       console.error("Logout failed:", error);
     }

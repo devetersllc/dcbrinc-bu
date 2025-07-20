@@ -12,8 +12,10 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { Edit } from "lucide-react";
 
 interface SubAdmin {
   _id: string;
@@ -28,8 +30,8 @@ interface SubAdmin {
 
 interface SubAdminEditFormProps {
   subAdmin: SubAdmin | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   onSuccess: () => void;
 }
 
@@ -79,7 +81,7 @@ export function SubAdminEditForm({
 
       if (response.ok) {
         toast.success("Sub-admin updated successfully");
-        onOpenChange(false);
+        onOpenChange?.(false);
         onSuccess();
       } else {
         const error = await response.json();
@@ -94,6 +96,12 @@ export function SubAdminEditForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm">
+          <Edit className="h-3 w-3 mr-1" />
+          Edit
+        </Button>
+      </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Edit Sub-Admin</DialogTitle>
@@ -192,7 +200,7 @@ export function SubAdminEditForm({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => onOpenChange?.(false)}
             >
               Cancel
             </Button>

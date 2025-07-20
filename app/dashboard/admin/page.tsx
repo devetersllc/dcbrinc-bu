@@ -79,6 +79,8 @@ import {
 import Image from "next/image";
 import { SubAdminForm } from "@/components/sub-admin-form";
 import { SubAdminEditForm } from "@/components/sub-admin-edit-form";
+import CardPreview from "../user/MakeCard/CardPreview";
+import { setAllFields } from "@/lib/features/data/makeCard";
 
 type User = {
   _id: string;
@@ -310,29 +312,43 @@ function SpecificationsPopover({ order }: { order: Order }) {
   );
 }
 function CardPreviewDialog({ order }: { order: Order }) {
-  if (order.type !== "card" || !order.cardImageUrl) return null;
+  const dispatch = useDispatch();
+  if (order.type !== "card") return null;
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-8 p-1 text-xs">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 p-1 text-xs flex justify-start items-center gap-1"
+          onClick={() => {
+            console.log("order----------", order);
+            dispatch(
+              setAllFields({
+                companyName: order.cardData?.companyName || "ACME Corp",
+                name: order.cardData?.companyName || "John Doe",
+                phone: Number(order.cardData?.phone) || 32324,
+                email: order.cardData?.email || "",
+                address: order.cardData?.address || "123 Main St",
+                companyLogo: order.cardData?.companyLogo,
+                currentBgColor: order.cardData?.backgroundColor || "white",
+                currentTextColor: order.cardData?.textColor || "#000000",
+                jobTitle: order.cardData?.jobTitle || "Software Engineer",
+                companyMessage: order.cardData?.companyMessage || "",
+                website: order.cardData?.website || "",
+              })
+            );
+          }}
+        >
           <Eye className="h-3 w-3 mr-1" />
-          Preview
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="w-fit">
         <DialogHeader>
           <DialogTitle>Business Card Preview</DialogTitle>
         </DialogHeader>
-        <div className="flex justify-center p-4">
-          <Image
-            src={order.cardImageUrl || "/placeholder.svg"}
-            alt="Business Card"
-            width={336}
-            height={192}
-            className="border-2 border-gray-300 rounded"
-          />
-        </div>
+        <CardPreview hideActions={true} adminPreview={true} />
       </DialogContent>
     </Dialog>
   );
@@ -580,18 +596,6 @@ function AdminDashboardContent() {
     return type === "card" ? "outline" : "default";
   };
 
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-      });
-      dispatch(logoutUser());
-      router.push("/auth/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
-
   const downloadPDF = (cloudinaryUrl: any, fileName: string) => {
     if (cloudinaryUrl) {
       fetch(cloudinaryUrl)
@@ -621,7 +625,7 @@ function AdminDashboardContent() {
       return;
     }
 
-    const canvas = canvasRef.current;
+    const canvas: any = canvasRef.current;
     if (!canvas) return;
     const link = document.createElement("a");
     link.download = `Example.png`;
@@ -919,7 +923,7 @@ function AdminDashboardContent() {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {orders?.map((order) => {
+                            {orders?.map((order: Order) => {
                               const TypeIcon = getOrderTypeIcon(order.type);
                               return (
                                 <TableRow
@@ -993,7 +997,8 @@ function AdminDashboardContent() {
                                             onClick={() =>
                                               downloadPDF(
                                                 order.pdfCloudinaryUrl,
-                                                order.userName
+                                                order.cardData?.name ||
+                                                  "no-name"
                                               )
                                             }
                                             disabled={!order.pdfCloudinaryUrl}
@@ -1014,7 +1019,8 @@ function AdminDashboardContent() {
                                             onClick={() =>
                                               downloadPDF(
                                                 order.coverCloudinaryUrl,
-                                                order.userName
+                                                order.cardData?.name ||
+                                                  "no-name"
                                               )
                                             }
                                             disabled={!order.coverCloudinaryUrl}
@@ -1039,14 +1045,16 @@ function AdminDashboardContent() {
                                             className="h-7 px-2 text-xs group relative disabled:opacity-50 disabled:cursor-not-allowed bg-transparent"
                                             onClick={() =>
                                               downloadCardImage(
-                                                order.cardImageUrl!,
+                                                order.cardData?.companyLogo!,
                                                 order.name
                                               )
                                             }
-                                            disabled={!order.cardImageUrl}
+                                            disabled={
+                                              !order.cardData?.companyLogo
+                                            }
                                           >
                                             <span className="absolute inset-0 flex items-center justify-center transition-opacity group-hover:opacity-0">
-                                              <CreditCard className="h-3 w-3" />
+                                              <ImageIcon className="h-3 w-3" />
                                             </span>
                                             <span className="opacity-0 group-hover:opacity-100 transition-opacity">
                                               <Download className="h-3 w-3" />
@@ -1215,7 +1223,7 @@ function AdminDashboardContent() {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {users?.map((user) => (
+                            {users?.map((user: User) => (
                               <TableRow
                                 key={user._id}
                                 className="hover:bg-muted/25 h-12"
@@ -1317,15 +1325,7 @@ function AdminDashboardContent() {
                       </CardDescription>
                     </div>
                     <div className="flex gap-2 flex-wrap">
-                      <SubAdminForm
-                        onSuccess={() => fetchSubAdmins()}
-                        trigger={
-                          <Button>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add Sub-Admin
-                          </Button>
-                        }
-                      />
+                      <SubAdminForm onSuccess={() => fetchSubAdmins()} />
                       <div className="relative w-full lg:w-[400px]">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -1442,12 +1442,6 @@ function AdminDashboardContent() {
                                     <SubAdminEditForm
                                       subAdmin={subAdmin}
                                       onSuccess={() => fetchSubAdmins()}
-                                      trigger={
-                                        <Button variant="outline" size="sm">
-                                          <Edit className="h-3 w-3 mr-1" />
-                                          Edit
-                                        </Button>
-                                      }
                                     />
                                     <AlertDialog>
                                       <AlertDialogTrigger asChild>

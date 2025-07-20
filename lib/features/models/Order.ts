@@ -14,7 +14,6 @@ export interface Order {
   bindingType?: string;
   coverFinish?: string;
   pageCount?: number;
-  cardImageUrl?: string;
   cardData?: {
     companyName: string;
     companyMessage: string;
@@ -25,6 +24,8 @@ export interface Order {
     website?: string;
     backgroundColor: string;
     textColor: string;
+    name: string;
+    email: string;
   };
   productType?: string;
   goal?: string;

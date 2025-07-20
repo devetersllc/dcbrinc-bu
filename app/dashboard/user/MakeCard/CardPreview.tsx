@@ -37,7 +37,13 @@ const textColorsArray: string[] = [
   "#C62828",
 ];
 
-export default function CardPreview({ hideActions = false }) {
+export default function CardPreview({
+  hideActions = false,
+  adminPreview = false,
+}: {
+  hideActions?: boolean;
+  adminPreview?: boolean;
+}) {
   const divRef = useRef<HTMLDivElement>(null);
   const makeCard = useSelector((state: RootState) => state.makeCard);
   const dispatch = useDispatch();
@@ -59,9 +65,13 @@ export default function CardPreview({ hideActions = false }) {
     setStateCustomColor(e.target.value);
     dispatch(setState(e.target.value));
   };
-
+  console.log("makeCard.companyLogo--------------------", makeCard.companyLogo);
   return (
-    <div className="relative w-full xl:w-[calc(40%-10px)] p-4 rounded-lg border-2 flex flex-col justify-start items-start overflow-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+    <div
+      className={`relative ${
+        adminPreview ? "w-fit" : "w-full xl:w-[calc(40%-10px)]"
+      } p-4 rounded-lg border-2 flex flex-col justify-start items-start overflow-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100`}
+    >
       <div
         ref={divRef}
         className={`w-[336px] h-[192px] px-3 border-2 border-black`}
@@ -71,10 +81,14 @@ export default function CardPreview({ hideActions = false }) {
         }}
       >
         <div className="flex items-center justify-start pt-4 w-fit h-fit gap-2">
-          {makeCard.imageUrl?.previewUrl && (
+          {(makeCard.companyLogo?.previewUrl || makeCard.companyLogo) && (
             <div className="flex items-center justify-center max-w-[50px] max-h-[50px] rounded">
               <Image
-                src={makeCard.imageUrl?.previewUrl || "/placeholder.svg"}
+                src={
+                  makeCard.companyLogo?.previewUrl ||
+                  makeCard.companyLogo ||
+                  "/placeholder.svg"
+                }
                 alt="Company Logo"
                 className="object-contain h-full w-full"
                 width={500}

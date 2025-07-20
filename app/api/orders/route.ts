@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
       "coverFinish",
     ];
 
-    const cardRequiredFields = ["cardImageUrl", "cardData"];
+    const cardRequiredFields = ["cardData"];
     for (const field of commonRequiredFields) {
       if (!orderData[field]) {
         return NextResponse.json(
@@ -162,7 +162,6 @@ export async function POST(request: NextRequest) {
       order.bindingType = orderData.bindingType;
       order.coverFinish = orderData.coverFinish;
     } else if (orderData.type === "card") {
-      order.cardImageUrl = orderData.cardImageUrl;
       order.cardData = orderData.cardData;
     }
 

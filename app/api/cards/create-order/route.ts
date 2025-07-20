@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
     const requiredFields = [
       "name",
       "email",
-      "cardImageUrl",
       "cardData",
       "totalPrice",
     ];
@@ -50,7 +49,6 @@ export async function POST(request: NextRequest) {
       name: orderData.name,
       email: orderData.email,
       type: "card",
-      cardImageUrl: orderData.cardImageUrl,
       cardData: {
         companyName: orderData.cardData.companyName,
         companyMessage: orderData.cardData.companyMessage,

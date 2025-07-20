@@ -3,10 +3,10 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 export interface BookSpecificationsState {
   companyName: string;
   name: string;
-  phone: number ;
+  phone: number;
   email: string;
   address: string;
-  imageUrl: string | any;
+  companyLogo: string | any;
   currentBgColor: string;
   currentTextColor: string;
   jobTitle: string;
@@ -17,7 +17,7 @@ export interface BookSpecificationsState {
 const initialState: BookSpecificationsState = {
   companyName: "",
   name: "",
-  imageUrl: 9,
+  companyLogo: 9,
   currentBgColor: "white",
   currentTextColor: "black",
   phone: 0,
@@ -82,9 +82,9 @@ const makeCard = createSlice({
     },
     setImageUrl: (
       state,
-      action: PayloadAction<BookSpecificationsState["imageUrl"]>
+      action: PayloadAction<BookSpecificationsState["companyLogo"]>
     ) => {
-      state.imageUrl = action.payload;
+      state.companyLogo = action.payload;
     },
     setCurrentBgColor: (
       state,
@@ -97,6 +97,9 @@ const makeCard = createSlice({
       action: PayloadAction<BookSpecificationsState["currentTextColor"]>
     ) => {
       state.currentTextColor = action.payload;
+    },
+    setAllFields: (state, action: PayloadAction<BookSpecificationsState>) => {
+      return { ...state, ...action.payload };
     },
   },
 });
@@ -113,6 +116,7 @@ export const {
   setJobTitle,
   setWebsite,
   setCurrentTextColor,
+  setAllFields,
 } = makeCard.actions;
 
 export default makeCard.reducer;
