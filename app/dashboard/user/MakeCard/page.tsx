@@ -19,6 +19,7 @@ import {
   setWebsite,
 } from "@/lib/features/data/makeCard";
 import CardPreview from "./CardPreview";
+import AllTemplates from "./Templates/Pages";
 
 export default function MakeCard() {
   const dispatch = useDispatch();
@@ -33,7 +34,7 @@ export default function MakeCard() {
   return (
     <>
       <div className="bg-white w-full flex flex-wrap gap-[20px] mx-auto p-6 rounded-lg border-2 my-2">
-        <div className="w-full xl:w-[calc(60%-10px)] p-4 rounded-lg border-2 flex flex-col gap-4">
+        <div className="w-full xl:w-[calc(100%-392px)] p-4 rounded-lg border-2 flex flex-col gap-4">
           <div>
             <div className="flex justify-between items-center mb-1">
               <Label
@@ -232,12 +233,12 @@ export default function MakeCard() {
         </div>
         <CardPreview />
       </div>
-
+      <AllTemplates />
       <Button
         disabled={general.areFieldsEmptyCheck}
         variant={"main"}
         size={"main"}
-        className="w-full text-2xl"
+        className="w-full text-2xl mt-2"
         onClick={handleSubmit}
       >
         Review Card

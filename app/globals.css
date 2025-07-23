@@ -5,6 +5,9 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
 
 @layer utilities {
   .text-balance {
@@ -99,5 +102,34 @@ body {
 }
 .custom-scroll {
   -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none;    /* Firefox */
+  scrollbar-width: none; /* Firefox */
+}
+.clip-large-points {
+  clip-path: polygon(
+    40% 0%,
+    60% 0%,
+    60% 40%,
+    100% 40%,
+    100% 60%,
+    60% 60%,
+    60% 100%,
+    40% 100%,
+    40% 60%,
+    0% 60%,
+    0% 40%,
+    40% 40%
+  );
+}
+
+.clip-small-points {
+  clip-path: polygon(
+    50% 0%,
+    60% 40%,
+    100% 50%,
+    60% 60%,
+    50% 100%,
+    40% 60%,
+    0% 50%,
+    40% 40%
+  );
 }

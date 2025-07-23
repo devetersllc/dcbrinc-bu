@@ -21,7 +21,6 @@ export default function LoginPage() {
   useEffect(() => {
     setIsAdmin(window.location.hostname.includes("admin"));
   }, []);
-  console.log("user?.role-----------", user?.role);
 
   useEffect(() => {
     if (isAuthenticated) {

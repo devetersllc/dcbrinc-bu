@@ -323,7 +323,6 @@ function CardPreviewDialog({ order }: { order: Order }) {
           size="sm"
           className="h-8 p-1 text-xs flex justify-start items-center gap-1"
           onClick={() => {
-            console.log("order----------", order);
             dispatch(
               setAllFields({
                 companyName: order.cardData?.companyName || "ACME Corp",
@@ -336,6 +335,7 @@ function CardPreviewDialog({ order }: { order: Order }) {
                 currentTextColor: order.cardData?.textColor || "#000000",
                 jobTitle: order.cardData?.jobTitle || "Software Engineer",
                 companyMessage: order.cardData?.companyMessage || "",
+                selectedCard: order.cardData?.selectedCard || 0,
                 website: order.cardData?.website || "",
               })
             );

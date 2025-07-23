@@ -5,13 +5,19 @@ import type { RootState } from "@/lib/store";
 import { useDispatch } from "react-redux";
 import { toPng } from "html-to-image";
 import download from "downloadjs";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import {
   setCurrentBgColor,
   setCurrentTextColor,
 } from "@/lib/features/data/makeCard";
 import { Download, PaintBucket, PenLine } from "lucide-react";
+import Template1 from "./Templates/Template2";
+import Template2 from "./Templates/Template1";
+import Template3 from "./Templates/Template3";
+import Template4 from "./Templates/Template4";
+import Template5 from "./Templates/Template5";
+import Template6 from "./Templates/Template6";
 
 const colorsArray: string[] = [
   "#1A1A1A",
@@ -65,143 +71,93 @@ export default function CardPreview({
     setStateCustomColor(e.target.value);
     dispatch(setState(e.target.value));
   };
-  console.log("makeCard.companyLogo--------------------", makeCard.companyLogo);
+  const templates = [
+    Template1,
+    Template2,
+    Template3,
+    Template4,
+    Template5,
+    Template6,
+  ];
+  const SelectedTemplate = useMemo(
+    () => templates[makeCard.selectedCard],
+    [makeCard.selectedCard]
+  );
   return (
     <div
       className={`relative ${
-        adminPreview ? "w-fit" : "w-full xl:w-[calc(40%-10px)]"
+        adminPreview ? "w-fit" : "w-full xl:w-[calc(36px+336px)]"
       } p-4 rounded-lg border-2 flex flex-col justify-start items-start overflow-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100`}
     >
-      <div
-        ref={divRef}
-        className={`w-[336px] h-[192px] px-3 border-2 border-black`}
-        style={{
-          backgroundColor: makeCard.currentBgColor,
-          color: makeCard.currentTextColor,
-        }}
-      >
-        <div className="flex items-center justify-start pt-4 w-fit h-fit gap-2">
-          {(makeCard.companyLogo?.previewUrl || makeCard.companyLogo) && (
-            <div className="flex items-center justify-center max-w-[50px] max-h-[50px] rounded">
-              <Image
-                src={
-                  makeCard.companyLogo?.previewUrl ||
-                  makeCard.companyLogo ||
-                  "/placeholder.svg"
-                }
-                alt="Company Logo"
-                className="object-contain h-full w-full"
-                width={500}
-                height={300}
-              />
-            </div>
-          )}
-          <div className="flex flex-col gap-0 ">
-            <span className="text-sm font-semibold">
-              {makeCard.companyName || "Company Name"}
-            </span>
-            <span className="text-xs font-extralight italic">
-              {makeCard.companyMessage || "Company Message"}
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center justify-end pt-2 w-full h-fit gap-2 ">
-          <div className="flex flex-col gap-0 items-end">
-            <span className="text-sm font-normal">
-              {makeCard.name || "Your Name"}
-            </span>
-            <span className="text-xs font-extralight">
-              {makeCard.jobTitle || "Your Job Title"}
-            </span>
-            <span className="text-xs font-extralight">
-              {makeCard.email || "Your Email"}
-            </span>
-          </div>
-        </div>
-        <div
-          className="h-[1px] w-full mt-2 rounded-full"
-          style={{
-            background: `linear-gradient(135deg,transparent, ${makeCard.currentTextColor}, transparent)`,
-          }}
-        ></div>
-        <div className="flex items-center justify-start pt-2 w-full h-fit gap-2">
-          <div className="flex flex-col gap-0 items-start w-full">
-            <span className="text-xs font-normal">
-              {makeCard.address || "Your Address"}
-            </span>
-            <div className="w-full flex justify-between items-center">
-              <span className="text-xs font-normal">
-                {makeCard.phone || "Your Phone"}
-              </span>
-              {makeCard.website && (
-                <span className="text-xs font-normal">
-                  {makeCard.website || "Your Website"}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+      <SelectedTemplate divRef={divRef} />
       {!hideActions && (
         <div className="flex flex-col justify-start items-start w-full">
-          <div className=" w-full h-fit mt-6 flex items-center justify-start gap-2 overflow-auto">
-            <PaintBucket />
-            <div
-              className={`w-[30px] h-[30px] rounded-full overflow-hidden flex items-center justify-center`}
-              style={{
-                background: `linear-gradient(135deg, ${
-                  bgCustomColor || "#000000"
-                }, white)`,
-              }}
-            >
-              <input
-                type="color"
-                onChange={(event) => {
-                  handleChange(event, setCurrentBgColor, setBgCustomColor);
-                }}
-                className="w-[150%] h-[150%] rounded-full border-none outline-none opacity-0"
-              />
-            </div>
-            {colorsArray.map((color, index) => (
+          <div className="w-full h-fit overflow-auto">
+            <div className="w-fit h-fit mt-6 flex items-center justify-start gap-2">
+              <PaintBucket />
               <div
-                key={index}
-                className={`w-[30px] h-[30px] rounded-full cursor-pointer`}
-                onClick={() => {
-                  dispatch(setCurrentBgColor(color));
+                className={`w-[30px] h-[30px] rounded-full overflow-hidden flex items-center justify-center`}
+                style={{
+                  background: `linear-gradient(135deg, ${
+                    bgCustomColor || "#000000"
+                  }, white)`,
                 }}
-                style={{ backgroundColor: color }}
-              ></div>
-            ))}
+              >
+                <input
+                  type="color"
+                  onChange={(event) => {
+                    handleChange(event, setCurrentBgColor, setBgCustomColor);
+                  }}
+                  className="w-[150%] h-[150%] rounded-full border-none outline-none opacity-0"
+                />
+              </div>
+              {colorsArray.map((color, index) => (
+                <div
+                  key={index}
+                  className={`w-[30px] h-[30px] rounded-full cursor-pointer`}
+                  onClick={() => {
+                    dispatch(setCurrentBgColor(color));
+                  }}
+                  style={{ backgroundColor: color }}
+                ></div>
+              ))}
+            </div>
           </div>
 
-          <div className=" w-full h-fit mt-6 flex items-center justify-start gap-2 overflow-auto">
-            <PenLine size={20} />
-            <div
-              className={`w-[30px] h-[30px] rounded-full overflow-hidden flex items-center justify-center`}
-              style={{
-                background: `linear-gradient(135deg, ${
-                  textCustomColor || "#000000"
-                }, white)`,
-              }}
-            >
-              <input
-                type="color"
-                onChange={(event) => {
-                  handleChange(event, setCurrentTextColor, setTextCustomColor);
-                }}
-                className="w-[150%] h-[150%] rounded-full border-none outline-none opacity-0"
-              />
-            </div>
-            {textColorsArray.map((color, index) => (
+          <div className="w-full h-fit overflow-auto">
+            <div className="w-fit h-fit mt-6 flex items-center justify-start gap-2">
+              <PenLine size={20} />
               <div
-                key={index}
-                className={`w-[30px] h-[30px] rounded-full cursor-pointer`}
-                onClick={() => {
-                  dispatch(setCurrentTextColor(color));
+                className={`w-[30px] h-[30px] rounded-full overflow-hidden flex items-center justify-center`}
+                style={{
+                  background: `linear-gradient(135deg, ${
+                    textCustomColor || "#000000"
+                  }, white)`,
                 }}
-                style={{ backgroundColor: color }}
-              ></div>
-            ))}
+              >
+                <input
+                  type="color"
+                  onChange={(event) => {
+                    handleChange(
+                      event,
+                      setCurrentTextColor,
+                      setTextCustomColor
+                    );
+                  }}
+                  className="w-[150%] h-[150%] rounded-full border-none outline-none opacity-0"
+                />
+              </div>
+              {textColorsArray.map((color, index) => (
+                <div
+                  key={index}
+                  className={`w-[30px] h-[30px] rounded-full cursor-pointer`}
+                  onClick={() => {
+                    dispatch(setCurrentTextColor(color));
+                  }}
+                  style={{ backgroundColor: color }}
+                ></div>
+              ))}
+            </div>
           </div>
         </div>
       )}

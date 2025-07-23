@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
       "address",
       "backgroundColor",
       "textColor",
+      "selectedCard",
     ];
 
     for (const field of cardDataRequiredFields) {
@@ -52,6 +53,7 @@ export async function POST(request: NextRequest) {
       cardData: {
         companyName: orderData.cardData.companyName,
         companyMessage: orderData.cardData.companyMessage,
+        selectedCard: orderData.cardData.selectedCard,
         companyLogo: orderData.cardData.companyLogo || null,
         jobTitle: orderData.cardData.jobTitle,
         phone: orderData.cardData.phone,

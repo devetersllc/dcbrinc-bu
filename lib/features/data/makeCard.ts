@@ -12,6 +12,7 @@ export interface BookSpecificationsState {
   jobTitle: string;
   companyMessage: string;
   website?: string;
+  selectedCard: number;
 }
 
 const initialState: BookSpecificationsState = {
@@ -26,6 +27,7 @@ const initialState: BookSpecificationsState = {
   jobTitle: "",
   companyMessage: "",
   website: "",
+  selectedCard: 0,
 };
 
 const makeCard = createSlice({
@@ -98,6 +100,12 @@ const makeCard = createSlice({
     ) => {
       state.currentTextColor = action.payload;
     },
+    setSelectedCard: (
+      state,
+      action: PayloadAction<BookSpecificationsState["selectedCard"]>
+    ) => {
+      state.selectedCard = action.payload;
+    },
     setAllFields: (state, action: PayloadAction<BookSpecificationsState>) => {
       return { ...state, ...action.payload };
     },
@@ -117,6 +125,7 @@ export const {
   setWebsite,
   setCurrentTextColor,
   setAllFields,
+  setSelectedCard,
 } = makeCard.actions;
 
 export default makeCard.reducer;

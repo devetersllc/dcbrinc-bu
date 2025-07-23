@@ -17,6 +17,7 @@ export interface Order {
   cardData?: {
     companyName: string;
     companyMessage: string;
+    selectedCard: number;
     companyLogo?: string;
     jobTitle: string;
     phone: string;

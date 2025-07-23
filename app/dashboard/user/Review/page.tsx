@@ -170,6 +170,7 @@ export default function Review() {
             email: makeCard.email,
             companyName: makeCard.companyName,
             companyMessage: makeCard.companyMessage,
+            selectedCard: makeCard.selectedCard,
             companyLogo: uploadResult.imageUrl || null,
             jobTitle: makeCard.jobTitle,
             phone: makeCard.phone.toString(),
