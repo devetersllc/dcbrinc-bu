@@ -1,11 +1,59 @@
-import { RootState } from "@/lib/store";
+import type { RootState } from "@/lib/store";
 import { Sparkles } from "lucide-react";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 
-export default function Template6({ divRef }: { divRef?: any }) {
+export default function Template6({
+  divRef,
+  isFront = true,
+}: {
+  divRef?: any;
+  isFront: boolean;
+}) {
   const makeCard = useSelector((state: RootState) => state.makeCard);
 
+  if (!isFront) {
+    // Back design
+    return (
+      <div
+        ref={divRef}
+        className="w-[336px] h-[192px] border-2 border-black flex justify-center items-center p-6"
+        style={{
+          backgroundColor:
+            makeCard.currentBgColor === "white"
+              ? "#A35C48"
+              : makeCard.currentBgColor,
+          color:
+            makeCard.currentTextColor === "black"
+              ? "white"
+              : makeCard.currentTextColor,
+        }}
+      >
+        <div className="w-full h-full flex flex-col justify-center items-center text-center space-y-6">
+          <div className="relative w-8 h-8">
+            <div className="absolute inset-0 bg-white rotate-45 clip-small-points opacity-60" />
+            <div className="absolute inset-0 rotate-90 bg-white clip-small-points opacity-60" />
+          </div>
+
+          <div>
+            <div className="text-lg font-medium mb-2">
+              {makeCard.companyName || "Company Name"}
+            </div>
+            <div className="text-xs">
+              {makeCard.website || "www.company.com"}
+            </div>
+          </div>
+
+          <div className="text-xs font-light italic opacity-80">
+            {`"`}{makeCard.companyMessage || "Crafting Excellence"}
+            {`"`}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Front design (existing)
   return (
     <div
       ref={divRef}

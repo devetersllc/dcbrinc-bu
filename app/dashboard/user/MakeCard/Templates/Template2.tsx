@@ -1,10 +1,67 @@
-import { RootState } from "@/lib/store";
+import type { RootState } from "@/lib/store";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 
-export default function Template1({ divRef }: { divRef?: any }) {
+export default function Template1({
+  divRef,
+  isFront = true,
+}: {
+  divRef?: any;
+  isFront: boolean;
+}) {
   const makeCard = useSelector((state: RootState) => state.makeCard);
 
+  if (!isFront) {
+    // Back design
+    return (
+      <div
+        ref={divRef}
+        className="w-[336px] h-[192px] border-2 border-black flex flex-col justify-center items-center p-6"
+        style={{
+          backgroundColor:
+            makeCard.currentBgColor === "white"
+              ? "#f5f3c6"
+              : makeCard.currentBgColor,
+          color: makeCard.currentTextColor,
+        }}
+      >
+        <div className="text-center w-full">
+          <h2
+            className="text-2xl font-bold mb-4"
+            style={{
+              color:
+                makeCard.currentBgColor === "white"
+                  ? "#114E89"
+                  : makeCard.currentTextColor,
+            }}
+          >
+            {makeCard.companyName || "Your Company"}
+          </h2>
+
+          <div className="text-sm mb-4 max-w-[250px] mx-auto">
+            {makeCard.companyMessage || "Building tomorrow's solutions today"}
+          </div>
+
+          <div
+            className="w-full h-[1px] mb-4"
+            style={{
+              backgroundColor:
+                makeCard.currentBgColor === "white"
+                  ? "#114E89"
+                  : makeCard.currentTextColor,
+            }}
+          />
+
+          <div className="text-xs space-y-1">
+            <div>📧 {makeCard.email || "info@company.com"}</div>
+            <div>🌐 {makeCard.website || "www.company.com"}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Front design (existing)
   return (
     <div
       ref={divRef}

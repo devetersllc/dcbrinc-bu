@@ -18,6 +18,7 @@ import Template3 from "./Templates/Template3";
 import Template4 from "./Templates/Template4";
 import Template5 from "./Templates/Template5";
 import Template6 from "./Templates/Template6";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const colorsArray: string[] = [
   "#1A1A1A",
@@ -83,13 +84,51 @@ export default function CardPreview({
     () => templates[makeCard.selectedCard],
     [makeCard.selectedCard]
   );
+  const TabsArray = [
+    { name: "Front", index: 0 },
+    { name: "Back", index: 1 },
+  ];
+  const [activeTab, setActiveTab] = useState(0);
   return (
     <div
       className={`relative ${
         adminPreview ? "w-fit" : "w-full xl:w-[calc(36px+336px)]"
       } p-4 rounded-lg border-2 flex flex-col justify-start items-start overflow-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100`}
     >
-      <SelectedTemplate divRef={divRef} />
+      <Tabs
+        defaultValue="Front"
+        className={`w-[100%] z-0`}
+        onValueChange={(e: string) => {
+          const index: number = TabsArray.findIndex((tab) => tab.name === e);
+          setActiveTab(index);
+        }}
+        value={TabsArray[activeTab]?.name}
+      >
+        <div>
+          {TabsArray.map((tab, index) => (
+            <TabsContent key={index} value={tab.name}>
+              <SelectedTemplate divRef={divRef} isFront={index === 0} />
+            </TabsContent>
+          ))}
+        </div>
+        <div className="px- w-full sticky top-1 z-10">
+          <TabsList
+            className={`grid border- grid-cols-2 rounded-b-md rounded-t-none mt-1 p-0 bg-white`}
+          >
+            {TabsArray.map((tab, index) => (
+              <TabsTrigger
+                key={index}
+                value={tab?.name}
+                className={`cursor-pointer border-2 rounded-t-none first:rounded-r-none last:rounded-l-none ${
+                  activeTab === index ? "border-transparent" : "border-black"
+                }  text-sm text-black`}
+              >
+                {tab?.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
+      </Tabs>
       {!hideActions && (
         <div className="flex flex-col justify-start items-start w-full">
           <div className="w-full h-fit overflow-auto">

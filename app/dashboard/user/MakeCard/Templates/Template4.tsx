@@ -1,10 +1,56 @@
-import { RootState } from "@/lib/store";
+import type { RootState } from "@/lib/store";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 
-export default function Template4({ divRef }: { divRef?: any }) {
+export default function Template4({
+  divRef,
+  isFront = true,
+}: {
+  divRef?: any;
+  isFront: boolean;
+}) {
   const makeCard = useSelector((state: RootState) => state.makeCard);
 
+  if (!isFront) {
+    // Back design
+    return (
+      <div
+        ref={divRef}
+        className="w-[336px] h-[192px] border-2 border-black flex justify-center items-center relative p-8"
+        style={{
+          backgroundColor: makeCard.currentBgColor,
+          color: makeCard.currentTextColor,
+        }}
+      >
+        <div className="w-full h-full absolute top-0 left-0 p-4 flex justify-center items-center">
+          <div
+            className="w-full h-full border-2"
+            style={{
+              borderColor:
+                makeCard.currentTextColor === "black"
+                  ? "gray"
+                  : makeCard.currentTextColor,
+              opacity: 0.3,
+            }}
+          ></div>
+        </div>
+
+        <div className="z-10 text-center">
+          <div className="text-xl font-light mb-4">
+            {makeCard.companyName || "Company Name"}
+          </div>
+
+          <div className="text-sm mb-6 font-light">
+            {makeCard.companyMessage || "Professional Excellence"}
+          </div>
+
+          <div className="text-xs">{makeCard.website || "www.company.com"}</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Front design (existing)
   return (
     <div
       ref={divRef}
