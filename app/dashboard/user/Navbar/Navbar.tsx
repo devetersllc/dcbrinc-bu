@@ -35,22 +35,24 @@ export default function Navbar() {
 
       <div className="flex justify-start gap-2 md:gap-6 items-center">
         <div className="flex justify-start gap-2 md:gap-4 items-center">
-          <span
+          <Link
+            href={"/books"}
             className="text-sm text-gray-600 cursor-pointer hover:underline"
             onClick={() => {
               dispatch(setServiceType("books"));
             }}
           >
             Books
-          </span>
-          <span
+          </Link>
+          <Link
+            href={"/cards"}
             className="text-sm text-gray-600 cursor-pointer hover:underline"
             onClick={() => {
               dispatch(setServiceType("cards"));
             }}
           >
             Cards
-          </span>
+          </Link>
         </div>
         <div className="flex justify-start gap-4 items-center border-l pl-2 md:pl-4">
           {isAuthenticated && user ? (
