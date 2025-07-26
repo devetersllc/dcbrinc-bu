@@ -7,6 +7,9 @@ import Template4 from "./Template4";
 import { RootState } from "@/lib/store";
 import Template5 from "./Template5";
 import Template6 from "./Template6";
+import Template7 from "./Template7";
+import Template8 from "./Template8";
+import Template9 from "./Template9";
 
 const templates = [
   Template1,
@@ -15,6 +18,9 @@ const templates = [
   Template4,
   Template5,
   Template6,
+  Template7,
+  Template8,
+  Template9,
 ];
 
 const AllTemplates = () => {
@@ -28,7 +34,7 @@ const AllTemplates = () => {
             dispatch(setSelectedCard(index));
           }}
         >
-          <Template key={index} />
+          <Template />
         </div>
       ))}
     </div>

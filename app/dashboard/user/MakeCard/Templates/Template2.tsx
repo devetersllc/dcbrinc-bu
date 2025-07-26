@@ -7,7 +7,7 @@ export default function Template1({
   isFront = true,
 }: {
   divRef?: any;
-  isFront: boolean;
+  isFront?: boolean;
 }) {
   const makeCard = useSelector((state: RootState) => state.makeCard);
 

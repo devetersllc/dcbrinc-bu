@@ -29,6 +29,9 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import Template7 from "./Templates/Template7";
+import Template8 from "./Templates/Template8";
+import Template9 from "./Templates/Template9";
 
 const colorsArray: string[] = [
   "#1A1A1A",
@@ -224,6 +227,9 @@ const PreviewTabs = ({
     Template4,
     Template5,
     Template6,
+    Template7,
+    Template8,
+    Template9,
   ];
   const SelectedTemplate = useMemo(
     () => templates[makeCard.selectedCard],
