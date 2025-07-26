@@ -13,6 +13,12 @@ import Template9 from "./Template9";
 import Template10 from "./Template10";
 import Template11 from "./Template11";
 import Template12 from "./Template12";
+import Template13 from "./Template13";
+import Template14 from "./Template14";
+import Template15 from "./Template15";
+import Template16 from "./Template16";
+import Template17 from "./Template17";
+import Template18 from "./Template18";
 
 const templates = [
   Template1,
@@ -27,6 +33,12 @@ const templates = [
   // Template10,
   Template11,
   Template12,
+  Template13,
+  Template14,
+  Template15,
+  Template16,
+  // Template17,
+  Template18,
 ];
 
 const AllTemplates = () => {
