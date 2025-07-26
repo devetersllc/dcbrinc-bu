@@ -24,7 +24,7 @@ const templates = [
   Template7,
   Template8,
   Template9,
-  Template10,
+  // Template10,
   Template11,
   Template12,
 ];
