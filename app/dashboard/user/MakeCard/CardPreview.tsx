@@ -32,6 +32,9 @@ import {
 import Template7 from "./Templates/Template7";
 import Template8 from "./Templates/Template8";
 import Template9 from "./Templates/Template9";
+import Template11 from "./Templates/Template11";
+import Template10 from "./Templates/Template10";
+import Template12 from "./Templates/Template12";
 
 const colorsArray: string[] = [
   "#1A1A1A",
@@ -230,6 +233,9 @@ const PreviewTabs = ({
     Template7,
     Template8,
     Template9,
+    Template10,
+    Template11,
+    Template12,
   ];
   const SelectedTemplate = useMemo(
     () => templates[makeCard.selectedCard],
