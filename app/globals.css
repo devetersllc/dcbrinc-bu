@@ -133,3 +133,24 @@ body {
     40% 40%
   );
 }
+.view-zoom {
+  zoom: 1.7;
+}
+
+@media (max-width: 1200px) {
+  .view-zoom {
+    zoom: 1.4;
+  }
+}
+
+@media (max-width: 992px) {
+  .view-zoom {
+    zoom: 1.2;
+  }
+}
+
+@media (max-width: 768px) {
+  .view-zoom {
+    zoom: 1;
+  }
+}

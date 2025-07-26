@@ -11,7 +11,7 @@ import {
   setCurrentBgColor,
   setCurrentTextColor,
 } from "@/lib/features/data/makeCard";
-import { Download, PaintBucket, PenLine } from "lucide-react";
+import { Download, Expand, PaintBucket, PenLine } from "lucide-react";
 import Template1 from "./Templates/Template2";
 import Template2 from "./Templates/Template1";
 import Template3 from "./Templates/Template3";
@@ -19,6 +19,16 @@ import Template4 from "./Templates/Template4";
 import Template5 from "./Templates/Template5";
 import Template6 from "./Templates/Template6";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const colorsArray: string[] = [
   "#1A1A1A",
@@ -72,63 +82,29 @@ export default function CardPreview({
     setStateCustomColor(e.target.value);
     dispatch(setState(e.target.value));
   };
-  const templates = [
-    Template1,
-    Template2,
-    Template3,
-    Template4,
-    Template5,
-    Template6,
-  ];
-  const SelectedTemplate = useMemo(
-    () => templates[makeCard.selectedCard],
-    [makeCard.selectedCard]
-  );
-  const TabsArray = [
-    { name: "Front", index: 0 },
-    { name: "Back", index: 1 },
-  ];
-  const [activeTab, setActiveTab] = useState(0);
   return (
     <div
       className={`relative ${
         adminPreview ? "w-fit" : "w-full xl:w-[calc(36px+336px)]"
       } p-4 rounded-lg border-2 flex flex-col justify-start items-start overflow-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100`}
     >
-      <Tabs
-        defaultValue="Front"
-        className={`w-[100%] z-0`}
-        onValueChange={(e: string) => {
-          const index: number = TabsArray.findIndex((tab) => tab.name === e);
-          setActiveTab(index);
-        }}
-        value={TabsArray[activeTab]?.name}
-      >
-        <div>
-          {TabsArray.map((tab, index) => (
-            <TabsContent key={index} value={tab.name}>
-              <SelectedTemplate divRef={divRef} isFront={index === 0} />
-            </TabsContent>
-          ))}
-        </div>
-        <div className="px- w-full sticky top-1 z-10">
-          <TabsList
-            className={`grid border- grid-cols-2 rounded-b-md rounded-t-none mt-1 p-0 bg-white`}
-          >
-            {TabsArray.map((tab, index) => (
-              <TabsTrigger
-                key={index}
-                value={tab?.name}
-                className={`cursor-pointer border-2 rounded-t-none first:rounded-r-none last:rounded-l-none ${
-                  activeTab === index ? "border-transparent" : "border-black"
-                }  text-sm text-black`}
+      <div className="w-fit h-fit relative">
+        <PreviewTabs divRef={divRef} />
+        {!adminPreview && (
+          <MyModal
+            triggerbutton={
+              <Button
+                size={"sm"}
+                variant={"outline"}
+                className="absolute bottom-12 right-2"
               >
-                {tab?.name}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </div>
-      </Tabs>
+                <Expand size={20} />
+              </Button>
+            }
+            component={<PreviewTabs divRef={divRef} isInModal={true} />}
+          />
+        )}
+      </div>
       {!hideActions && (
         <div className="flex flex-col justify-start items-start w-full">
           <div className="w-full h-fit overflow-auto">
@@ -201,12 +177,103 @@ export default function CardPreview({
         </div>
       )}
 
-      <button
+      <Button
         onClick={handleDownload}
-        className="absolute top-2 right-2 bg-blue-500 text-white p-2 rounded-full"
+        variant={"outline"}
+        className="absolute top-2 right-2 bg-blue-500 text-white border-0"
       >
-        <Download />
-      </button>
+        <Download size={18} />
+      </Button>
     </div>
   );
 }
+
+export function MyModal({
+  triggerbutton,
+  component,
+}: {
+  triggerbutton: any;
+  component: any;
+}) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{triggerbutton}</DialogTrigger>
+      <DialogContent className="max-w-[90vw] md:max-w-fit h-fit view-zoom">
+        <DialogHeader>
+          <DialogDescription className="flex justify-center items-center">
+            {component}
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+const PreviewTabs = ({
+  divRef,
+  isInModal,
+}: {
+  divRef: any;
+  isInModal?: boolean;
+}) => {
+  const makeCard = useSelector((state: RootState) => state.makeCard);
+  const templates = [
+    Template1,
+    Template2,
+    Template3,
+    Template4,
+    Template5,
+    Template6,
+  ];
+  const SelectedTemplate = useMemo(
+    () => templates[makeCard.selectedCard],
+    [makeCard.selectedCard]
+  );
+  const TabsArray = [
+    { name: "Front", index: 0 },
+    { name: "Back", index: 1 },
+  ];
+  const [activeTab, setActiveTab] = useState(0);
+
+  return (
+    <Tabs
+      defaultValue="Front"
+      className={`w-[100%]`}
+      onValueChange={(e: string) => {
+        const index: number = TabsArray.findIndex((tab) => tab.name === e);
+        setActiveTab(index);
+      }}
+      value={TabsArray[activeTab]?.name}
+    >
+      <div>
+        {TabsArray.map((tab, index) => (
+          <TabsContent key={index} value={tab.name}>
+            <div className="w-fit h-fit relative">
+              <SelectedTemplate
+                divRef={divRef}
+                isFront={index === 0}
+              />
+            </div>
+          </TabsContent>
+        ))}
+      </div>
+      <div className="px- w-full sticky top-1 z-10">
+        <TabsList
+          className={`grid border- grid-cols-2 rounded-b-md rounded-t-none mt-1 p-0 bg-white`}
+        >
+          {TabsArray.map((tab, index) => (
+            <TabsTrigger
+              key={index}
+              value={tab?.name}
+              className={`cursor-pointer border-2 rounded-t-none first:rounded-r-none last:rounded-l-none ${
+                activeTab === index ? "border-transparent" : "border-black"
+              }  text-sm text-black`}
+            >
+              {tab?.name}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </div>
+    </Tabs>
+  );
+};
