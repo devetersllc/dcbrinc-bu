@@ -92,7 +92,7 @@ export function PhotoBookCoverDesign() {
 
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
-      <h1 className="text-xl font-bold mb-6">Photo Book Cover Design</h1>
+      <h1 className="text-xl font-bold mb-6">Book Cover Design</h1>
 
       <RadioGroup
         value={coverOption}
@@ -117,7 +117,7 @@ export function PhotoBookCoverDesign() {
                   Upload Your Cover
                 </Label>
                 <p className="text-sm text-gray-600">
-                  Upload a cover for your Photo Book.
+                  Upload a cover for your Book.
                 </p>
               </div>
               <button
@@ -168,8 +168,8 @@ export function PhotoBookCoverDesign() {
                       <Alert className="mb-6 border-green-300 bg-green-50 text-green-900">
                         <CheckCircle className="h-5 w-5 text-green-500" />
                         <AlertDescription>
-                          Your Photo Book file was successfully uploaded! Please
-                          continue designing your Photo Book below.
+                          Your Book file was successfully uploaded! Please
+                          continue designing your Book below.
                         </AlertDescription>
                       </Alert>
                     )}

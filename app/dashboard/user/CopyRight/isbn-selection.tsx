@@ -78,9 +78,9 @@ export default function ISBNSelection() {
                   </Label>
                   <p className="text-sm text-gray-600 mt-1">
                     Use a free DCBRINC ISBN, with DCBRINC assigned as the publishing
-                    imprint. Once your Photo Book is published and the proof
+                    imprint. Once your Book is published and the proof
                     copy approved, the ISBN will never expire and remain
-                    attached to your published Photo Book indefinitely.
+                    attached to your published Book indefinitely.
                   </p>
                 </div>
               </div>
@@ -122,7 +122,7 @@ export default function ISBNSelection() {
                     I have my own ISBN
                   </Label>
                   <p className="text-sm text-gray-600 mt-1">
-                    Add a previously unused ISBN to your Photo Book
+                    Add a previously unused ISBN to your Book
                   </p>
                 </div>
               </div>

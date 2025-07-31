@@ -44,16 +44,16 @@ export default function PayeeManagement() {
         <div className="flex justify-between items-start">
           <h2 className="text-xl font-bold">Set Payees</h2>
           <p className="text-sm text-gray-600 max-w-md">
-            Designate who gets paid when your Photo Book sells. Select from
+            Designate who gets paid when your Book sells. Select from
             Payees saved in your account or create new ones.
           </p>
         </div>
 
         {/* Payees Section */}
         <div>
-          <h3 className="font-semibold mb-2">Payees for Your Photo Book</h3>
+          <h3 className="font-semibold mb-2">Payees for Your Book</h3>
           <p className="text-sm text-gray-600 mb-4">
-            There are currently no Payees for your Photo Book.
+            There are currently no Payees for your Book.
           </p>
           <div className="border-t border-gray-200 my-4"></div>
 
@@ -124,11 +124,11 @@ export default function PayeeManagement() {
               Some Steps Are Incomplete.
             </h4>
             <p className="text-sm text-purple-800">
-              Before you can review your Photo Book, you must complete all steps
+              Before you can review your Book, you must complete all steps
               in the publishing process. Click on the step(s) in the progress
               bar without this green checkmark{" "}
               <CheckCircle2 className="h-4 w-4 text-green-500 inline" /> to
-              continue working on your Photo Book.
+              continue working on your Book.
             </p>
           </div>
         </div>

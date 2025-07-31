@@ -38,7 +38,7 @@ export default function RetailPriceForm() {
           <h2 className="text-xl font-bold">Set a Retail Price</h2>
           <p className="text-sm text-gray-600 max-w-md">
             Set the price for each currency manually or select a revenue goal
-            for each Photo Book sale.
+            for each Book sale.
           </p>
         </div>
 

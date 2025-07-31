@@ -37,7 +37,7 @@ export function GoalSelection() {
         </div>
         <div className="md:w-2/3">
           <p className="text-base">
-            Start by telling us what you plan to do with your Photo Book. From
+            Start by telling us what you plan to do with your Book. From
             printing your own copies to selling around the world or on your own
             website, we've got you covered!
           </p>
@@ -47,7 +47,7 @@ export function GoalSelection() {
       {/* <Alert className="mb-6 border-purple-500 bg-purple-50 text-purple-900">
         <InfoIcon className="h-5 w-5 text-purple-500" />
         <AlertDescription>
-          Your Photo Book is currently not eligible for Global Distribution.
+          Your Book is currently not eligible for Global Distribution.
         </AlertDescription>
       </Alert> */}
 
@@ -77,11 +77,11 @@ export function GoalSelection() {
                   htmlFor="publish"
                   className="font-bold text-base cursor-pointer"
                 >
-                  Publish Your Photo Book
+                  Publish Your Book
                 </Label>
                 <p className="text-sm text-gray-600">
-                  Publish your Photo Book to use any or all of our retail
-                  options to sell your Photo Book.
+                  Publish your Book to use any or all of our retail
+                  options to sell your Book.
                 </p>
               </div>
               {/* <button
@@ -117,7 +117,7 @@ export function GoalSelection() {
                           DCBRINC Bookstore
                         </Label>
                         <p className="text-sm text-gray-600">
-                          Sell your Photo Book on the DCBRINC Bookstore.
+                          Sell your Book on the DCBRINC Bookstore.
                         </p>
                       </div>
                     </div>
@@ -141,7 +141,7 @@ export function GoalSelection() {
                           DCBRINC Direct
                         </Label>
                         <p className="text-sm text-gray-600">
-                          Sell your Photo Book on your website or ecommerce
+                          Sell your Book on your website or ecommerce
                           store.
                         </p>
                       </div>
@@ -171,7 +171,7 @@ export function GoalSelection() {
                           <InfoIcon className="h-4 w-4 text-purple-500" />
                         </div>
                         <p className="text-sm text-gray-600">
-                          Sell your Photo Book through 40,000+ global retailers
+                          Sell your Book through 40,000+ global retailers
                           using DCBRINC's distribution service. Please note that a
                           title page, copyright page, and ISBN are required.
                         </p>
@@ -196,10 +196,10 @@ export function GoalSelection() {
                 htmlFor="print"
                 className="font-bold text-base cursor-pointer"
               >
-                Print Your Photo Book
+                Print Your Book
               </Label>
               <p className="text-sm text-gray-600">
-                Upload your Photo Book files to your account and purchase
+                Upload your Book files to your account and purchase
                 copies.
               </p>
             </div>

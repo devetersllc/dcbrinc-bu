@@ -62,7 +62,7 @@ export default function PhotoBookReview() {
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
       {general.serviceType === "books" ? (
-        <h1 className="text-xl font-bold mb-4">Review Your Photo Book</h1>
+        <h1 className="text-xl font-bold mb-4">Review Your Book</h1>
       ) : (
         <h1 className="text-xl font-bold mb-4">Review Your Card</h1>
       )}
@@ -100,10 +100,10 @@ export default function PhotoBookReview() {
             </div> */}
 
               <div className="space-y-3">
-                <h3 className="font-semibold">Photo Book Specifications</h3>
+                <h3 className="font-semibold">Specifications</h3>
 
                 <div className="grid grid-cols-[auto_1fr] gap-x-2 text-sm">
-                  <span className="text-gray-600">Photo Book Size:</span>
+                  <span className="text-gray-600">Book Size:</span>
                   <span>A4 (8.27 x 11.69 in / 210 x 297 mm)</span>
 
                   <span className="text-gray-600">Page Count:</span>

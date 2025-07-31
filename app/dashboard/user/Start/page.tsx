@@ -21,8 +21,8 @@ export default function Start() {
 
   return (
     <>
-      <ProductSelection />
       <GoalSelection />
+      <ProductSelection />
       <PhotoBookDetails />
       <Button
         disabled={general.areFieldsEmptyCheck}

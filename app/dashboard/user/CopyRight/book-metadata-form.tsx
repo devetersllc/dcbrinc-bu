@@ -133,9 +133,9 @@ export default function BookMetadataForm() {
             <h2 className="text-xl font-bold">Contributors</h2>
             <div className="max-w-md">
               <p className="text-sm text-gray-600">
-                Add the name and role for each contributor on this Photo Book.
+                Add the name and role for each contributor on this Book.
                 This includes authors, editors, and illustrators you want to
-                credit for working on this Photo Book.
+                credit for working on this Book.
               </p>
               <p className="text-sm font-semibold mt-2">
                 Please note: Contributors are displayed in order and most

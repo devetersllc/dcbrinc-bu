@@ -29,7 +29,7 @@ export default function AudienceForm() {
         <div>
           <h1 className="text-xl font-bold">Audience</h1>
           <p className="text-sm text-gray-600">
-            Help readers find your Photo Book by assigning an Audience.
+            Help readers find your Book by assigning an Audience.
           </p>
         </div>
 
@@ -78,7 +78,7 @@ export default function AudienceForm() {
                     htmlFor="explicit-content"
                     className="font-medium cursor-pointer"
                   >
-                    This Photo Book contains Explicit Content
+                    This Book contains Explicit Content
                   </label>
                   <div>
                     <a

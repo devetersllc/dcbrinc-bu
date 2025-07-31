@@ -31,7 +31,7 @@ export function PhotoBookDetails() {
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
       <div className="bg-white p- rounded-lg mb-4">
-        <h1 className="text-xl font-bold mb-6">Photo Book Details</h1>
+        <h1 className="text-xl font-bold mb-6">Book Details</h1>
 
         <div className="space-y-6">
           <div>
@@ -62,7 +62,7 @@ export function PhotoBookDetails() {
                 htmlFor="book-language"
                 className="text-xs font-semibold uppercase"
               >
-                Photo Book Language
+                Book Language
               </Label>
               <div className="ml-2 text-purple-600">
                 <InfoIcon size={16} />
@@ -93,7 +93,7 @@ export function PhotoBookDetails() {
               htmlFor="book-category"
               className="text-xs font-semibold uppercase mb-2 block"
             >
-              Photo Book Category
+              Book Category
             </Label>
             <Select
               value={startPage.bookCategory}

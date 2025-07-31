@@ -183,7 +183,7 @@ export default function SuccessPage() {
               </div>
 
               <div>
-                <h4 className="font-semibold mb-2">Book Specifications</h4>
+                <h4 className="font-semibold mb-2">Specifications</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Size:</span>

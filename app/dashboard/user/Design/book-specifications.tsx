@@ -92,13 +92,13 @@ export function BookSpecifications() {
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <div className="md:w-1/3">
-          <h1 className="text-xl font-bold">Book Specifications</h1>
+          <h1 className="text-xl font-bold">Specifications</h1>
         </div>
         <div className="md:w-2/3">
           <p className="text-sm">
-            Select specifications for your Photo Book, including binding type
+            Select specifications for your Book, including binding type
             and finish for your cover. Note that if an option is unavailable for
-            your Photo Book size, it will not be available in this step.
+            your Book size, it will not be available in this step.
           </p>
           <div className="flex items-center gap-2 mt-2 bg-blue-50 p-2 rounded text-sm">
             <InfoIcon className="h-4 w-4 text-blue-500" />
@@ -186,7 +186,7 @@ export function BookSpecifications() {
           </div>
           <div className="md:w-2/3">
             <p className="text-sm">
-              Photo Books use only Premium inks to provide the best coverage on
+              Books use only Premium inks to provide the best coverage on
               the page.
             </p>
           </div>
@@ -263,7 +263,7 @@ export function BookSpecifications() {
           </div>
           <div className="md:w-2/3">
             <p className="text-sm">
-              Photo Books use our highest quality 80# paper for color and black
+              Books use our highest quality 80# paper for color and black
               & white printing.
             </p>
           </div>
@@ -319,7 +319,7 @@ export function BookSpecifications() {
           </div>
           <div className="md:w-2/3">
             <p className="text-sm">
-              Pick a binding option for your Photo Book.
+              Pick a binding option for your Book.
             </p>
           </div>
         </div>
@@ -389,7 +389,7 @@ export function BookSpecifications() {
           </div>
           <div className="md:w-2/3">
             <p className="text-sm">
-              Select the cover finish for your Photo Book.
+              Select the cover finish for your Book.
             </p>
           </div>
         </div>

@@ -16,7 +16,7 @@ export function ProjectDetails() {
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#1B463C]">
-          Promotional Information and Photo Book Details
+          Promotional Information and Book Details
         </h1>
         <p className="text-gray-600">
           We need to add a few more details to complete your Project's metadata
@@ -53,7 +53,7 @@ export function ProjectDetails() {
               value={detail.description}
               onChange={(e) => dispatch(setDescription(e.target.value))}
               className="min-h-32 border-gray-300 resize-none"
-              placeholder="The Photo Book description will appear on the DCBRINC Bookstore and any retail sites if your Photo Book uses Global Distribution. Please note: Your description must be a minimum of 50 characters."
+              placeholder="The Book description will appear on the DCBRINC Bookstore and any retail sites if your Book uses Global Distribution. Please note: Your description must be a minimum of 50 characters."
             />
             {detail.description.length === 0 && (
               <div className="flex items-center gap-2 mt-2 text-red-500">
@@ -82,7 +82,7 @@ export function ProjectDetails() {
               value={detail.contributorNotes}
               onChange={(e) => dispatch(setContributorNotes(e.target.value))}
               className="min-h-32 border-gray-300 resize-none"
-              placeholder="Add information about your Photo Book contributors such as related works, websites, social media profiles, and other notable achievements to help readers find your Photo Book with online searches. The contributor information listed here will appear with some online retailers when you use Global Distribution to distribute your Photo Book and will help your book appear in search results."
+              placeholder="Add information about your Book contributors such as related works, websites, social media profiles, and other notable achievements to help readers find your Book with online searches. The contributor information listed here will appear with some online retailers when you use Global Distribution to distribute your Book and will help your book appear in search results."
             />
           </div>
 
@@ -103,7 +103,7 @@ export function ProjectDetails() {
               value={detail.tableOfContents}
               onChange={(e) => dispatch(setTableOfContents(e.target.value))}
               className="min-h-32 border-gray-300 resize-none"
-              placeholder="Add a Table of Contents for your Photo Book using a comma separated list. The Table of Contents entered here assists users searching for specific terms online. Please note that the Table of Contents entered here does not appear in the DCBRINC Bookstore and will only assist users searching for your Photo Book if it uses Global Distribution."
+              placeholder="Add a Table of Contents for your Book using a comma separated list. The Table of Contents entered here assists users searching for specific terms online. Please note that the Table of Contents entered here does not appear in the DCBRINC Bookstore and will only assist users searching for your Book if it uses Global Distribution."
             />
           </div>
         </div>
