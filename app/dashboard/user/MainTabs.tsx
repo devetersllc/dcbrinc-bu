@@ -21,9 +21,10 @@ export default function MainTabs() {
   const general = useSelector((state: RootState) => state.general);
   const startPage = useSelector((state: RootState) => state.startPage);
   const searchParams = useSearchParams();
-  const type = searchParams.get("type") as StartPageState["type"];
+  const type =
+    (searchParams.get("type") as StartPageState["type"]) || "print-book";
   useEffect(() => {
-    dispatch(setType(type || "print-book"));
+    dispatch(setType(type));
   }, [type]);
 
   const TabsArray = useMemo(
