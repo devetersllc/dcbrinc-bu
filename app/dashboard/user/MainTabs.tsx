@@ -10,15 +10,21 @@ import Pricing from "./Pricing/page";
 import Review from "./Review/page";
 import { setActiveTab } from "@/lib/features/general/general";
 import { useDispatch } from "react-redux";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import MakeCard from "./MakeCard/page";
+import { useSearchParams } from "next/navigation";
+import { setType, StartPageState } from "@/lib/features/data/startPageSlice";
 
 export default function MainTabs() {
   const dispatch = useDispatch();
   const state = useSelector((state: RootState) => state);
   const general = useSelector((state: RootState) => state.general);
   const startPage = useSelector((state: RootState) => state.startPage);
-  console.log("general.serviceType", general.serviceType);
+  const searchParams = useSearchParams();
+  const type = searchParams.get("type") as StartPageState["type"];
+  useEffect(() => {
+    dispatch(setType(type || "print-book"));
+  }, [type]);
 
   const TabsArray = useMemo(
     () => [
