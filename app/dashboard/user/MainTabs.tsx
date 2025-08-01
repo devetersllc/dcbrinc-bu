@@ -12,7 +12,6 @@ import { setActiveTab } from "@/lib/features/general/general";
 import { useDispatch } from "react-redux";
 import { useCallback, useEffect, useMemo } from "react";
 import MakeCard from "./MakeCard/page";
-import { useSearchParams } from "next/navigation";
 import { setType, StartPageState } from "@/lib/features/data/startPageSlice";
 
 export default function MainTabs() {
@@ -20,12 +19,11 @@ export default function MainTabs() {
   const state = useSelector((state: RootState) => state);
   const general = useSelector((state: RootState) => state.general);
   const startPage = useSelector((state: RootState) => state.startPage);
-  const searchParams = useSearchParams();
-  const type =
-    (searchParams.get("type") as StartPageState["type"]) || "print-book";
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const type = (params.get("type") as StartPageState["type"]) || "print-book";
     dispatch(setType(type));
-  }, [type]);
+  }, [dispatch]);
 
   const TabsArray = useMemo(
     () => [
