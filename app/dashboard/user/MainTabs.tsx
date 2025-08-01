@@ -22,6 +22,7 @@ export default function MainTabs() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const type = (params.get("type") as StartPageState["type"]) || "print-book";
+    console.log("Type from URL:", type);
     dispatch(setType(type));
   }, [dispatch]);
 
