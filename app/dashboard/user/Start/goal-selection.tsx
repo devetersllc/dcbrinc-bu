@@ -20,6 +20,7 @@ export function GoalSelection() {
   ]);
   const startPage = useSelector((state: RootState) => state.startPage);
   const dispatch = useDispatch();
+console.log("StartPage State:", startPage.type);
 
   const handleOptionChange = (option: string) => {
     if (selectedOptions.includes(option)) {
@@ -75,13 +76,13 @@ export function GoalSelection() {
               <div className="ml-3 flex-1">
                 <Label
                   htmlFor="publish"
-                  className="font-bold text-base cursor-pointer"
+                  className="font-bold text-base cursor-pointer capitalize"
                 >
-                  Publish Your Book
+                  Publish Your {startPage.type?.replaceAll("-", " ")}
                 </Label>
                 <p className="text-sm text-gray-600">
-                  Publish your Book to use any or all of our retail
-                  options to sell your Book.
+                  Publish your Book to use any or all of our retail options to
+                  sell your Book.
                 </p>
               </div>
               {/* <button
@@ -141,8 +142,7 @@ export function GoalSelection() {
                           DCBRINC Direct
                         </Label>
                         <p className="text-sm text-gray-600">
-                          Sell your Book on your website or ecommerce
-                          store.
+                          Sell your Book on your website or ecommerce store.
                         </p>
                       </div>
                     </div>
@@ -171,8 +171,8 @@ export function GoalSelection() {
                           <InfoIcon className="h-4 w-4 text-purple-500" />
                         </div>
                         <p className="text-sm text-gray-600">
-                          Sell your Book through 40,000+ global retailers
-                          using DCBRINC's distribution service. Please note that a
+                          Sell your Book through 40,000+ global retailers using
+                          DCBRINC's distribution service. Please note that a
                           title page, copyright page, and ISBN are required.
                         </p>
                       </div>
@@ -194,13 +194,12 @@ export function GoalSelection() {
             <div className="ml-3">
               <Label
                 htmlFor="print"
-                className="font-bold text-base cursor-pointer"
+                className="font-bold text-base cursor-pointer capitalize"
               >
-                Print Your Book
+                Print Your {startPage.type?.replaceAll("-", " ")}
               </Label>
               <p className="text-sm text-gray-600">
-                Upload your Book files to your account and purchase
-                copies.
+                Upload your Book files to your account and purchase copies.
               </p>
             </div>
           </div>
