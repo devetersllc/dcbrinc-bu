@@ -78,8 +78,8 @@ export function PhotoBookDetails() {
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Akkadian">Amharic</SelectItem>
                 <SelectItem value="Akkadian">Akkadian</SelectItem>
+                <SelectItem value="Amharic">Amharic</SelectItem>
                 <SelectItem value="English">English</SelectItem>
                 <SelectItem value="Spanish">Spanish</SelectItem>
                 <SelectItem value="French">French</SelectItem>

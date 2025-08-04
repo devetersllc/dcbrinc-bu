@@ -12,7 +12,7 @@ export interface StartPageState {
     | "ebook";
   projectTitle: string;
   bookLanguage:
-    | "Akkadian"
+    | "Amharic"
     | "Akkadian"
     | "English"
     | "Spanish"
