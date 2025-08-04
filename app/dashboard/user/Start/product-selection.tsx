@@ -29,7 +29,7 @@ export function ProductSelection() {
     },
     {
       id: "photo-book",
-      title: "Book",
+      title: "Photo Book",
       description:
         "Preserve memories or create a lookbook of your work with a traditional book. Choose from a variety of sizes, paper types, cover styles, and more. Let your photographs highlight the best of your story options.",
       image: "/startPage 2.webp",
