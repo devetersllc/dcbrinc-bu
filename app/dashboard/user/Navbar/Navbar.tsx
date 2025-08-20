@@ -469,7 +469,7 @@ export default function Navbar() {
               {menuItems.map((item) => renderMenuItem(item))}
             </div>
 
-            <div className="hidden md:flex justify-start gap-2 md:gap-4 items-center">
+            {/* <div className="hidden md:flex justify-start gap-2 md:gap-4 items-center">
               <Link
                 href={"/books"}
                 className="text-sm text-gray-600 cursor-pointer hover:underline"
@@ -488,7 +488,7 @@ export default function Navbar() {
               >
                 Cards
               </Link>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
@@ -508,7 +508,7 @@ export default function Navbar() {
                 <SheetTitle className="text-left text-lg">Menu</SheetTitle>
               </SheetHeader>
               <div className="px-6">
-                <div className="mb-6 pb-6 border-b space-y-2">
+                {/* <div className="mb-6 pb-6 border-b space-y-2">
                   <Link
                     href="/books"
                     className="block py-2 px-2 font-medium text-gray-900 hover:text-blue-600 text-base rounded-md hover:bg-gray-50"
@@ -529,7 +529,7 @@ export default function Navbar() {
                   >
                     Cards
                   </Link>
-                </div>
+                </div> */}
 
                 <Accordion type="multiple" className="w-full space-y-2">
                   {menuItems.map((item) => renderMenuItem(item, true))}
