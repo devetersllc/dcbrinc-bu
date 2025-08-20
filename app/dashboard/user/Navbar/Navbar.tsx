@@ -451,7 +451,7 @@ export default function Navbar() {
   return (
     <div className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-center">
       <div className="container flex h-14 max-w-screen-2xl items-center justify-between px-3 w-full">
-        <div className="flex items-center gap-0 pe-2 justify-between w-full">
+        <div className="flex items-center gap-0 pe-2 justify-between w-fit xl:w-[calc(100%-160px)]">
           <Link
             href={"/"}
             className="h-8 md:h-10 flex items-center justify-center w-fit cursor-pointer"
@@ -459,7 +459,7 @@ export default function Navbar() {
             <Image
               src="https://dcbrinc.com/wp-content/uploads/2025/03/IMG_6463-2-1024x779-1.png"
               alt="DCBR Logo"
-              className="object-cover w-[100px]"
+              className="object-cover h-full w-full mr-2"
               width={20}
               height={10}
             />
@@ -491,7 +491,7 @@ export default function Navbar() {
             </div> */}
           </div>
         </div>
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex items-center gap-2 md:gap-4 w-fit xl:w-[160px] justify-end">
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild className="xl:hidden">
               <Button variant="ghost" size="icon">
@@ -538,7 +538,7 @@ export default function Navbar() {
             </SheetContent>
           </Sheet>
 
-          <div className="flex justify-start gap-4 items-center border-l pl-2 md:pl-4">
+          <div className="flex justify-end gap-4 items-center border-l pl-2 md:pl-4 w-full">
             {isAuthenticated && user ? (
               <>
                 <div className="items-center space-x-4 hidden md:flex">
