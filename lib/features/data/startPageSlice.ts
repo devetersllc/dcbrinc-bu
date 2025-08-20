@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export interface StartPageState {
+  typeFromQuery: boolean | undefined;
   goal: "publish" | "print";
   type:
     | "print-book"
@@ -30,6 +31,7 @@ export interface StartPageState {
 }
 
 const initialState: StartPageState = {
+  typeFromQuery: undefined,
   goal: "print",
   type: "print-book",
   projectTitle: "",
@@ -43,6 +45,12 @@ const startpageSlice = createSlice({
   reducers: {
     setGoal: (state, action: PayloadAction<StartPageState["goal"]>) => {
       state.goal = action.payload;
+    },
+    setTypeFromQuery: (
+      state,
+      action: PayloadAction<StartPageState["typeFromQuery"]>
+    ) => {
+      state.typeFromQuery = action.payload;
     },
     setType: (state, action: PayloadAction<StartPageState["type"]>) => {
       state.type = action.payload;
@@ -69,6 +77,7 @@ const startpageSlice = createSlice({
 });
 
 export const {
+  setTypeFromQuery,
   setGoal,
   setType,
   setProjectTitle,

@@ -12,7 +12,11 @@ import { setActiveTab } from "@/lib/features/general/general";
 import { useDispatch } from "react-redux";
 import { useCallback, useEffect, useMemo } from "react";
 import MakeCard from "./MakeCard/page";
-import { setType, StartPageState } from "@/lib/features/data/startPageSlice";
+import {
+  setType,
+  setTypeFromQuery,
+  StartPageState,
+} from "@/lib/features/data/startPageSlice";
 
 export default function MainTabs() {
   const dispatch = useDispatch();
@@ -22,8 +26,13 @@ export default function MainTabs() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const type = (params.get("type") as StartPageState["type"]) || "print-book";
-    console.log("Type from URL:", type);
+    console.log("Type from URL:");
     dispatch(setType(type));
+    dispatch(
+      setTypeFromQuery(
+        (params.get("type") as StartPageState["type"]) ? true : false
+      )
+    );
   }, [dispatch]);
 
   const TabsArray = useMemo(

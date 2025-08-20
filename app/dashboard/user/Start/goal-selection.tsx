@@ -20,7 +20,6 @@ export function GoalSelection() {
   ]);
   const startPage = useSelector((state: RootState) => state.startPage);
   const dispatch = useDispatch();
-  console.log("StartPage State:", startPage.bookLanguage);
 
   const handleOptionChange = (option: string) => {
     if (selectedOptions.includes(option)) {

@@ -14,6 +14,8 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setType, StartPageState } from "@/lib/features/data/startPageSlice";
 import Image from "next/image";
+import { useMemo } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function ProductSelection() {
   const startPage = useSelector((state: RootState) => state.startPage);
@@ -71,57 +73,69 @@ export function ProductSelection() {
     },
   ];
 
+  const transformedArray = useMemo(() => {
+    if (startPage.typeFromQuery) {
+      return products.filter((product) => product.id === startPage.type);
+    } else {
+      return products;
+    }
+  }, [startPage.typeFromQuery]);
+
   return (
     <div className="w-full mx-auto p-6 bg-white rounded-lg border-2 my-2">
       <h1 className="text-xl font-bold mb-6">Select a Product Type</h1>
-      <RadioGroup
-        value={startPage.type}
-        onValueChange={(e: StartPageState["type"]) => {
-          dispatch(setType(e));
-        }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-4"
-      >
-        {products.map((product) => (
-          <div key={product.id} className="relative">
-            <Label
-              htmlFor={product.id}
-              className={cn(
-                "cursor-pointer block h-full",
-                startPage.type === product.id
-                  ? "ring-2 ring-blue-500 rounded-lg"
-                  : ""
-              )}
-            >
-              <Card className="h-full border overflow-hidden">
-                <div className="h-40 overflow-hidden bg-gray-100">
-                  <Image
-                    src={product.image || "/placeholder.svg"}
-                    alt={product.title}
-                    className="w-full h-full object-cover"
-                    width={100}
-                    height={100}
-                  />
-                </div>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <RadioGroupItem
-                      value={product.id}
-                      id={product.id}
-                      className="mt-0"
+      {startPage.typeFromQuery === undefined ? (
+        <Skeleton className="h-60 w-full rounded-xl bg-[rgb(243,244,246)]" />
+      ) : (
+        <RadioGroup
+          value={startPage.type}
+          onValueChange={(e: StartPageState["type"]) => {
+            dispatch(setType(e));
+          }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-4"
+        >
+          {transformedArray.map((product) => (
+            <div key={product.id} className="relative">
+              <Label
+                htmlFor={product.id}
+                className={cn(
+                  "cursor-pointer block h-full",
+                  startPage.type === product.id
+                    ? "ring-2 ring-blue-500 rounded-lg"
+                    : ""
+                )}
+              >
+                <Card className="h-full border overflow-hidden">
+                  <div className="h-40 overflow-hidden bg-gray-100">
+                    <Image
+                      src={product.image || "/placeholder.svg"}
+                      alt={product.title}
+                      className="w-full h-full object-cover"
+                      width={100}
+                      height={100}
                     />
-                    <CardTitle className="text-base font-medium">
-                      {product.title}
-                    </CardTitle>
                   </div>
-                  <CardDescription className="text-xs text-gray-600">
-                    {product.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            </Label>
-          </div>
-        ))}
-      </RadioGroup>
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <RadioGroupItem
+                        value={product.id}
+                        id={product.id}
+                        className="mt-0"
+                      />
+                      <CardTitle className="text-base font-medium">
+                        {product.title}
+                      </CardTitle>
+                    </div>
+                    <CardDescription className="text-xs text-gray-600">
+                      {product.description}
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              </Label>
+            </div>
+          ))}
+        </RadioGroup>
+      )}
     </div>
   );
 }
