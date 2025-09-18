@@ -264,17 +264,19 @@ export default function Review() {
         variant={"main"}
         size={"main"}
         className="w-full text-2xl"
-        onClick={
-          general.serviceType === "cards"
-            ? handlePaymentSuccess
-            : handleInitiatePayment
-        }
+        // onClick={
+        //   general.serviceType === "cards"
+        //     ? handlePaymentSuccess
+        //     : handleInitiatePayment
+        // }
+        onClick={handlePaymentSuccess}
         disabled={isProcessing}
       >
         {isProcessing
           ? "Processing..."
           : authData.isAuthenticated
-          ? `Confirm & Pay $${getPrice().toFixed(2)}`
+          // ? `Confirm & Pay $${getPrice().toFixed(2)}`
+          ? `Publish Your Book`
           : `Sign in to Pay $${getPrice().toFixed(2)}`}
       </Button>
 

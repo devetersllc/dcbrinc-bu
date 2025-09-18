@@ -449,7 +449,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-center">
+    <div className="sticky top-0 z-50 w-full border-b border-border/40 bg-white backdrop-blur supports-[backdrop-filter]:bg-white flex items-center justify-center">
       <div className="container flex h-14 max-w-screen-2xl items-center justify-between px-3 w-full">
         <div className="flex items-center gap-0 pe-2 justify-between w-fit xl:w-[calc(100%-160px)]">
           <Link

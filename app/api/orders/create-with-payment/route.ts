@@ -8,12 +8,12 @@ export async function POST(request: NextRequest) {
     const { orderData, paymentData } = requestData;
 
     // Validate required fields
-    if (!paymentData?.paymentId || !paymentData?.transactionId) {
-      return NextResponse.json(
-        { error: "Valid payment information is required" },
-        { status: 400 }
-      );
-    }
+    // if (!paymentData?.paymentId || !paymentData?.transactionId) {
+    //   return NextResponse.json(
+    //     { error: "Valid payment information is required" },
+    //     { status: 400 }
+    //   );
+    // }
     const orderType = orderData.type || "book";
     if (orderType === "book") {
       const requiredBookFields = [
