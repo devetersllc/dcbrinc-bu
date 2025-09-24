@@ -5,7 +5,7 @@ export async function GET() {
   try {
     // Step 1: Authorization request (GET https://appcenter.intuit.com/connect/oauth2)
     const baseUrl = "https://appcenter.intuit.com/connect/oauth2"
-    const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL || "https://lulu-seven.vercel.app"}/api/auth/quickbooks/callback`
+    const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL || "https://dcbrinc.vercel.app"}/api/auth/quickbooks/callback`
 
     // Generate a random state parameter for security
     const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)

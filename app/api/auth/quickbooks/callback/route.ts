@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
           grant_type: "authorization_code",
           code: code,
           redirect_uri: `${
-            process.env.NEXT_PUBLIC_APP_URL || "https://lulu-seven.vercel.app"
+            process.env.NEXT_PUBLIC_APP_URL || "https://dcbrinc.vercel.app"
           }/api/auth/quickbooks/callback`,
         }),
       }
