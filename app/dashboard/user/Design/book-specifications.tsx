@@ -46,7 +46,9 @@ const BASE_PRICE = 0;
 export function BookSpecifications() {
   const dispatch = useDispatch();
   const design = useSelector((state: RootState) => state.design);
+  const startPage = useSelector((state: RootState) => state.startPage);
   const disptach = useDispatch();
+
   const calculateTotalPrice = () => {
     let total = BASE_PRICE;
 
@@ -96,8 +98,8 @@ export function BookSpecifications() {
         </div>
         <div className="md:w-2/3">
           <p className="text-sm">
-            Select specifications for your Book, including binding type
-            and finish for your cover. Note that if an option is unavailable for
+            Select specifications for your Book, including binding type and
+            finish for your cover. Note that if an option is unavailable for
             your Book size, it will not be available in this step.
           </p>
           <div className="flex items-center gap-2 mt-2 bg-blue-50 p-2 rounded text-sm">
@@ -174,319 +176,336 @@ export function BookSpecifications() {
           </div>
         </div>
       </div>
-
-      {/* Step 2: Interior Color */}
-      <div className="border-t border-gray-200 py-4 flex flex-col justify-start items-start gap-7 w-full">
-        <div className="flex flex-col md:flex-row gap-4 items-center w-full">
-          <div className="md:w-1/3 flex items-center gap-2">
-            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-700 text-xs font-bold">
-              2
-            </span>
-            <h3 className="font-semibold">Interior Color</h3>
-          </div>
-          <div className="md:w-2/3">
-            <p className="text-sm">
-              Books use only Premium inks to provide the best coverage on
-              the page.
-            </p>
-          </div>
-        </div>
-        <RadioGroup
-          disabled={!design.processedPDF}
-          value={design.interiorColor}
-          onValueChange={(value: BookSpecificationsState["interiorColor"]) =>
-            dispatch(setInteriorColor(value))
-          }
-          className={`grid grid-cols-1 md:grid-cols-6 gap-4 w-full ${
-            !design.processedPDF && "cursor-not-allowed opacity-60"
-          }`}
-        >
-          <Label
-            htmlFor="premium-color"
-            className={`border rounded-md p-2 col-span-2 ${
-              design.interiorColor === "premium-color"
-                ? "ring-2 ring-blue-500"
-                : ""
-            } ${
-              !design.processedPDF ? "cursor-not-allowed" : "cursor-pointer"
-            }`}
-          >
-            <div className="flex items-center mb-2">
-              <RadioGroupItem value="premium-color" id="premium-color" />
-              <div className="ml-2 font-medium">Premium Color</div>
-            </div>
-            <div className="h-36 flex items-center justify-center p-1">
-              <Image
-                src="/design.webp"
-                alt="Premium color book interior example"
-                className="object-cover h-full w-full"
-                width={100}
-                height={100}
-              />
-            </div>
-          </Label>
-          <Label
-            htmlFor="black-white"
-            className={`border rounded-md p-2 col-span-2 ${
-              design.interiorColor === "black-white"
-                ? "ring-2 ring-blue-500"
-                : ""
-            }  ${
-              !design.processedPDF ? "cursor-not-allowed" : "cursor-pointer"
-            }`}
-          >
-            <div className="flex items-center mb-2">
-              <RadioGroupItem value="black-white" id="black-white" />
-              <div className="ml-2 font-medium">Black & White</div>
-            </div>
-            <div className="h-36 flex items-center justify-center p-1">
-              <Image
-                src="/design 2.webp"
-                alt="Black and white book interior example"
-                className="object-cover h-full w-full"
-                width={100}
-                height={100}
-              />
-            </div>
-          </Label>
-        </RadioGroup>
-      </div>
-
-      {/* Step 3: Paper Type */}
-      <div className="border-t border-gray-200 py-4 flex flex-col justify-start items-start gap-7 w-full">
-        <div className="flex flex-col md:flex-row gap-4 items-center w-full">
-          <div className="md:w-1/3 flex items-center gap-2">
-            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-700 text-xs font-bold">
-              3
-            </span>
-            <h3 className="font-semibold">Paper Type</h3>
-          </div>
-          <div className="md:w-2/3">
-            <p className="text-sm">
-              Books use our highest quality 80# paper for color and black
-              & white printing.
-            </p>
-          </div>
-        </div>
-        <RadioGroup
-          disabled={!design.interiorColor}
-          value={design.paperType}
-          onValueChange={(value: BookSpecificationsState["paperType"]) =>
-            dispatch(setPaperType(value))
-          }
-          className={`grid grid-cols-1 md:grid-cols-6 gap-4 w-full ${
-            !design.interiorColor && "cursor-not-allowed opacity-60"
-          }`}
-        >
-          <Label
-            htmlFor="80lb-white-coated"
-            className={`border rounded-md p-2 col-span-2 ${
-              design.paperType === "80lb-white-coated"
-                ? "ring-2 ring-blue-500"
-                : ""
-            } ${
-              !design.interiorColor ? "cursor-not-allowed" : "cursor-pointer"
-            }`}
-          >
-            <div className="flex items-center mb-2">
-              <RadioGroupItem
-                value="80lb-white-coated"
-                id="80lb-white-coated"
-              />
-              <div className="ml-2 font-medium">80# White - Coated</div>
-            </div>
-            <div className="h-36 flex items-center justify-center p-1">
-              <Image
-                src="/design 3.webp"
-                alt="80# white coated paper example"
-                className="object-cover h-full w-full"
-                width={100}
-                height={100}
-              />
-            </div>
-          </Label>
-        </RadioGroup>
-      </div>
-
-      {/* Step 4: Binding Type */}
-      <div className="border-t border-gray-200 py-4 flex flex-col justify-start items-start gap-7 w-full">
-        <div className="flex flex-col md:flex-row gap-4 items-center w-full">
-          <div className="md:w-1/3 flex items-center gap-2">
-            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-700 text-xs font-bold">
-              4
-            </span>
-            <h3 className="font-semibold">Binding Type</h3>
-          </div>
-          <div className="md:w-2/3">
-            <p className="text-sm">
-              Pick a binding option for your Book.
-            </p>
-          </div>
-        </div>
-        <RadioGroup
-          disabled={!design.paperType}
-          value={design.bindingType}
-          onValueChange={(value: BookSpecificationsState["bindingType"]) =>
-            dispatch(setBindingType(value))
-          }
-          className={`grid grid-cols-1 md:grid-cols-6 gap-4 w-full ${
-            !design.paperType && "cursor-not-allowed opacity-60"
-          }`}
-        >
-          <Label
-            htmlFor="hardcover-linen"
-            className={`border rounded-md p-2 col-span-2 ${
-              design.bindingType === "hardcover-linen"
-                ? "ring-2 ring-blue-500"
-                : ""
-            } ${!design.paperType ? "cursor-not-allowed" : "cursor-pointer"}`}
-          >
-            <div className="flex items-center mb-2">
-              <RadioGroupItem value="hardcover-linen" id="hardcover-linen" />
-              <div className="ml-2 font-medium">Hardcover Linen</div>
-            </div>
-            <div className="h-36 flex items-center justify-center p-1">
-              <Image
-                src="/design 4.webp"
-                alt="Hardcover linen binding example"
-                className="object-cover h-full w-full"
-                width={100}
-                height={100}
-              />
-            </div>
-          </Label>
-          <Label
-            htmlFor="paperback"
-            className={`border rounded-md p-2 col-span-2 ${
-              design.bindingType === "paperback" ? "ring-2 ring-blue-500" : ""
-            } ${!design.paperType ? "cursor-not-allowed" : "cursor-pointer"}`}
-          >
-            <div className="flex items-center mb-2">
-              <RadioGroupItem value="paperback" id="paperback" />
-              <div className="ml-2 font-medium">Paperback</div>
-            </div>
-            <div className="h-36 flex items-center justify-center p-1">
-              <Image
-                src="/design 5.webp"
-                alt="Paperback binding example"
-                className="object-cover h-full w-full"
-                width={100}
-                height={100}
-              />
-            </div>
-          </Label>
-        </RadioGroup>
-      </div>
-
-      {/* Step 5: Cover Finish */}
-      <div className="border-t border-gray-200 py-4 flex flex-col justify-start items-start gap-7 w-full">
-        <div className="flex flex-col md:flex-row gap-4 items-center w-full">
-          <div className="md:w-1/3 flex items-center gap-2">
-            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-700 text-xs font-bold">
-              5
-            </span>
-            <h3 className="font-semibold">Cover Finish</h3>
-          </div>
-          <div className="md:w-2/3">
-            <p className="text-sm">
-              Select the cover finish for your Book.
-            </p>
-          </div>
-        </div>
-        <RadioGroup
-          disabled={!design.bindingType}
-          value={design.coverFinish}
-          onValueChange={(value: BookSpecificationsState["coverFinish"]) =>
-            dispatch(setCoverFinish(value))
-          }
-          className={`grid grid-cols-1 md:grid-cols-6 gap-4 w-full ${
-            !design.bindingType && "cursor-not-allowed opacity-60"
-          }`}
-        >
-          <Label
-            htmlFor="glossy"
-            className={`border rounded-md p-2 col-span-2 ${
-              design.coverFinish === "glossy" ? "ring-2 ring-blue-500" : ""
-            } ${!design.bindingType ? "cursor-not-allowed" : "cursor-pointer"}`}
-          >
-            <div className="flex items-center">
-              <RadioGroupItem value="glossy" id="glossy" />
-              <div className="ml-2 font-medium">Glossy</div>
-            </div>
-          </Label>
-          <Label
-            htmlFor="matte"
-            className={`border rounded-md p-2 col-span-2 ${
-              design.coverFinish === "matte" ? "ring-2 ring-blue-500" : ""
-            } ${!design.bindingType ? "cursor-not-allowed" : "cursor-pointer"}`}
-          >
-            <div className="flex items-center">
-              <RadioGroupItem value="matte" id="matte" />
-              <div className="ml-2 font-medium">Matte</div>
-            </div>
-          </Label>
-        </RadioGroup>
-      </div>
-
-      <div className="border-t border-gray-200 pt-4 mt-2">
-        <div className="flex justify-between items-center">
-          <div className="font-bold text-lg">Book Cost</div>
-          <div className="bg-green-500 text-white px-4 py-1 rounded-md font-bold">
-            ${design.totalPrice.toFixed(2)} USD
-          </div>
-        </div>
-        {design.totalPrice > BASE_PRICE && (
-          <div className="mt-2 text-sm text-gray-600">
-            {design.interiorColor && (
-              <div className="flex justify-between">
-                <span>Interior Color ({design.interiorColor}):</span>
-                <span>
-                  +$
-                  {(
-                    prices.find((p) => p.name === design.interiorColor)
-                      ?.price || 0
-                  ).toFixed(2)}
+      {startPage.goal !== "publish" && (
+        <>
+          {/* Step 2: Interior Color */}
+          <div className="border-t border-gray-200 py-4 flex flex-col justify-start items-start gap-7 w-full">
+            <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+              <div className="md:w-1/3 flex items-center gap-2">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-700 text-xs font-bold">
+                  2
                 </span>
+                <h3 className="font-semibold">Interior Color</h3>
+              </div>
+              <div className="md:w-2/3">
+                <p className="text-sm">
+                  Books use only Premium inks to provide the best coverage on
+                  the page.
+                </p>
+              </div>
+            </div>
+            <RadioGroup
+              disabled={!design.processedPDF}
+              value={design.interiorColor}
+              onValueChange={(
+                value: BookSpecificationsState["interiorColor"]
+              ) => dispatch(setInteriorColor(value))}
+              className={`grid grid-cols-1 md:grid-cols-6 gap-4 w-full ${
+                !design.processedPDF && "cursor-not-allowed opacity-60"
+              }`}
+            >
+              <Label
+                htmlFor="premium-color"
+                className={`border rounded-md p-2 col-span-2 ${
+                  design.interiorColor === "premium-color"
+                    ? "ring-2 ring-blue-500"
+                    : ""
+                } ${
+                  !design.processedPDF ? "cursor-not-allowed" : "cursor-pointer"
+                }`}
+              >
+                <div className="flex items-center mb-2">
+                  <RadioGroupItem value="premium-color" id="premium-color" />
+                  <div className="ml-2 font-medium">Premium Color</div>
+                </div>
+                <div className="h-36 flex items-center justify-center p-1">
+                  <Image
+                    src="/design.webp"
+                    alt="Premium color book interior example"
+                    className="object-cover h-full w-full"
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              </Label>
+              <Label
+                htmlFor="black-white"
+                className={`border rounded-md p-2 col-span-2 ${
+                  design.interiorColor === "black-white"
+                    ? "ring-2 ring-blue-500"
+                    : ""
+                }  ${
+                  !design.processedPDF ? "cursor-not-allowed" : "cursor-pointer"
+                }`}
+              >
+                <div className="flex items-center mb-2">
+                  <RadioGroupItem value="black-white" id="black-white" />
+                  <div className="ml-2 font-medium">Black & White</div>
+                </div>
+                <div className="h-36 flex items-center justify-center p-1">
+                  <Image
+                    src="/design 2.webp"
+                    alt="Black and white book interior example"
+                    className="object-cover h-full w-full"
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              </Label>
+            </RadioGroup>
+          </div>
+
+          {/* Step 3: Paper Type */}
+          <div className="border-t border-gray-200 py-4 flex flex-col justify-start items-start gap-7 w-full">
+            <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+              <div className="md:w-1/3 flex items-center gap-2">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-700 text-xs font-bold">
+                  3
+                </span>
+                <h3 className="font-semibold">Paper Type</h3>
+              </div>
+              <div className="md:w-2/3">
+                <p className="text-sm">
+                  Books use our highest quality 80# paper for color and black &
+                  white printing.
+                </p>
+              </div>
+            </div>
+            <RadioGroup
+              disabled={!design.interiorColor}
+              value={design.paperType}
+              onValueChange={(value: BookSpecificationsState["paperType"]) =>
+                dispatch(setPaperType(value))
+              }
+              className={`grid grid-cols-1 md:grid-cols-6 gap-4 w-full ${
+                !design.interiorColor && "cursor-not-allowed opacity-60"
+              }`}
+            >
+              <Label
+                htmlFor="80lb-white-coated"
+                className={`border rounded-md p-2 col-span-2 ${
+                  design.paperType === "80lb-white-coated"
+                    ? "ring-2 ring-blue-500"
+                    : ""
+                } ${
+                  !design.interiorColor
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer"
+                }`}
+              >
+                <div className="flex items-center mb-2">
+                  <RadioGroupItem
+                    value="80lb-white-coated"
+                    id="80lb-white-coated"
+                  />
+                  <div className="ml-2 font-medium">80# White - Coated</div>
+                </div>
+                <div className="h-36 flex items-center justify-center p-1">
+                  <Image
+                    src="/design 3.webp"
+                    alt="80# white coated paper example"
+                    className="object-cover h-full w-full"
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              </Label>
+            </RadioGroup>
+          </div>
+
+          {/* Step 4: Binding Type */}
+          <div className="border-t border-gray-200 py-4 flex flex-col justify-start items-start gap-7 w-full">
+            <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+              <div className="md:w-1/3 flex items-center gap-2">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-700 text-xs font-bold">
+                  4
+                </span>
+                <h3 className="font-semibold">Binding Type</h3>
+              </div>
+              <div className="md:w-2/3">
+                <p className="text-sm">Pick a binding option for your Book.</p>
+              </div>
+            </div>
+            <RadioGroup
+              disabled={!design.paperType}
+              value={design.bindingType}
+              onValueChange={(value: BookSpecificationsState["bindingType"]) =>
+                dispatch(setBindingType(value))
+              }
+              className={`grid grid-cols-1 md:grid-cols-6 gap-4 w-full ${
+                !design.paperType && "cursor-not-allowed opacity-60"
+              }`}
+            >
+              <Label
+                htmlFor="hardcover-linen"
+                className={`border rounded-md p-2 col-span-2 ${
+                  design.bindingType === "hardcover-linen"
+                    ? "ring-2 ring-blue-500"
+                    : ""
+                } ${
+                  !design.paperType ? "cursor-not-allowed" : "cursor-pointer"
+                }`}
+              >
+                <div className="flex items-center mb-2">
+                  <RadioGroupItem
+                    value="hardcover-linen"
+                    id="hardcover-linen"
+                  />
+                  <div className="ml-2 font-medium">Hardcover Linen</div>
+                </div>
+                <div className="h-36 flex items-center justify-center p-1">
+                  <Image
+                    src="/design 4.webp"
+                    alt="Hardcover linen binding example"
+                    className="object-cover h-full w-full"
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              </Label>
+              <Label
+                htmlFor="paperback"
+                className={`border rounded-md p-2 col-span-2 ${
+                  design.bindingType === "paperback"
+                    ? "ring-2 ring-blue-500"
+                    : ""
+                } ${
+                  !design.paperType ? "cursor-not-allowed" : "cursor-pointer"
+                }`}
+              >
+                <div className="flex items-center mb-2">
+                  <RadioGroupItem value="paperback" id="paperback" />
+                  <div className="ml-2 font-medium">Paperback</div>
+                </div>
+                <div className="h-36 flex items-center justify-center p-1">
+                  <Image
+                    src="/design 5.webp"
+                    alt="Paperback binding example"
+                    className="object-cover h-full w-full"
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              </Label>
+            </RadioGroup>
+          </div>
+
+          {/* Step 5: Cover Finish */}
+          <div className="border-t border-gray-200 py-4 flex flex-col justify-start items-start gap-7 w-full">
+            <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+              <div className="md:w-1/3 flex items-center gap-2">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-700 text-xs font-bold">
+                  5
+                </span>
+                <h3 className="font-semibold">Cover Finish</h3>
+              </div>
+              <div className="md:w-2/3">
+                <p className="text-sm">
+                  Select the cover finish for your Book.
+                </p>
+              </div>
+            </div>
+            <RadioGroup
+              disabled={!design.bindingType}
+              value={design.coverFinish}
+              onValueChange={(value: BookSpecificationsState["coverFinish"]) =>
+                dispatch(setCoverFinish(value))
+              }
+              className={`grid grid-cols-1 md:grid-cols-6 gap-4 w-full ${
+                !design.bindingType && "cursor-not-allowed opacity-60"
+              }`}
+            >
+              <Label
+                htmlFor="glossy"
+                className={`border rounded-md p-2 col-span-2 ${
+                  design.coverFinish === "glossy" ? "ring-2 ring-blue-500" : ""
+                } ${
+                  !design.bindingType ? "cursor-not-allowed" : "cursor-pointer"
+                }`}
+              >
+                <div className="flex items-center">
+                  <RadioGroupItem value="glossy" id="glossy" />
+                  <div className="ml-2 font-medium">Glossy</div>
+                </div>
+              </Label>
+              <Label
+                htmlFor="matte"
+                className={`border rounded-md p-2 col-span-2 ${
+                  design.coverFinish === "matte" ? "ring-2 ring-blue-500" : ""
+                } ${
+                  !design.bindingType ? "cursor-not-allowed" : "cursor-pointer"
+                }`}
+              >
+                <div className="flex items-center">
+                  <RadioGroupItem value="matte" id="matte" />
+                  <div className="ml-2 font-medium">Matte</div>
+                </div>
+              </Label>
+            </RadioGroup>
+          </div>
+
+          <div className="border-t border-gray-200 pt-4 mt-2">
+            <div className="flex justify-between items-center">
+              <div className="font-bold text-lg">Book Cost</div>
+              <div className="bg-green-500 text-white px-4 py-1 rounded-md font-bold">
+                ${design.totalPrice.toFixed(2)} USD
+              </div>
+            </div>
+            {design.totalPrice > BASE_PRICE && (
+              <div className="mt-2 text-sm text-gray-600">
+                {design.interiorColor && (
+                  <div className="flex justify-between">
+                    <span>Interior Color ({design.interiorColor}):</span>
+                    <span>
+                      +$
+                      {(
+                        prices.find((p) => p.name === design.interiorColor)
+                          ?.price || 0
+                      ).toFixed(2)}
+                    </span>
+                  </div>
+                )}
+                {design.paperType && (
+                  <div className="flex justify-between">
+                    <span>Paper Type ({design.paperType}):</span>
+                    <span>
+                      +$
+                      {(
+                        prices.find((p) => p.name === design.paperType)
+                          ?.price || 0
+                      ).toFixed(2)}
+                    </span>
+                  </div>
+                )}
+                {design.bindingType && (
+                  <div className="flex justify-between">
+                    <span>Binding Type ({design.bindingType}):</span>
+                    <span>
+                      +$
+                      {(
+                        prices.find((p) => p.name === design.bindingType)
+                          ?.price || 0
+                      ).toFixed(2)}
+                    </span>
+                  </div>
+                )}
+                {design.coverFinish && (
+                  <div className="flex justify-between">
+                    <span>Cover Finish ({design.coverFinish}):</span>
+                    <span>
+                      +$
+                      {(
+                        prices.find((p) => p.name === design.coverFinish)
+                          ?.price || 0
+                      ).toFixed(2)}
+                    </span>
+                  </div>
+                )}
               </div>
             )}
-            {design.paperType && (
-              <div className="flex justify-between">
-                <span>Paper Type ({design.paperType}):</span>
-                <span>
-                  +$
-                  {(
-                    prices.find((p) => p.name === design.paperType)?.price || 0
-                  ).toFixed(2)}
-                </span>
-              </div>
-            )}
-            {design.bindingType && (
-              <div className="flex justify-between">
-                <span>Binding Type ({design.bindingType}):</span>
-                <span>
-                  +$
-                  {(
-                    prices.find((p) => p.name === design.bindingType)?.price ||
-                    0
-                  ).toFixed(2)}
-                </span>
-              </div>
-            )}
-            {design.coverFinish && (
-              <div className="flex justify-between">
-                <span>Cover Finish ({design.coverFinish}):</span>
-                <span>
-                  +$
-                  {(
-                    prices.find((p) => p.name === design.coverFinish)?.price ||
-                    0
-                  ).toFixed(2)}
-                </span>
-              </div>
-            )}
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }

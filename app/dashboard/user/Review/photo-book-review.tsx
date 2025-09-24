@@ -21,6 +21,7 @@ export default function PhotoBookReview() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const general = useSelector((state: RootState) => state.general);
   const makeCard = useSelector((state: RootState) => state.makeCard);
+  const startPage = useSelector((state: RootState) => state.startPage);
 
   const downloadPDF = (cloudinaryUrl: any, fileName: string | undefined) => {
     if (cloudinaryUrl) {
@@ -108,26 +109,32 @@ export default function PhotoBookReview() {
 
                   <span className="text-gray-600">Page Count:</span>
                   <span>{pageCount} Pages</span>
+                  {startPage.goal !== "publish" && (
+                    <>
+                      <span className="text-gray-600">Interior Color:</span>
+                      <span className="text-[#1B463C]">{interiorColor}</span>
 
-                  <span className="text-gray-600">Interior Color:</span>
-                  <span className="text-[#1B463C]">{interiorColor}</span>
+                      <span className="text-gray-600">Paper Type:</span>
+                      <span className="text-[#1B463C]">{paperType}</span>
 
-                  <span className="text-gray-600">Paper Type:</span>
-                  <span className="text-[#1B463C]">{paperType}</span>
+                      <span className="text-gray-600">Binding Type:</span>
+                      <span className="text-[#1B463C]">{bindingType}</span>
 
-                  <span className="text-gray-600">Binding Type:</span>
-                  <span className="text-[#1B463C]">{bindingType}</span>
-
-                  <span className="text-gray-600">Cover Finish:</span>
-                  <span className="text-[#1B463C]">{coverFinish}</span>
+                      <span className="text-gray-600">Cover Finish:</span>
+                      <span className="text-[#1B463C]">{coverFinish}</span>
+                    </>
+                  )}
                 </div>
-
-                <div className="pt-2">
-                  <span className="text-gray-600 text-sm">Print Cost:</span>
-                  <span className="text-[#1B463C] font-semibold ml-2">
-                    {totalPrice?.toFixed(2)} USD
-                  </span>
-                </div>
+                {startPage.goal !== "publish" && (
+                  <>
+                    <div className="pt-2">
+                      <span className="text-gray-600 text-sm">Print Cost:</span>
+                      <span className="text-[#1B463C] font-semibold ml-2">
+                        {totalPrice?.toFixed(2)} USD
+                      </span>
+                    </div>
+                  </>
+                )}
 
                 <div className="pt-4 flex flex-wrap gap-2">
                   <Button

@@ -26,6 +26,7 @@ export default function Review() {
 
   // Get data from Redux store
   const design = useSelector((state: RootState) => state.design);
+  const startPage = useSelector((state: RootState) => state.startPage);
   const authData = useSelector((state: RootState) => state.auth);
   const general = useSelector((state: RootState) => state.general);
   const makeCard = useSelector((state: RootState) => state.makeCard);
@@ -263,7 +264,7 @@ export default function Review() {
       <Button
         variant={"main"}
         size={"main"}
-        className="w-full text-2xl"
+        className="w-full text-2xl capitalize"
         // onClick={
         //   general.serviceType === "cards"
         //     ? handlePaymentSuccess
@@ -275,9 +276,14 @@ export default function Review() {
         {isProcessing
           ? "Processing..."
           : authData.isAuthenticated
-          // ? `Confirm & Pay $${getPrice().toFixed(2)}`
-          ? `Publish Your Book`
-          : `Sign in to Pay $${getPrice().toFixed(2)}`}
+          ? // ? `Confirm & Pay $${getPrice().toFixed(2)}`
+            `${startPage.goal} Your Book`
+          : `Sign in to ${
+              startPage.goal === "publish" && general.serviceType !== "cards"
+                ? startPage.goal
+                : "pay"
+            }`}
+        {startPage.goal !== "publish" && <>${getPrice().toFixed(2)}</>}
       </Button>
 
       <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>

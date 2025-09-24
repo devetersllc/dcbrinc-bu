@@ -30,14 +30,14 @@ export async function POST(request: NextRequest) {
         "totalPrice",
       ];
 
-      for (const field of requiredBookFields) {
-        if (!orderData[field]) {
-          return NextResponse.json(
-            { error: `Missing required book field: ${field}` },
-            { status: 400 }
-          );
-        }
-      }
+      // for (const field of requiredBookFields) {
+      //   if (!orderData[field]) {
+      //     return NextResponse.json(
+      //       { error: `Missing required book field: ${field}` },
+      //       { status: 400 }
+      //     );
+      //   }
+      // }
     } else if (orderType === "card") {
       const requiredCardFields = [
         "name",

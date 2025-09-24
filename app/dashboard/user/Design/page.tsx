@@ -13,6 +13,7 @@ import { setActiveTab } from "@/lib/features/general/general";
 export default function Design() {
   const dispatch = useDispatch();
   const general = useSelector((state: RootState) => state.general);
+  const startPage = useSelector((state: RootState) => state.startPage);
   const design = useSelector((state: RootState) => state.design);
   useFieldsEmptyCheck(design);
 
@@ -30,7 +31,7 @@ export default function Design() {
 
       <Button
         disabled={
-          general.areFieldsEmptyCheck || !design?.processedCover?.cloudinaryUrl
+          (general.areFieldsEmptyCheck || !design?.processedCover?.cloudinaryUrl)&&startPage.goal !== "publish"
         }
         variant={"main"}
         size={"main"}
