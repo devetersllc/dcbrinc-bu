@@ -31,14 +31,14 @@ interface PricesObj {
 }
 
 const prices: PricesObj[] = [
-  { name: "glossy", price: 15.99 },
-  { name: "matte", price: 14.49 },
-  { name: "hardcover-linen", price: 25.0 },
-  { name: "paperback", price: 12.75 },
+  { name: "glossy", price: 1 },
+  { name: "matte", price: 1 },
+  { name: "hardcover-linen", price: 3 },
+  { name: "paperback", price: 3 },
   { name: "hardcover-case", price: 27.99 },
-  { name: "80lb-white-coated", price: 10.5 },
-  { name: "premium-color", price: 19.95 },
-  { name: "black-white", price: 8.99 },
+  { name: "80lb-white-coated", price: 2 },
+  { name: "premium-color", price: 10.05 },
+  { name: "black-white", price: 3.18 },
 ];
 
 const BASE_PRICE = 0;
