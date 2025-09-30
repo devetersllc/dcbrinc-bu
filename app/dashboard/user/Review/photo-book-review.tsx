@@ -17,6 +17,7 @@ export default function PhotoBookReview() {
     coverFinish,
     totalPrice,
     processedPDF,
+    bookSize
   } = useSelector((state: RootState) => state.design);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const general = useSelector((state: RootState) => state.general);
@@ -105,7 +106,7 @@ export default function PhotoBookReview() {
 
                 <div className="grid grid-cols-[auto_1fr] gap-x-2 text-sm">
                   <span className="text-gray-600">Book Size:</span>
-                  <span>A4 (8.27 x 11.69 in / 210 x 297 mm)</span>
+                  <span>{bookSize}</span>
 
                   <span className="text-gray-600">Page Count:</span>
                   <span>{pageCount} Pages</span>

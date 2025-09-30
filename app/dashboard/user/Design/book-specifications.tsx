@@ -136,7 +136,6 @@ export function BookSpecifications() {
               onValueChange={(value: BookSpecificationsState["bookSize"]) =>
                 dispatch(setBookSize(value))
               }
-              disabled
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select book size" />
@@ -160,7 +159,6 @@ export function BookSpecifications() {
               onValueChange={(value: BookSpecificationsState["pageCount"]) =>
                 dispatch(setPageCount(value))
               }
-              disabled
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Page count" />
