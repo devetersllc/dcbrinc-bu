@@ -10,7 +10,7 @@ import Pricing from "./Pricing/page";
 import Review from "./Review/page";
 import { setActiveTab } from "@/lib/features/general/general";
 import { useDispatch } from "react-redux";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import MakeCard from "./MakeCard/page";
 import {
   setType,
@@ -57,6 +57,65 @@ export default function MainTabs() {
     },
     [general.areFieldsEmptyCheck, general.activeTab]
   );
+
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<any>(null);
+  const demoPayload = {
+    contact_email: "test@test.com",
+    external_id: "demo-time",
+    line_items: [
+      {
+        external_id: "item-reference-1",
+        printable_normalization: {
+          cover: {
+            source_url:
+              "https://www.dropbox.com/s/7bv6mg2tj0h3l0r/lulu_trade_perfect_template.pdf?dl=1&raw=1",
+          },
+          interior: {
+            source_url:
+              "https://www.dropbox.com/s/r20orb8umqjzav9/lulu_trade_interior_template-32.pdf?dl=1&raw=1",
+          },
+          pod_package_id: "0600X0900BWSTDPB060UW444MXX",
+        },
+        quantity: 30,
+        title: "My Book",
+      },
+    ],
+    production_delay: 120,
+    shipping_address: {
+      city: "Lübeck",
+      country_code: "GB",
+      name: "Hans Dampf",
+      phone_number: "844-212-0689",
+      postcode: "PO1 3AX",
+      state_code: "",
+      street1: "Holstenstr. 48",
+    },
+    shipping_level: "MAIL",
+  };
+  const createOrder = async () => {
+    setLoading(true);
+    setResult(null);
+
+    try {
+      const res = await fetch("/api/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(demoPayload), // just a dummy payload for now
+      });
+
+      const data = await res.json();
+      setResult(data);
+    } catch (err: any) {
+      setResult({ error: err.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // createOrder();
+  }, []);
 
   return (
     <Tabs
