@@ -50,8 +50,8 @@ export function CategoriesAndKeywords() {
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="fiction">Fiction</SelectItem>
                 <SelectItem value="non-fiction">Non-Fiction</SelectItem>
+                <SelectItem value="fiction">Fiction</SelectItem>
                 <SelectItem value="children">Children's Books</SelectItem>
                 <SelectItem value="academic">Academic & Textbooks</SelectItem>
                 <SelectItem value="art">Art & Photography</SelectItem>

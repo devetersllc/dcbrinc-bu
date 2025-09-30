@@ -78,9 +78,9 @@ export function PhotoBookDetails() {
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="English">English</SelectItem>
                 <SelectItem value="Akkadian">Akkadian</SelectItem>
                 <SelectItem value="Amharic">Amharic</SelectItem>
-                <SelectItem value="English">English</SelectItem>
                 <SelectItem value="Spanish">Spanish</SelectItem>
                 <SelectItem value="French">French</SelectItem>
                 <SelectItem value="German">German</SelectItem>
@@ -106,8 +106,8 @@ export function PhotoBookDetails() {
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Fiction">Fiction</SelectItem>
                 <SelectItem value="Non-Fiction">Non-Fiction</SelectItem>
+                <SelectItem value="Fiction">Fiction</SelectItem>
                 <SelectItem value="Art & Photography">
                   Art & Photography
                 </SelectItem>

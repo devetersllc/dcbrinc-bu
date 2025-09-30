@@ -35,8 +35,8 @@ const initialState: StartPageState = {
   goal: "print",
   type: "print-book",
   projectTitle: "",
-  bookLanguage: "Akkadian",
-  bookCategory: "Fiction",
+  bookLanguage: "English",
+  bookCategory: "Non-Fiction",
 };
 
 const startpageSlice = createSlice({

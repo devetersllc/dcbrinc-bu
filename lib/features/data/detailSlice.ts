@@ -18,7 +18,7 @@ const initialState: DetailState = {
   description: "",
   contributorNotes: "",
   tableOfContents: "",
-  luluCategory: "fiction",
+  luluCategory: "non-fiction",
   bisacMain: "",
   bisacCategory2: "",
   bisacCategory3: "",
