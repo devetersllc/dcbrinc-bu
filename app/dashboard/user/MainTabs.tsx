@@ -15,7 +15,9 @@ import MakeCard from "./MakeCard/page";
 import {
   setType,
   setTypeFromQuery,
+  setGoalFromQuery,
   StartPageState,
+  setGoal,
 } from "@/lib/features/data/startPageSlice";
 
 export default function MainTabs() {
@@ -31,6 +33,17 @@ export default function MainTabs() {
     dispatch(
       setTypeFromQuery(
         (params.get("type") as StartPageState["type"]) ? true : false
+      )
+    );
+  }, [dispatch]);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const goal = (params.get("goal") as StartPageState["goal"]) || "print";
+    console.log("Goal from URL:");
+    dispatch(setGoal(goal));
+    dispatch(
+      setGoalFromQuery(
+        (params.get("goal") as StartPageState["goal"]) ? true : false
       )
     );
   }, [dispatch]);
