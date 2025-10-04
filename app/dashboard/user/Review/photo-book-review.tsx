@@ -150,7 +150,7 @@ export default function PhotoBookReview() {
                     disabled={processedPDF?.cloudinaryUrl ? false : true}
                   >
                     <Download size={16} />
-                    Print-Ready Files
+                    Files
                   </Button>
                   {/* <Button
                   variant="outline"

@@ -272,14 +272,14 @@ async function validatePDFProperties(
     const [minPages, maxPages] = requirements.pageCount.split("-").map(Number);
 
     // Validate page count based on book type
-    if (pageCount < minPages || pageCount > maxPages) {
-      errors.push(
-        `Page count (${pageCount}) must be between ${minPages} and ${maxPages} for ${bookType.replace(
-          "-",
-          " "
-        )}`
-      );
-    }
+    // if (pageCount < minPages || pageCount > maxPages) {
+    //   errors.push(
+    //     `Page count (${pageCount}) must be between ${minPages} and ${maxPages} for ${bookType.replace(
+    //       "-",
+    //       " "
+    //     )}`
+    //   );
+    // }
 
     // Check PDF content for fonts and layers
     const content = buffer.toString("binary");
@@ -360,14 +360,14 @@ function fallbackValidation(
   const [minPages, maxPages] = requirements.pageCount.split("-").map(Number);
 
   // Validate page count based on book type
-  if (pageCount < minPages || pageCount > maxPages) {
-    errors.push(
-      `Page count (${pageCount}) must be between ${minPages} and ${maxPages} for ${bookType.replace(
-        "-",
-        " "
-      )}`
-    );
-  }
+  // if (pageCount < minPages || pageCount > maxPages) {
+  //   errors.push(
+  //     `Page count (${pageCount}) must be between ${minPages} and ${maxPages} for ${bookType.replace(
+  //       "-",
+  //       " "
+  //     )}`
+  //   );
+  // }
 
   // Check for embedded fonts (simplified check)
   const hasEmbeddedFonts =
