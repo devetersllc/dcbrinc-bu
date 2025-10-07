@@ -158,7 +158,8 @@ async function validateCoverProperties(buffer: Buffer) {
     // Dynamic import for pdf-parse
     let pdfParse;
     try {
-      pdfParse = (await import("pdf-parse")).default;
+      pdfParse = require("pdf-parse");
+      // pdfParse = (await import("pdf-parse")).default;
     } catch (importError) {
       console.warn("pdf-parse not available, using fallback validation");
       return fallbackCoverValidation(buffer);
