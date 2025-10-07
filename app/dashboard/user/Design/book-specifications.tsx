@@ -169,6 +169,15 @@ export function BookSpecifications() {
                 <SelectItem value="36">36</SelectItem>
                 <SelectItem value="42">42</SelectItem>
                 <SelectItem value="48">48</SelectItem>
+                <SelectItem value="54">54</SelectItem>
+                <SelectItem value="60">60</SelectItem>
+                <SelectItem value="66">66</SelectItem>
+                <SelectItem value="72">72</SelectItem>
+                <SelectItem value="78">78</SelectItem>
+                <SelectItem value="84">84</SelectItem>
+                <SelectItem value="90">90</SelectItem>
+                <SelectItem value="96">96</SelectItem>
+                <SelectItem value="100+">100+</SelectItem>
               </SelectContent>
             </Select>
           </div>
