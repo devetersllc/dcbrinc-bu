@@ -41,9 +41,24 @@ export interface BookSpecificationsState {
   processedCover: ProcessedCover | null;
   bookSize: "a4" | "a5" | "square";
   pageCount: "24" | "30" | "36" | "42" | "48";
-  interiorColor: "black-white" | "premium-color" | "";
-  paperType: "80lb-white-coated" | "";
-  bindingType: "hardcover-case" | "paperback" | "hardcover-linen" | "";
+  interiorColor:
+    | "premium-black-white"
+    | "standard-black-white"
+    | "premium-color"
+    | "standard-color"
+    | "";
+  paperType:
+    | "80lb-white-coated"
+    | "60lb-white-coated"
+    | "60lb-cream-coated"
+    | "";
+  bindingType:
+    | "hardcover-case"
+    | "paperback-perfect-bound"
+    | "paper-coil-bound"
+    | "paperback"
+    | "hardcover-linen"
+    | "";
   coverFinish: "glossy" | "matte" | "";
   totalPrice: number;
 }

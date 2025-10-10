@@ -33,12 +33,18 @@ interface PricesObj {
 const prices: PricesObj[] = [
   { name: "glossy", price: 1 },
   { name: "matte", price: 1 },
+  { name: "paper-coil-bound", price: 3 },
+  { name: "paperback-perfect-bound", price: 3 },
   { name: "hardcover-linen", price: 3 },
   { name: "paperback", price: 3 },
-  { name: "hardcover-case", price: 27.99 },
+  { name: "hardcover-case", price: 3 },
   { name: "80lb-white-coated", price: 2 },
+  { name: "60lb-white-coated", price: 2 },
+  { name: "60lb-cream-coated", price: 2 },
+  { name: "standard-color", price: 10.05 },
   { name: "premium-color", price: 10.05 },
-  { name: "black-white", price: 3.18 },
+  { name: "standard-black-white", price: 10.05 },
+  { name: "premium-black-white", price: 10.05 },
 ];
 
 const BASE_PRICE = 0;
@@ -212,6 +218,60 @@ export function BookSpecifications() {
               }`}
             >
               <Label
+                htmlFor="premium-black-white"
+                className={`border rounded-md p-2 col-span-2 ${
+                  design.interiorColor === "premium-black-white"
+                    ? "ring-2 ring-[#1b463c]"
+                    : ""
+                } ${
+                  !design.processedPDF ? "cursor-not-allowed" : "cursor-pointer"
+                }`}
+              >
+                <div className="flex items-center mb-2">
+                  <RadioGroupItem
+                    value="premium-black-white"
+                    id="premium-black-white"
+                  />
+                  <div className="ml-2 font-medium">Premium Black White</div>
+                </div>
+                <div className="h-36 flex items-center justify-center p-1">
+                  <Image
+                    src="/design.webp"
+                    alt="Premium color book interior example"
+                    className="object-cover h-full w-full"
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              </Label>
+              <Label
+                htmlFor="standard-black-white"
+                className={`border rounded-md p-2 col-span-2 ${
+                  design.interiorColor === "standard-black-white"
+                    ? "ring-2 ring-[#1b463c]"
+                    : ""
+                }  ${
+                  !design.processedPDF ? "cursor-not-allowed" : "cursor-pointer"
+                }`}
+              >
+                <div className="flex items-center mb-2">
+                  <RadioGroupItem
+                    value="standard-black-white"
+                    id="standard-black-white"
+                  />
+                  <div className="ml-2 font-medium">Standard Black & White</div>
+                </div>
+                <div className="h-36 flex items-center justify-center p-1">
+                  <Image
+                    src="/design 2.webp"
+                    alt="Black and white book interior example"
+                    className="object-cover h-full w-full"
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              </Label>
+              <Label
                 htmlFor="premium-color"
                 className={`border rounded-md p-2 col-span-2 ${
                   design.interiorColor === "premium-color"
@@ -227,32 +287,32 @@ export function BookSpecifications() {
                 </div>
                 <div className="h-36 flex items-center justify-center p-1">
                   <Image
-                    src="/design.webp"
+                    src="/design 3.webp"
                     alt="Premium color book interior example"
                     className="object-cover h-full w-full"
                     width={100}
                     height={100}
                   />
                 </div>
-              </Label>
+              </Label>{" "}
               <Label
-                htmlFor="black-white"
+                htmlFor="standard-color"
                 className={`border rounded-md p-2 col-span-2 ${
-                  design.interiorColor === "black-white"
+                  design.interiorColor === "standard-color"
                     ? "ring-2 ring-[#1b463c]"
                     : ""
-                }  ${
+                } ${
                   !design.processedPDF ? "cursor-not-allowed" : "cursor-pointer"
                 }`}
               >
                 <div className="flex items-center mb-2">
-                  <RadioGroupItem value="black-white" id="black-white" />
-                  <div className="ml-2 font-medium">Black & White</div>
+                  <RadioGroupItem value="standard-color" id="standard-color" />
+                  <div className="ml-2 font-medium">Standard Color</div>
                 </div>
                 <div className="h-36 flex items-center justify-center p-1">
                   <Image
-                    src="/design 2.webp"
-                    alt="Black and white book interior example"
+                    src="/design 4.webp"
+                    alt="Premium color book interior example"
                     className="object-cover h-full w-full"
                     width={100}
                     height={100}
@@ -289,6 +349,64 @@ export function BookSpecifications() {
               }`}
             >
               <Label
+                htmlFor="60lb-cream-coated"
+                className={`border rounded-md p-2 col-span-2 ${
+                  design.paperType === "60lb-cream-coated"
+                    ? "ring-2 ring-[#1b463c]"
+                    : ""
+                } ${
+                  !design.interiorColor
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer"
+                }`}
+              >
+                <div className="flex items-center mb-2">
+                  <RadioGroupItem
+                    value="60lb-cream-coated"
+                    id="60lb-cream-coated"
+                  />
+                  <div className="ml-2 font-medium">60# White - Coated</div>
+                </div>
+                <div className="h-36 flex items-center justify-center p-1">
+                  <Image
+                    src="/design 5.webp"
+                    alt="80# white coated paper example"
+                    className="object-cover h-full w-full"
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              </Label>
+              <Label
+                htmlFor="60lb-white-coated"
+                className={`border rounded-md p-2 col-span-2 ${
+                  design.paperType === "60lb-white-coated"
+                    ? "ring-2 ring-[#1b463c]"
+                    : ""
+                } ${
+                  !design.interiorColor
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer"
+                }`}
+              >
+                <div className="flex items-center mb-2">
+                  <RadioGroupItem
+                    value="60lb-white-coated"
+                    id="60lb-white-coated"
+                  />
+                  <div className="ml-2 font-medium">60# White - Coated</div>
+                </div>
+                <div className="h-36 flex items-center justify-center p-1">
+                  <Image
+                    src="/design 5.webp"
+                    alt="80# white coated paper example"
+                    className="object-cover h-full w-full"
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              </Label>
+              <Label
                 htmlFor="80lb-white-coated"
                 className={`border rounded-md p-2 col-span-2 ${
                   design.paperType === "80lb-white-coated"
@@ -309,7 +427,7 @@ export function BookSpecifications() {
                 </div>
                 <div className="h-36 flex items-center justify-center p-1">
                   <Image
-                    src="/design 3.webp"
+                    src="/design 5.webp"
                     alt="80# white coated paper example"
                     className="object-cover h-full w-full"
                     width={100}
@@ -344,9 +462,9 @@ export function BookSpecifications() {
               }`}
             >
               <Label
-                htmlFor="hardcover-linen"
+                htmlFor="paper-coil-bound"
                 className={`border rounded-md p-2 col-span-2 ${
-                  design.bindingType === "hardcover-linen"
+                  design.bindingType === "paper-coil-bound"
                     ? "ring-2 ring-[#1b463c]"
                     : ""
                 } ${
@@ -355,15 +473,63 @@ export function BookSpecifications() {
               >
                 <div className="flex items-center mb-2">
                   <RadioGroupItem
-                    value="hardcover-linen"
-                    id="hardcover-linen"
+                    value="paper-coil-bound"
+                    id="paper-coil-bound"
                   />
-                  <div className="ml-2 font-medium">Hardcover Linen</div>
+                  <div className="ml-2 font-medium">Paper Coil Bound</div>
                 </div>
                 <div className="h-36 flex items-center justify-center p-1">
                   <Image
-                    src="/design 4.webp"
-                    alt="Hardcover linen binding example"
+                    src="/design 6.webp"
+                    alt="paper-coil-bound linen binding example"
+                    className="object-cover h-full w-full"
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              </Label>
+              <Label
+                htmlFor="paperback-perfect-bound"
+                className={`border rounded-md p-2 col-span-2 ${
+                  design.bindingType === "paperback-perfect-bound"
+                    ? "ring-2 ring-[#1b463c]"
+                    : ""
+                } ${
+                  !design.paperType ? "cursor-not-allowed" : "cursor-pointer"
+                }`}
+              >
+                <div className="flex items-center mb-2">
+                  <RadioGroupItem value="paperback-perfect-bound" id="paperback-perfect-bound" />
+                  <div className="ml-2 font-medium">Paperback Perfect Bound</div>
+                </div>
+                <div className="h-36 flex items-center justify-center p-1">
+                  <Image
+                    src="/design 7.webp"
+                    alt="paperback-perfect-bound binding example"
+                    className="object-cover h-full w-full"
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              </Label>
+              <Label
+                htmlFor="hardcover-case"
+                className={`border rounded-md p-2 col-span-2 ${
+                  design.bindingType === "hardcover-case"
+                    ? "ring-2 ring-[#1b463c]"
+                    : ""
+                } ${
+                  !design.paperType ? "cursor-not-allowed" : "cursor-pointer"
+                }`}
+              >
+                <div className="flex items-center mb-2">
+                  <RadioGroupItem value="hardcover-case" id="hardcover-case" />
+                  <div className="ml-2 font-medium">Hardcover Case</div>
+                </div>
+                <div className="h-36 flex items-center justify-center p-1">
+                  <Image
+                    src="/design 7.webp"
+                    alt="hardcover-case binding example"
                     className="object-cover h-full w-full"
                     width={100}
                     height={100}
@@ -386,8 +552,35 @@ export function BookSpecifications() {
                 </div>
                 <div className="h-36 flex items-center justify-center p-1">
                   <Image
-                    src="/design 5.webp"
+                    src="/design 7.webp"
                     alt="Paperback binding example"
+                    className="object-cover h-full w-full"
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              </Label>
+              <Label
+                htmlFor="hardcover-linen"
+                className={`border rounded-md p-2 col-span-2 ${
+                  design.bindingType === "hardcover-linen"
+                    ? "ring-2 ring-[#1b463c]"
+                    : ""
+                } ${
+                  !design.paperType ? "cursor-not-allowed" : "cursor-pointer"
+                }`}
+              >
+                <div className="flex items-center mb-2">
+                  <RadioGroupItem
+                    value="hardcover-linen"
+                    id="hardcover-linen"
+                  />
+                  <div className="ml-2 font-medium">Hardcover Linen</div>
+                </div>
+                <div className="h-36 flex items-center justify-center p-1">
+                  <Image
+                    src="/design 8.webp"
+                    alt="Hardcover linen binding example"
                     className="object-cover h-full w-full"
                     width={100}
                     height={100}
