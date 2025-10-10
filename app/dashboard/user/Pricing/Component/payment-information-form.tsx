@@ -260,8 +260,8 @@ export default function PaymentInformationForm() {
         <div className="border rounded-md p-4 space-y-4">
           <h3 className="font-semibold">Tax-Related Information (Optional)</h3>
           <p className="text-sm text-gray-600">
-            DCBRINC is located in the United States and is subject to US tax laws.
-            When we make a payment, we may be required to withhold certain
+            DCBRINC is located in the United States and is subject to US tax
+            laws. When we make a payment, we may be required to withhold certain
             amounts from your payment for certain eligible sales.
           </p>
           <p className="text-sm text-gray-600">
@@ -317,7 +317,7 @@ export default function PaymentInformationForm() {
             </a>
 
             {/* Download Button */}
-            <Button className="bg-blue-500 hover:bg-blue-600 mb-4 flex items-center gap-2">
+            <Button className="bg-[#1b463c] hover:bg-blue-600 mb-4 flex items-center gap-2">
               <Download size={16} />
               Download Tax Form Templates
             </Button>

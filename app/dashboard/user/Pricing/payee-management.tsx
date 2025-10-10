@@ -44,8 +44,8 @@ export default function PayeeManagement() {
         <div className="flex justify-between items-start">
           <h2 className="text-xl font-bold">Set Payees</h2>
           <p className="text-sm text-gray-600 max-w-md">
-            Designate who gets paid when your Book sells. Select from
-            Payees saved in your account or create new ones.
+            Designate who gets paid when your Book sells. Select from Payees
+            saved in your account or create new ones.
           </p>
         </div>
 
@@ -69,7 +69,7 @@ export default function PayeeManagement() {
                 className="w-full flex justify-between items-center p-3 bg-blue-50 hover:bg-blue-100 rounded-md text-left"
               >
                 <span>Select from Existing Payees</span>
-                <div className={`bg-blue-500 p-1 rounded-md text-white`}>
+                <div className={`bg-[#1b463c] p-1 rounded-md text-white`}>
                   {existingPayeesOpen ? (
                     <ChevronUp size={18} />
                   ) : (
@@ -124,9 +124,9 @@ export default function PayeeManagement() {
               Some Steps Are Incomplete.
             </h4>
             <p className="text-sm text-purple-800">
-              Before you can review your Book, you must complete all steps
-              in the publishing process. Click on the step(s) in the progress
-              bar without this green checkmark{" "}
+              Before you can review your Book, you must complete all steps in
+              the publishing process. Click on the step(s) in the progress bar
+              without this green checkmark{" "}
               <CheckCircle2 className="h-4 w-4 text-green-500 inline" /> to
               continue working on your Book.
             </p>

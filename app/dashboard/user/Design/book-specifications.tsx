@@ -103,7 +103,7 @@ export function BookSpecifications() {
             your Book size, it will not be available in this step.
           </p>
           <div className="flex items-center gap-2 mt-2 bg-blue-50 p-2 rounded text-sm">
-            <InfoIcon className="h-4 w-4 text-blue-500" />
+            <InfoIcon className="h-4 w-4 text-[#1b463c]" />
             <p>
               The icon indicates that the option is available for Global
               Distribution
@@ -215,7 +215,7 @@ export function BookSpecifications() {
                 htmlFor="premium-color"
                 className={`border rounded-md p-2 col-span-2 ${
                   design.interiorColor === "premium-color"
-                    ? "ring-2 ring-blue-500"
+                    ? "ring-2 ring-[#1b463c]"
                     : ""
                 } ${
                   !design.processedPDF ? "cursor-not-allowed" : "cursor-pointer"
@@ -239,7 +239,7 @@ export function BookSpecifications() {
                 htmlFor="black-white"
                 className={`border rounded-md p-2 col-span-2 ${
                   design.interiorColor === "black-white"
-                    ? "ring-2 ring-blue-500"
+                    ? "ring-2 ring-[#1b463c]"
                     : ""
                 }  ${
                   !design.processedPDF ? "cursor-not-allowed" : "cursor-pointer"
@@ -292,7 +292,7 @@ export function BookSpecifications() {
                 htmlFor="80lb-white-coated"
                 className={`border rounded-md p-2 col-span-2 ${
                   design.paperType === "80lb-white-coated"
-                    ? "ring-2 ring-blue-500"
+                    ? "ring-2 ring-[#1b463c]"
                     : ""
                 } ${
                   !design.interiorColor
@@ -347,7 +347,7 @@ export function BookSpecifications() {
                 htmlFor="hardcover-linen"
                 className={`border rounded-md p-2 col-span-2 ${
                   design.bindingType === "hardcover-linen"
-                    ? "ring-2 ring-blue-500"
+                    ? "ring-2 ring-[#1b463c]"
                     : ""
                 } ${
                   !design.paperType ? "cursor-not-allowed" : "cursor-pointer"
@@ -374,7 +374,7 @@ export function BookSpecifications() {
                 htmlFor="paperback"
                 className={`border rounded-md p-2 col-span-2 ${
                   design.bindingType === "paperback"
-                    ? "ring-2 ring-blue-500"
+                    ? "ring-2 ring-[#1b463c]"
                     : ""
                 } ${
                   !design.paperType ? "cursor-not-allowed" : "cursor-pointer"
@@ -425,7 +425,7 @@ export function BookSpecifications() {
               <Label
                 htmlFor="glossy"
                 className={`border rounded-md p-2 col-span-2 ${
-                  design.coverFinish === "glossy" ? "ring-2 ring-blue-500" : ""
+                  design.coverFinish === "glossy" ? "ring-2 ring-[#1b463c]" : ""
                 } ${
                   !design.bindingType ? "cursor-not-allowed" : "cursor-pointer"
                 }`}
@@ -438,7 +438,7 @@ export function BookSpecifications() {
               <Label
                 htmlFor="matte"
                 className={`border rounded-md p-2 col-span-2 ${
-                  design.coverFinish === "matte" ? "ring-2 ring-blue-500" : ""
+                  design.coverFinish === "matte" ? "ring-2 ring-[#1b463c]" : ""
                 } ${
                   !design.bindingType ? "cursor-not-allowed" : "cursor-pointer"
                 }`}

@@ -61,7 +61,7 @@ export function GoalSelection() {
           <div
             className={`border rounded-lg overflow-hidden ${
               startPage.goal === item.value
-                ? "border-l-4 border-l-blue-500"
+                ? "border-l-4 border-l-[#1b463c]"
                 : ""
             }`}
           >

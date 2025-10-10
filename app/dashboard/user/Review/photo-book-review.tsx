@@ -17,7 +17,7 @@ export default function PhotoBookReview() {
     coverFinish,
     totalPrice,
     processedPDF,
-    bookSize
+    bookSize,
   } = useSelector((state: RootState) => state.design);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const general = useSelector((state: RootState) => state.general);
@@ -72,7 +72,7 @@ export default function PhotoBookReview() {
         <div className="bg-white p-6 rounded-md shadow-sm">
           <div className="flex flex-col md:flex-row gap-6">
             <div className="flex-shrink-0">
-              <div className="border-4 border-blue-900 p-2 w-[180px]">
+              <div className="border-4 border-[#1b463c] p-2 w-[180px]">
                 <div className="bg-white p-4 flex flex-col items-center">
                   <div className="mb-4">
                     <Image
@@ -98,7 +98,7 @@ export default function PhotoBookReview() {
 
             <div className="flex-grow">
               {/* <div className="flex justify-between items-start">
-              <Button className="bg-blue-500 hover:bg-blue-600">Revise</Button>
+              <Button className="bg-[#1b463c] hover:bg-blue-600">Revise</Button>
             </div> */}
 
               <div className="space-y-3">

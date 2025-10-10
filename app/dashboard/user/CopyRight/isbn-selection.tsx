@@ -47,9 +47,9 @@ export default function ISBNSelection() {
           <div>
             <h4 className="font-semibold text-purple-900">ISBN Not Required</h4>
             <p className="text-sm text-purple-800">
-              If you are only selling your book on the DCBRINC Bookstore, an ISBN
-              is not required. You can add an ISBN at any time if you decide
-              later to sell your book through retailers.
+              If you are only selling your book on the DCBRINC Bookstore, an
+              ISBN is not required. You can add an ISBN at any time if you
+              decide later to sell your book through retailers.
             </p>
           </div>
         </div>
@@ -77,16 +77,16 @@ export default function ISBNSelection() {
                     Use a free ISBN
                   </Label>
                   <p className="text-sm text-gray-600 mt-1">
-                    Use a free DCBRINC ISBN, with DCBRINC assigned as the publishing
-                    imprint. Once your Book is published and the proof
-                    copy approved, the ISBN will never expire and remain
+                    Use a free DCBRINC ISBN, with DCBRINC assigned as the
+                    publishing imprint. Once your Book is published and the
+                    proof copy approved, the ISBN will never expire and remain
                     attached to your published Book indefinitely.
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => toggleSection("freeIsbn")}
-                className="bg-blue-500 text-white p-1 rounded-md"
+                className="bg-[#1b463c] text-white p-1 rounded-md"
               >
                 {expandedSections.freeIsbn ? (
                   <ChevronUp size={18} />
@@ -98,8 +98,8 @@ export default function ISBNSelection() {
             {expandedSections.freeIsbn && (
               <div className="p-4 border-t bg-gray-50">
                 <p className="text-sm text-gray-600">
-                  By selecting this option, DCBRINC will be listed as the publisher
-                  of your book.
+                  By selecting this option, DCBRINC will be listed as the
+                  publisher of your book.
                 </p>
                 <Button className="mt-3 bg-blue-600 hover:bg-blue-700">
                   Assign Free ISBN
@@ -137,8 +137,8 @@ export default function ISBNSelection() {
                 )}
               </button>
             </div>
-            {(expandedSections.ownIsbn ||
-              (copyWrite.isbnOption === "own-isbn") && (
+            {expandedSections.ownIsbn ||
+              (copyWrite.isbnOption === "own-isbn" && (
                 <div className="p-4 border-t bg-gray-50">
                   <div className="space-y-3">
                     <div>

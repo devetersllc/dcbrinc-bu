@@ -283,7 +283,7 @@ export default function Review() {
                 ? startPage.goal
                 : "pay"
             }`}
-        {startPage.goal !== "publish" && <>${getPrice().toFixed(2)}</>}
+        {/* {startPage.goal !== "publish" && <>${getPrice().toFixed(2)}</>} */}
       </Button>
 
       <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>

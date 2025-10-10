@@ -259,7 +259,7 @@ export function PhotoBookPreview() {
       renderFallbackPage(pageNum);
     }
   };
-  
+
   const renderFallbackPage = (pageNum: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -409,7 +409,7 @@ export function PhotoBookPreview() {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1b463c] mx-auto mb-4"></div>
           <p>Loading PDFs...</p>
         </div>
       </div>

@@ -103,7 +103,7 @@ export function PhotoBookCoverDesign() {
           <div
             className={`border-l-4 ${
               coverOption === "upload"
-                ? "border-l-green-500"
+                ? "border-l-[#1b463c]"
                 : "border-l-transparent"
             }`}
           >

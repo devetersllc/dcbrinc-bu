@@ -192,7 +192,7 @@ export default function CardPreview({
       <Button
         onClick={handleDownload}
         variant={"outline"}
-        className="absolute top-2 right-2 bg-blue-500 text-white border-0"
+        className="absolute top-2 right-2 bg-[#1b463c] text-white border-0"
       >
         <Download size={18} />
       </Button>
@@ -273,10 +273,7 @@ const PreviewTabs = ({
         {TabsArray.map((tab, index) => (
           <TabsContent key={index} value={tab.name}>
             <div className="w-fit h-fit relative">
-              <SelectedTemplate
-                divRef={divRef}
-                isFront={index === 0}
-              />
+              <SelectedTemplate divRef={divRef} isFront={index === 0} />
             </div>
           </TabsContent>
         ))}

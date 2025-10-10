@@ -24,7 +24,7 @@ export function ProductSelection() {
   const products = [
     {
       id: "print-book",
-      title: "Print Book",
+      title: "Book",
       description:
         "Traditional or paperback book using a wide range of paper stock and binding options. Perfect for novels, cookbooks, and more - perfect for a variety of projects.",
       image: "/startPage.webp",
@@ -101,7 +101,7 @@ export function ProductSelection() {
                 className={cn(
                   "cursor-pointer block h-full",
                   startPage.type === product.id
-                    ? "ring-2 ring-blue-500 rounded-lg"
+                    ? "ring-2 ring-[#1b463c] rounded-lg"
                     : ""
                 )}
               >
