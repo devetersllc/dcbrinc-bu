@@ -79,10 +79,7 @@ export function GoalSelection() {
                   {item.value === "publish" ? (
                     <>Publish Your {startPage.type?.replaceAll("-", " ")}</>
                   ) : (
-                    <>
-                      {startPage.type === "print-book" ? "Get " : "Print "}
-                      Your {startPage.type?.replaceAll("-", " ")}
-                    </>
+                    <>Print Your {startPage.type?.replaceAll("-", " ")}</>
                   )}
                 </Label>
                 <p className="text-sm text-gray-600">{item.text}</p>
