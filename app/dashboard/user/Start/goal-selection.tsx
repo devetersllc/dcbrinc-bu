@@ -77,7 +77,12 @@ export function GoalSelection() {
                   className="font-bold text-base cursor-pointer capitalize"
                 >
                   {item.value === "publish" ? (
-                    <>Publish Your {startPage.type?.replaceAll("-", " ")}</>
+                    <>
+                      Publish Your{" "}
+                      {startPage.type
+                        ?.replaceAll("-", " ")
+                        ?.replaceAll("print", " ")}
+                    </>
                   ) : (
                     <>
                       Print Your{" "}
