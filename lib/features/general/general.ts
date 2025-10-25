@@ -4,12 +4,14 @@ export interface GeneralState {
   activeTab: number;
   areFieldsEmptyCheck: boolean;
   serviceType: "books" | "cards";
+  showLoginDialog: boolean;
 }
 
 const initialState: GeneralState = {
   activeTab: 0,
   areFieldsEmptyCheck: true,
   serviceType: "books",
+  showLoginDialog: false,
 };
 
 const startpageSlice = createSlice({
@@ -18,6 +20,12 @@ const startpageSlice = createSlice({
   reducers: {
     setActiveTab: (state, action: PayloadAction<GeneralState["activeTab"]>) => {
       state.activeTab = action.payload;
+    },
+    setShowLoginDialog: (
+      state,
+      action: PayloadAction<GeneralState["showLoginDialog"]>
+    ) => {
+      state.showLoginDialog = action.payload;
     },
     setServiceType: (
       state,
@@ -31,7 +39,7 @@ const startpageSlice = createSlice({
   },
 });
 
-export const { setActiveTab, setAreFieldsEmptyCheck, setServiceType } =
+export const { setActiveTab, setAreFieldsEmptyCheck, setServiceType, setShowLoginDialog } =
   startpageSlice.actions;
 
 export default startpageSlice.reducer;

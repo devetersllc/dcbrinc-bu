@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import PhotoBookReview from "./photo-book-review";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/lib/store";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -16,14 +16,19 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { LoginPopup } from "./LoginPopup";
+import { setShowLoginDialog } from "@/lib/features/general/general";
 
 export default function Review() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const showLoginDialog = useSelector(
+    (s: RootState) => s.general.showLoginDialog
+  );
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const { toast } = useToast();
   const router = useRouter();
-
+  const dispatch = useDispatch();
   // Get data from Redux store
   const design = useSelector((state: RootState) => state.design);
   const startPage = useSelector((state: RootState) => state.startPage);
@@ -42,7 +47,8 @@ export default function Review() {
     if (!authData.isAuthenticated) {
       // Store current path to redirect back after login
       sessionStorage.setItem("redirectAfterLogin", window.location.pathname);
-      router.push("/auth/login");
+      // router.push("/auth/login");
+      dispatch(setShowLoginDialog(true));
       return;
     }
 
@@ -311,6 +317,20 @@ export default function Review() {
             isProcessing={isProcessing}
             setShowPaymentDialog={setShowPaymentDialog}
           />
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={showLoginDialog}
+        onOpenChange={() => {
+          dispatch(setShowLoginDialog(false));
+        }}
+      >
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto custom-scroll">
+          <DialogHeader>
+            <DialogTitle>Sign in</DialogTitle>
+            <DialogDescription>Sign in to continue</DialogDescription>
+          </DialogHeader>
+          <LoginPopup />
         </DialogContent>
       </Dialog>
     </>
