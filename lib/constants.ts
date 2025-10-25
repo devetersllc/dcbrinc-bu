@@ -1,5 +1,5 @@
 type BookType =
-  | "print-book"
+  | "book"
   | "photo-book"
   | "comic-book"
   | "magazine"
@@ -16,7 +16,7 @@ type BookInfo = {
 };
 
 export const dataAccordingToType: Record<BookType, BookInfo> = {
-  "print-book": {
+  book: {
     fileType: "PDF",
     pageCount: "2-800",
     fonts: "Embedded",

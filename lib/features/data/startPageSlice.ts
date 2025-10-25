@@ -5,7 +5,7 @@ export interface StartPageState {
   goalFromQuery: boolean | undefined;
   goal: "publish" | "print";
   type:
-    | "print-book"
+    | "book"
     | "photo-book"
     | "comic-book"
     | "magazine"
@@ -35,7 +35,7 @@ const initialState: StartPageState = {
   typeFromQuery: undefined,
   goalFromQuery: undefined,
   goal: "print",
-  type: "print-book",
+  type: "book",
   projectTitle: "",
   bookLanguage: "English",
   bookCategory: "Non-Fiction",

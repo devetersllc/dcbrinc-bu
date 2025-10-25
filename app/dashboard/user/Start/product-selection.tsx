@@ -23,7 +23,7 @@ export function ProductSelection() {
 
   const products = [
     {
-      id: "print-book",
+      id: "book",
       title: "Book",
       description:
         "Traditional or paperback book using a wide range of paper stock and binding options. Perfect for novels, cookbooks, and more - perfect for a variety of projects.",

@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 type BookType =
-  | "print-book"
+  | "book"
   | "photo-book"
   | "comic-book"
   | "magazine"
@@ -18,7 +18,7 @@ type BookInfo = {
 };
 
 const dataAccordingToType: Record<BookType, BookInfo> = {
-  "print-book": {
+  book: {
     fileType: "PDF",
     pageCount: "2-800",
     fonts: "Embedded",
