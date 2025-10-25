@@ -115,7 +115,7 @@ export default function Review() {
           paperType: design?.paperType || "Standard",
           bindingType: design?.bindingType || "Perfect Bound",
           coverFinish: design?.coverFinish || "Matte",
-          totalPrice: design.totalPrice,
+          totalPrice: 1,
         };
 
         const response = await fetch("/api/orders/create-with-payment", {
