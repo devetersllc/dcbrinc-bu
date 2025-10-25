@@ -306,7 +306,7 @@ export default function Review() {
             customerName={authData.user?.name || ""}
             customerEmail={authData.user?.email || ""}
             orderId={`order-${Date.now()}`}
-            onPaymentSuccess={handlePaymentSuccess}
+            onSuccess={handlePaymentSuccess}
             onPaymentError={handlePaymentError}
             isProcessing={isProcessing}
             setShowPaymentDialog={setShowPaymentDialog}
