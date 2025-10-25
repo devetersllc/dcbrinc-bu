@@ -349,7 +349,7 @@ export default function OrderSuccess() {
       <p className="text-gray-600 text-sm sm:text-base md:text-lg mb-6 max-w-md">
         Your booking has been placed successfully. You can continue to your dashboard for more details.
       </p>
-      <Link href="/dashboard" className="w-full sm:w-auto">
+      <Link href="/" className="w-full sm:w-auto">
         <Button className="w-full sm:w-auto px-6 py-2 text-sm sm:text-base">
           Go to Dashboard
         </Button>
