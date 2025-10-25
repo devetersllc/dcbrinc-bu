@@ -453,7 +453,7 @@ export default function Navbar() {
       <div className="container flex h-14 max-w-screen-2xl items-center justify-between px-3 w-full">
         <div className="flex items-center gap-0 pe-2 justify-between w-fit xl:w-[calc(100%-160px)]">
           <Link
-            href={"/"}
+            href={"https://dcbrinc.com/"}
             className="h-8 md:h-10 flex items-center justify-center w-fit cursor-pointer"
           >
             <Image
