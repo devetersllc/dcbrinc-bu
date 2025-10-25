@@ -265,19 +265,17 @@ export default function Review() {
         variant={"main"}
         size={"main"}
         className="w-full text-2xl capitalize"
-        // onClick={
-        //   general.serviceType === "cards"
-        //     ? handlePaymentSuccess
-        //     : handleInitiatePayment
-        // }
-        onClick={handlePaymentSuccess}
+        onClick={
+             handleInitiatePayment
+        }
+        // onClick={handlePaymentSuccess}
         disabled={isProcessing}
       >
         {isProcessing
           ? "Processing..."
           : authData.isAuthenticated
-          ? // ? `Confirm & Pay $${getPrice().toFixed(2)}`
-            `${startPage.goal} Your Book`
+          ?  `Confirm & Pay $${getPrice().toFixed(2)}`
+           // `${startPage.goal} Your Book`
           : `Sign in to ${
               startPage.goal === "publish" && general.serviceType !== "cards"
                 ? startPage.goal

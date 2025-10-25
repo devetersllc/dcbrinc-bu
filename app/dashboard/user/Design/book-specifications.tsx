@@ -31,19 +31,19 @@ interface PricesObj {
 }
 
 const prices: PricesObj[] = [
-  { name: "glossy", price: 1 },
-  { name: "matte", price: 1 },
-  { name: "paper-coil-bound", price: 3 },
-  { name: "paperback-perfect-bound", price: 3 },
-  { name: "hardcover-linen", price: 3 },
-  { name: "paperback", price: 3 },
-  { name: "hardcover-case", price: 3 },
+  { name: "glossy", price: 1.1 },
+  { name: "matte", price: 0.75 },
+  { name: "paper-coil-bound", price: 3.7 },
+  { name: "paperback-perfect-bound", price: 3.5 },
+  { name: "hardcover-linen", price: 2.8 },
+  { name: "paperback", price: 3.1 },
+  { name: "hardcover-case", price: 3.4 },
   { name: "80lb-white-coated", price: 2 },
-  { name: "60lb-white-coated", price: 2 },
-  { name: "60lb-cream-coated", price: 2 },
-  { name: "standard-color", price: 10.05 },
-  { name: "premium-color", price: 10.05 },
-  { name: "standard-black-white", price: 10.05 },
+  { name: "60lb-white-coated", price: 1.5 },
+  { name: "60lb-cream-coated", price: 2.5 },
+  { name: "standard-color", price: 13.05 },
+  { name: "premium-color", price: 9.05 },
+  { name: "standard-black-white", price: 11 },
   { name: "premium-black-white", price: 10.05 },
 ];
 
