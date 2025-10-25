@@ -47,6 +47,7 @@ interface PaymentFormProps {
   onPaymentError?: (error: string) => void;
   isProcessing?: boolean;
   error?: string | null;
+  setShowPaymentDialog?: any;
 }
 
 export function PaymentForm({
@@ -55,6 +56,7 @@ export function PaymentForm({
   description = "Payment",
   onSuccess,
   onError,
+  setShowPaymentDialog,
 }: PaymentFormProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -158,6 +160,7 @@ export function PaymentForm({
       if (result.success) {
         setSuccess(`Payment successful! Transaction ID: ${result.paymentId}`);
         onSuccess?.(result.paymentId);
+        setShowPaymentDialog(false);
       } else {
         setError(result.error || "Payment failed");
         onError?.(result.error || "Payment failed");
